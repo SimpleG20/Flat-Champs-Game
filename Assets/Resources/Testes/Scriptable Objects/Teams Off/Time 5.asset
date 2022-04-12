@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a8abedb5ca00940a4813b4883a66a7, type: 3}
+  m_Name: Time 5
+  m_EditorClassIdentifier: 
+  m_nomeTime: Meteli Goli FC
+  m_abreviacao: MTG
+  m_base: {fileID: 21300000, guid: c68b93e43137e6b4daf0d4584bbadb80, type: 3}
+  m_fundo: {fileID: 21300000, guid: ab1ef82279053b5499659b0e0ce534c4, type: 3}
+  m_simbolo: {fileID: 21300000, guid: ab1ef82279053b5499659b0e0ce534c4, type: 3}
+  m_corPrimaria: {r: 0.9725491, g: 0.87843144, b: 0.46274513, a: 1}
+  m_corSecundaria: {r: 0.39607847, g: 0.20784315, b: 0.058823533, a: 1}
+  m_corTerciaria: {r: 0.3529412, g: 0.32156864, b: 0.37254903, a: 1}
+  m_Casa: {r: 0.39607847, g: 0.20784315, b: 0.058823533, a: 1}
+  m_Fora: {r: 0.3529412, g: 0.32156864, b: 0.37254903, a: 1}
+  m_playerBotao: {fileID: 2167976884893475941, guid: 4a94a45604c698f42bc70c9b5c30603f,
+    type: 3}
+  m_playerGoleiro: {fileID: 1732771847129821856, guid: 3e7cfcab611460a41b8abf40c4f88070,
+    type: 3}
+  m_tipoJogador: 1
+  m_tipoGoleiro: 1
+  esquema: 2

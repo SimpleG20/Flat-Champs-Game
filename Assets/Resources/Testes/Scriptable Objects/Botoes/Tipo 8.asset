@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599fccbaad5cdf14eb0189b4298432b5, type: 3}
+  m_Name: Tipo 8
+  m_EditorClassIdentifier: 
+  nome: Castery
+  cod: 8
+  tipoBotao: 0
+  m_locked: {fileID: 21300000, guid: ce5175564ff7837428bfc2a3bb8d482f, type: 3}
+  m_imagem: {fileID: 21300000, guid: a651be00b8199b04f87ca9b5f6abb094, type: 3}
+  m_formato: {fileID: 5324466125052181936, guid: d6481f231345e154198a82c5b35d9cb9,
+    type: 3}
+  m_collider: {fileID: 4792900278750073275, guid: d6481f231345e154198a82c5b35d9cb9,
+    type: 3}
+  m_cor1: {fileID: 21300000, guid: 155033a818c289041afbf1d9738ed66f, type: 3}
+  m_cor2: {fileID: 21300000, guid: dc456c33a700e3047b2884a8a441f36a, type: 3}
+  m_cor3: {fileID: 21300000, guid: 643fbdace1cf0c941bbb3161f85d6621, type: 3}
+  m_adesivo: 1
+  m_podeAdesivo: 1
+  m_exclusivoMetal: 0
+  raridade: 4
+  m_tipo: 8
+  m_levelDesbloquear: 60
+  m_rotacao: -235

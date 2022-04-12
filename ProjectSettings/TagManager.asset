@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Linha Fundo G1
+  - LateralD
+  - Linha Fundo G2
+  - PequenaArea2
+  - LateralE
+  - PequenaArea1
+  - Esquema
+  - Abertura
+  - Goleiro1
+  - Goleiro2
+  - Camera Jogador
+  - Campo
+  - Gol1
+  - Trave
+  - TorcidaAleatoria
+  - Camera Abertura
+  - Camera Torcida
+  - Estadio
+  - Torcida2
+  - Torcida1
+  - Gol2
+  - Placar
+  - Tempo
+  - Imagem Formatos Player
+  - Direcao Bola
+  - Botao Mover Player
+  - Cores Primarias
+  - Bola
+  - Botao Lousa
+  - Mira Especial
+  - Imagem Adesivo
+  - Cores Terciarias
+  - Cores Secundarias
+  - Imagem Formatos Goleiro
+  - Slot Recompensa
+  - Imagem Simbolo Brasao
+  - Botao do Menu
+  - Imagem Borda Brasao
+  - Imagem Fundo Brasao
+  - Player Selecionado
+  - Camera TM D
+  - Camera TM E
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - UI colorida
+  - Water
+  - UI
+  - Cores
+  - Exibicao Config
+  - Player1
+  - Player2
+  - Passa Bola
+  - Bola
+  - Torcida
+  - Gol
+  - Limite Goleiro
+  - Goleiro
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599fccbaad5cdf14eb0189b4298432b5, type: 3}
+  m_Name: Tipo 3
+  m_EditorClassIdentifier: 
+  nome: Cleaner
+  cod: 3
+  tipoBotao: 0
+  m_locked: {fileID: 21300000, guid: ce5175564ff7837428bfc2a3bb8d482f, type: 3}
+  m_imagem: {fileID: 21300000, guid: 10c48b174fbd2f446a06c179d02005be, type: 3}
+  m_formato: {fileID: 3741455949057496974, guid: a61d09663c3527040b947c89d0edb0d4,
+    type: 3}
+  m_collider: {fileID: -8553823538394231539, guid: a61d09663c3527040b947c89d0edb0d4,
+    type: 3}
+  m_cor1: {fileID: 21300000, guid: 025b30eef58da1342966e4c3a4190fe5, type: 3}
+  m_cor2: {fileID: 21300000, guid: f2ea25ea716c69c43b62cb919af5504b, type: 3}
+  m_cor3: {fileID: 21300000, guid: a89efc29185807c45a5cc5b7444fa1b0, type: 3}
+  m_adesivo: 1
+  m_podeAdesivo: 1
+  m_exclusivoMetal: 0
+  raridade: 2
+  m_tipo: 3
+  m_levelDesbloquear: 10
+  m_rotacao: -90

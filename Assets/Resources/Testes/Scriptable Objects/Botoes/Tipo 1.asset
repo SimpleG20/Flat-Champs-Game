@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599fccbaad5cdf14eb0189b4298432b5, type: 3}
+  m_Name: Tipo 1
+  m_EditorClassIdentifier: 
+  nome: Classic
+  cod: 1
+  tipoBotao: 0
+  m_locked: {fileID: 21300000, guid: ce5175564ff7837428bfc2a3bb8d482f, type: 3}
+  m_imagem: {fileID: 21300000, guid: a5e70b336f3cb72479ab375daad1e279, type: 3}
+  m_formato: {fileID: 8439202594070435684, guid: 482db9b1949830a4da206896c44a5b17,
+    type: 3}
+  m_collider: {fileID: 7472753434400480865, guid: 482db9b1949830a4da206896c44a5b17,
+    type: 3}
+  m_cor1: {fileID: 21300000, guid: d5f1a49cd46986249818f9f7abf589b4, type: 3}
+  m_cor2: {fileID: 21300000, guid: 4ff6a51aeee642d45afbb34a03b34544, type: 3}
+  m_cor3: {fileID: 21300000, guid: ea3a017d199245c459121b293c234969, type: 3}
+  m_adesivo: 1
+  m_podeAdesivo: 1
+  m_exclusivoMetal: 0
+  raridade: 1
+  m_tipo: 1
+  m_levelDesbloquear: 1
+  m_rotacao: 0

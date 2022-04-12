@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a8abedb5ca00940a4813b4883a66a7, type: 3}
+  m_Name: UsuarioTeste
+  m_EditorClassIdentifier: 
+  m_nomeUsuario: Username
+  m_nomeTime: Name_Team
+  m_abreviacao: AAA
+  m_base: {fileID: 2541355517435428699, guid: 5bf03f9cf46533c4ab9257dc433fdd42, type: 3}
+  m_fundo: {fileID: 4234783028992503373, guid: ee31ffb83574d524c99e921cd6dee3fa, type: 3}
+  m_simbolo: {fileID: 7096233228588517223, guid: 9042c66b3a1c2c44293bf533a528e156,
+    type: 3}
+  m_corPrimaria: {fileID: 2100000, guid: a24f5ae642ecc9843832f68c17fbc36f, type: 2}
+  m_corSecundaria: {fileID: 2100000, guid: 9ed12d95db86fd044b1dee42a75d0952, type: 2}
+  m_corTerciaria: {fileID: 2100000, guid: d296ee24e1540e343ad5ff45dfa36366, type: 2}
+  m_Casa: {fileID: 2100000, guid: d296ee24e1540e343ad5ff45dfa36366, type: 2}
+  m_Fora: {fileID: 2100000, guid: 9ed12d95db86fd044b1dee42a75d0952, type: 2}
+  m_vitorias: 0
+  m_empates: 0
+  m_derrotas: 0
+  m_level: 1
+  m_playerButton: {fileID: 3704188638071102626, guid: d870282b16ce896408bf6f1ff5b93500,
+    type: 3}
+  m_playerGoleiro: {fileID: 1011431188681955694, guid: 938fcf36d0a6c254ea8e78f7d976c39a,
+    type: 3}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599fccbaad5cdf14eb0189b4298432b5, type: 3}
+  m_Name: Tipo 5
+  m_EditorClassIdentifier: 
+  nome: Brutus
+  cod: 5
+  tipoBotao: 0
+  m_locked: {fileID: 21300000, guid: ce5175564ff7837428bfc2a3bb8d482f, type: 3}
+  m_imagem: {fileID: 21300000, guid: 7f4f20793b772b7458d17aa21e8acfeb, type: 3}
+  m_formato: {fileID: 786355905873850185, guid: 531043a649104d64c85ede7c769ce32d,
+    type: 3}
+  m_collider: {fileID: -2785422392017886042, guid: 531043a649104d64c85ede7c769ce32d,
+    type: 3}
+  m_cor1: {fileID: 21300000, guid: be90def621c98d340a698615d7f5be2e, type: 3}
+  m_cor2: {fileID: 21300000, guid: 93a912a7a5e211b43944e66ef3af5a4c, type: 3}
+  m_cor3: {fileID: 21300000, guid: c70e2410299092c4dbb4a36eecaf3d7a, type: 3}
+  m_adesivo: 1
+  m_podeAdesivo: 1
+  m_exclusivoMetal: 0
+  raridade: 3
+  m_tipo: 5
+  m_levelDesbloquear: 30
+  m_rotacao: -259

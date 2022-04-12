@@ -1,0 +1,160 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1526780221940870333
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1526780221940870334}
+  - component: {fileID: 1526780221940870335}
+  - component: {fileID: 1526780221940870304}
+  - component: {fileID: 1526780221940870305}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1526780221940870334
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526780221940870333}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1526780221940870335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526780221940870333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb273c2e907bd754484db2294cd8f74d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sceneManager: {fileID: 0}
+  m_logoManager: {fileID: 0}
+  m_statsManager: {fileID: 0}
+  m_playerEditionManager: {fileID: 0}
+  m_teamEditionManager: {fileID: 0}
+  m_configurationManager: {fileID: 0}
+  m_levelManager: {fileID: 0}
+  m_usuario: {fileID: 1526780221940870304}
+  m_config: {fileID: 1526780221940870305}
+  m_menu: 1
+  m_jogoClassico: 0
+  m_jogo6v6: 0
+  m_jogo1v1: 0
+  m_online: 0
+  m_offline: 0
+  m_jogadorAi: 0
+  m_jogadorJogador: 0
+  m_tempoPartida: 0
+  m_playerButtonMenu: {fileID: 0}
+  m_playerGoleiroMenu: {fileID: 0}
+  m_timeOffEscolhido: {fileID: 0}
+  m_timesOff:
+  - {fileID: 11400000, guid: 3425adb85918a7c43a8c356abdd0144c, type: 2}
+  - {fileID: 11400000, guid: f747f461fa1bdd84ea80f3e5aff6474b, type: 2}
+  - {fileID: 11400000, guid: 244fc6a6a3197894ca514605786a9d16, type: 2}
+  - {fileID: 11400000, guid: c3c38ce30977c394fb68a8ee74cc9add, type: 2}
+  - {fileID: 11400000, guid: 1495b6cb0b010aa49957bbbdcf7b1d26, type: 2}
+  m_transicaoCena: 0
+--- !u!114 &1526780221940870304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526780221940870333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce05dbc9c4b6ac43b94d7d77854abdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_username: 
+  m_timeNome: 
+  m_abreviacao: 
+  m_level: 1
+  m_xp: 0
+  m_xpReferenciaAnterior: 0
+  m_xpReferencia: 1500
+  m_vitorias: 0
+  m_empates: 0
+  m_derrotas: 0
+  m_recompensasLevel: 010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  m_baseLogo: {fileID: 21300000, guid: ef8ea78a02f9c084ebd8e46efe9981d3, type: 3}
+  m_fundoLogo: {fileID: 21300000, guid: ab9867a70d645ac438dadefe4098d815, type: 3}
+  m_simboloLogo: {fileID: 21300000, guid: af59d5cbdbd4662478a3e1eecd7ffa0e, type: 3}
+  m_bordaLogo: {fileID: 21300000, guid: f773abc953980004b935d92b7c47b684, type: 3}
+  m_transparente: {fileID: 21300000, guid: f773abc953980004b935d92b7c47b684, type: 3}
+  m_estrela: {fileID: 21300000, guid: 7bf263898d108414ea5169f6a97bdb49, type: 3}
+  m_tipoBaseLogo: 1
+  m_tipoFundoLogo: 1
+  m_tipoSimboloLogo: 1
+  m_tipoBorda: 0
+  m_usarLogo: 1
+  m_usarEstrelas: 0
+  m_podeAdesivo: 0
+  m_opcaoCorAdesivo: 0
+  m_codigoAdesivo: 0
+  m_corAdesivo: {r: 1, g: 1, b: 1, a: 1}
+  m_playerBotao: {fileID: 1026842510897607209, guid: b5955002729d57843aacc968e9f986fe,
+    type: 3}
+  m_tipoPlayerBotaoOnline: 0
+  m_codigoBotao: 0
+  m_goleiroBotao: {fileID: 2843294713490516287, guid: e1498150364aaa241beb0c7b5ec7f883,
+    type: 3}
+  m_tipoGoleiroBotao: 1
+  m_codigoGoleiro: 0
+  m_corPrimaria: {r: 1, g: 1, b: 1, a: 1}
+  m_codigoCorPrimaria: 0
+  m_corSecundaria: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_codigoCorSecundaria: 0
+  m_corTerciaria: {r: 0, g: 0, b: 0, a: 1}
+  m_codigoCorTerciaria: 0
+  m_codTextura: 0
+  m_esquemaClassico: 0
+  m_esquemaRapido: 0
+  m_esquema3v3: 0
+  m_tipoBotaoAtaque: 0
+  m_tipoBotaoMeio: 0
+  m_tipoBotaoDefesa: 0
+--- !u!114 &1526780221940870305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526780221940870333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82177965a6e61164f9c114f5bf2b9def, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_corMenuCustom: 0
+  m_corJogadorCustom: 0
+  m_corTimeCustom: 0
+  m_corConfigCustom: 0
+  m_camSensibilidade: 50
+  m_camPosY: 0
+  m_camAngulo: 0
+  m_somTorcida: 50
+  m_somInterface: 50
+  m_somMusica: 50
+  m_somEfeito: 50
+  m_resolucao: 2
+  m_language: 1
