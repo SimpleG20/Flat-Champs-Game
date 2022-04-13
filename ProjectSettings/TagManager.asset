@@ -46,6 +46,7 @@ TagManager:
   - Player Selecionado
   - Camera TM D
   - Camera TM E
+  - Direcao Especial
   layers:
   - Default
   - TransparentFX

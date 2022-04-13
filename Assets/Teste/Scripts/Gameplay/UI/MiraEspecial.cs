@@ -5,39 +5,37 @@ using UnityEngine.UI;
 
 public class MiraEspecial : MonoBehaviour
 {
-    [Header("Teste")]
-    public GameObject gol;
-    public GameObject bola, direcaoEspecial;
-    public float distanciaGol, forca;
-    public bool chutar, pc;
-
     [Header("Movimento Interno")]
     [SerializeField] Image tempoGO;
     [SerializeField] Image miraGO;
     float tempoEspecial, tempoScale, tamanho, cos;
 
     [Header("Movimentacao")]
-    public Vector2 startPos;
+    [SerializeField] GameObject trajetoria;
+    GameObject gol, direcaoEspecial;
+    Vector3 startPos;
 
-    public float speedMira, distancia, velocidadeVolta;
-    public bool voltando, travouMira;
+    float speedMira, distancia;
+    bool travouMira;
 
-    //private FisicaBola bola;
-    private InputManager joystick;
+    InputManager joystick;
+    EventsManager events;
+    UIMetodosGameplay ui;
 
     void Start()
     {
+        events = EventsManager.current;
         joystick = FindObjectOfType<InputManager>();
-        //bola = FindObjectOfType<FisicaBola>();
+        ui = FindObjectOfType<UIMetodosGameplay>();
 
-        direcaoEspecial.transform.position = GameObject.Find("Gol Tipo 1").transform.position;
-        startPos = FindObjectOfType<Camera>().WorldToScreenPoint(direcaoEspecial.transform.position, Camera.MonoOrStereoscopicEye.Mono);
+        events.onAplicarMetodosUiComBotao += UiMetodos;
 
-        transform.position = startPos;
-        velocidadeVolta = 3.5f;
+        direcaoEspecial = GameObject.FindGameObjectWithTag("Direcao Especial");
+
+        startPos = transform.position;
         tamanho = 175;
 
-        distanciaGol = (gol.transform.position - bola.transform.position).magnitude;
+        Instantiate(trajetoria);
     }
 
     void FixedUpdate()
@@ -60,12 +58,12 @@ public class MiraEspecial : MonoBehaviour
         #endregion
 
         #region Movimentacao
-        distancia = (direcaoEspecial.transform.position - gol.transform.position).magnitude;
+        distancia = (direcaoEspecial.transform.position - startPos).magnitude;
 
         if (distancia < 3) speedMira = 1.5f;
         else speedMira = 2f;
 
-        if (pc)
+        if (MovimentacaoDoJogador.pc)
         {
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
@@ -89,27 +87,26 @@ public class MiraEspecial : MonoBehaviour
 
         transform.position = FindObjectOfType<Camera>().WorldToScreenPoint(direcaoEspecial.transform.position, Camera.MonoOrStereoscopicEye.Mono);
         #endregion
-
-
     }
 
-    private void Update()
+    void UiMetodos(string metodo)
     {
-
-        if (chutar)
+        switch (metodo)
         {
-            bola.GetComponent<Rigidbody>().AddForce((direcaoEspecial.transform.position - bola.transform.position).normalized * forca, ForceMode.Impulse);
-            chutar = false;
+            case "travar mira especial":
+                travouMira = true;
+                ui.travarMiraBt.gameObject.SetActive(false);
+                ui.chuteEspecialBt.gameObject.SetActive(true);
+                break;
         }
     }
-
 
     IEnumerator Voltar()
     {
         float step = 0;
 
         yield return new WaitForSeconds(0.01f);
-        step += 0.05f;
-        direcaoEspecial.transform.position = Vector3.MoveTowards(direcaoEspecial.transform.position, gol.transform.position, step);
+        step += 0.1f;
+        direcaoEspecial.transform.position = Vector3.MoveTowards(direcaoEspecial.transform.position, startPos, step);
     }
 }

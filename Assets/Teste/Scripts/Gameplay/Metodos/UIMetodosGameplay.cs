@@ -270,9 +270,8 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
     }
     void FimEspecial()
     {
-        EstadoBotoesSituacoeGameplay("normal");
+        MetodosUISemBotao("estado jogador e goleiro", "", false, 0, 0);
         chuteEspecialBt.gameObject.SetActive(false);
-        travarMiraBt.gameObject.SetActive(false);
     }
     void BotoesNoPause()
     {

@@ -100,9 +100,6 @@ public class GameplayOff : MonoBehaviour
             case "direcionar jogador":
                 DirecionamentoAuto();
                 break;
-            case "travar mira especial":
-                TravarMira();
-                break;
             case "selecionar outro":
                 SelecionarOutroJogador();
                 break;
@@ -163,11 +160,6 @@ public class GameplayOff : MonoBehaviour
         }
 
         if (LogisticaVars.tempoJogada >= 20) events.OnTrocarVez();
-    }
-
-    void TravarMira()
-    {
-        FindObjectOfType<MiraEspecial>().travouMira = true;
     }
 
     void TempoJogo()
@@ -306,36 +298,33 @@ public class GameplayOff : MonoBehaviour
     }
     void AcionaEspecial()
     {
-        //LogisticaVars.jogoParado = true;
-        comecarContagemJogada = false;
+        LogisticaVars.aplicouEspecial = false;
+        JogoParado();
         LogisticaVars.especial = true;
-
-        Vector3 vetorPosicao;
-        float angulo;
 
         if (LogisticaVars.vezJ1)
         {
-            LogisticaVars.especialT1Disponivel = false; LogisticaVars.m_especialAtualT1 = 0;
-            vetorPosicao = posGol2 - LogisticaVars.m_jogadorEscolhido.transform.position;
-            angulo = Mathf.Rad2Deg * Mathf.Acos(vetorPosicao.x / vetorPosicao.magnitude);
+            LogisticaVars.especialT1Disponivel = false; 
+            LogisticaVars.m_especialAtualT1 = 0;
+            LogisticaVars.m_jogadorEscolhido.transform.LookAt(posGol2);
         }
         else
         {
-            LogisticaVars.especialT2Disponivel = false; LogisticaVars.m_especialAtualT2 = 0;
-            vetorPosicao = posGol1 - LogisticaVars.m_jogadorEscolhido.transform.position;
-            angulo = Mathf.Rad2Deg * Mathf.Acos(vetorPosicao.x / vetorPosicao.magnitude);
+            LogisticaVars.especialT2Disponivel = false; 
+            LogisticaVars.m_especialAtualT2 = 0;
+            LogisticaVars.m_jogadorEscolhido.transform.LookAt(posGol1);
         }
 
-        LogisticaVars.m_especialAnimator.GetComponent<Animator>().SetBool("Especial", false);
+        LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
 
-        if (vetorPosicao.z > 0) LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, 0, -angulo - 40);
-        else LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, 0, angulo - 40);
+        if (LogisticaVars.vezJ1) GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = posGol2;
+        else GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = posGol1;
 
-        Physics.gravity *= 1.35f;
+        Instantiate(ui.miraEspecial, FindObjectOfType<Camera>().WorldToScreenPoint(GameObject.FindGameObjectWithTag("Direcao Especial").transform.position,
+            Camera.MonoOrStereoscopicEye.Mono), Quaternion.identity, canvas.transform.GetChild(2));
 
-        if (LogisticaVars.vezJ1) Instantiate(ui.miraEspecial, Camera.main.WorldToScreenPoint(posGol2), Quaternion.identity, canvas.transform);
-        else Instantiate(ui.miraEspecial, Camera.main.WorldToScreenPoint(posGol1), Quaternion.identity, canvas.transform);
-
+        ui.especialBt.gameObject.SetActive(false);
+        ui.travarMiraBt.gameObject.SetActive(true);
         events.SituacaoGameplay("especial");
         events.OnAplicarRotinas("rotina tempo especial");
     }
@@ -344,9 +333,10 @@ public class GameplayOff : MonoBehaviour
         Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
         events.OnAplicarMetodosUiSemBotao("fim especial");
         LogisticaVars.m_colJogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().
-            GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_NoiseProfile = null;
+            GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = 0;
+        LogisticaVars.m_colJogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().
+            GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_FrequencyGain = 0;
 
-        Physics.gravity = new Vector3(0, -9.81f, 0);
         LogisticaVars.especial = false;
         LogisticaVars.aplicouEspecial = true;
     }
@@ -516,6 +506,7 @@ public class GameplayOff : MonoBehaviour
     #endregion
 
     #endregion
+
 
     public static float Modulo(float numero)
     {

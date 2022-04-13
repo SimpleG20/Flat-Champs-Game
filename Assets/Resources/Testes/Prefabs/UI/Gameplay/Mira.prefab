@@ -128,14 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tempoGO: {fileID: 5541015594691678734}
   miraGO: {fileID: 8036424930896995710}
-  startPos: {x: 0, y: 0}
-  distanciaCentro: {x: 0, y: 0}
-  speedMira: 0
-  distancia: 0
-  velocidadeVolta: 0
-  resistividade: 0
-  voltando: 0
-  travouMira: 0
+  trajetoria: {fileID: 7502341446552508340, guid: f656d1f94ea956841ba6d00a9784cffb, type: 3}
 --- !u!1 &7482680206054531242
 GameObject:
   m_ObjectHideFlags: 0

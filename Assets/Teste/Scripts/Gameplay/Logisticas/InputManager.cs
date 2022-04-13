@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [Header("Teste")]
-    public GameObject jogador;
-    public GameObject especialPrefab;
-
     [Header("Joystick")]
     Vector2 touchPosA;
     Vector2 touchPosB, posInicialTouchB;
@@ -38,15 +34,13 @@ public class InputManager : MonoBehaviour
 
                 if(Input.touches[i].phase == TouchPhase.Moved && rightTouch == Input.touches[i].fingerId)
                 {
-                    /*if(LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 || LogisticaVars.auxChuteAoGol || LogisticaVars.especial)
+                    if(LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 || LogisticaVars.auxChuteAoGol || LogisticaVars.especial)
                     {
                         direcaoRight = Vector2.ClampMagnitude(touchPosB - posInicialTouchB, 1);
                         if(LogisticaVars.auxChuteAoGol){
-                        FindObjectOfType<TesteDirecaoBola>().alturaChute = FindObjectOfType<TesteDirecaoBola>().alturaChute + direcaoRight.y *  Time.deltaTime;
+                            FindObjectOfType<TesteDirecaoBola>().alturaChute = FindObjectOfType<TesteDirecaoBola>().alturaChute + direcaoRight.y *  Time.deltaTime;
                         }
-                    }*/
-                
-
+                    }
                 }
 
                 if (Input.touches[i].phase == TouchPhase.Ended && rightTouch == Input.touches[i].fingerId)
@@ -60,16 +54,16 @@ public class InputManager : MonoBehaviour
                 if (Input.touches[i].phase == TouchPhase.Began)
                 {
                     leftTouch = Input.touches[i].fingerId;
-                    /*if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
+                    if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
                     {
+                        if(!LogisticaVars.especial) JogadorVars.m_rotacionar = true;
                         GoleiroVars.m_movimentar = false;
-                        JogadorVars.m_rotacionar = true;
                     }
                     else if(LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2)
                     {
                         GoleiroVars.m_movimentar = true;
                         JogadorVars.m_rotacionar = false;
-                    }*/
+                    }
                 }
                 if (Input.touches[i].phase == TouchPhase.Moved && leftTouch == Input.touches[i].fingerId)
                 {
@@ -87,9 +81,7 @@ public class InputManager : MonoBehaviour
                 }
                 else if (Input.touches[i].phase == TouchPhase.Ended && leftTouch == Input.touches[i].fingerId)
                 {
-                    //if (LogisticaVars.especial) voltar = true;
-                    //else voltar = false;
-                    //GoleiroVars.m_movimentar = JogadorVars.m_rotacionar = false;
+                    GoleiroVars.m_movimentar = JogadorVars.m_rotacionar = false;
                     vX = 0;
                     vY = 0;
                     handle.localPosition = new Vector3(0, 0, 0);

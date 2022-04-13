@@ -4,30 +4,35 @@ using UnityEngine;
 
 public class DesenharPrevisaoChute : MonoBehaviour
 {
-    public GameObject bola, direcaoEspecial;
-
-    public Transform Point1;
-    public Transform Point2;
-    public Transform Point3;
     public LineRenderer linerenderer;
-    public float vertexCount;
-    public int vetor;
-    public bool chutar;
+    float vertexCount;
+    int vetor;
 
-    public List<Vector3> caminhoLivre;
+    Transform Point1, Point3;
+    [SerializeField] Transform Point2;
+
+    List<Vector3> caminhoLivre;
+
+    FisicaBola bola;
+    InputManager input;
 
     private void Start()
     {
-        Point1 = bola.transform;
-        Point3 = direcaoEspecial.transform;
-        Point2.position = (Point3.position - Point1.position) / 2;
+        bola = FindObjectOfType<FisicaBola>();
 
+        Point1 = bola.transform;
+        if (LogisticaVars.especial) Point3 = GameObject.FindGameObjectWithTag("Direcao Especial").transform;
+        else print("Trajetoria para outra ocasiao");
+        Point2.position = (Point3.position - Point1.position) / 2;
+        vertexCount = 12;
     }
 
     void Update()
     {
-        if (!chutar)
+        if (!LogisticaVars.aplicouEspecial)
         {
+            Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
+
             var pointList = new List<Vector3>();
             for (float ratio = 0; ratio <= 1; ratio += 1 / vertexCount)
             {
@@ -66,7 +71,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
             if (Point2.position.y < 2) erroY = 0;
 
             if (i < 2 * caminhoLivre.Count / 3) erro = new Vector3(0, 0, 0);
-            else erro = new Vector3(erroX / 2, erroY, 0);
+            else erro = new Vector3(erroX / 1.5f, erroY, 0);
 
             caminhoLivre[i] += erro;
         }
@@ -79,7 +84,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
         step += 1.25f;
         bola.transform.position = Vector3.MoveTowards(bola.transform.position, caminho[vetor], step);
-        if (bola.transform.position == caminho[caminho.Count - 1]) chutar = false;
+        if (bola.transform.position == caminho[caminho.Count - 1]) { LogisticaVars.aplicouEspecial = false; Destroy(gameObject); }
         else
         {
             if (bola.transform.position == caminho[vetor]) vetor++;

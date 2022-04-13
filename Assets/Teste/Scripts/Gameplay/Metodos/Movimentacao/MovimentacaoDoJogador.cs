@@ -60,7 +60,7 @@ public class MovimentacaoDoJogador : MonoBehaviour
         }
         else
         {
-            print("JogoParado: " + LogisticaVars.jogoParado + "Continua Fora: " + LogisticaVars.continuaSendoFora);
+            //print("JogoParado: " + LogisticaVars.jogoParado + "Continua Fora: " + LogisticaVars.continuaSendoFora);
             if (JogadorVars.m_aplicarChute && LogisticaVars.jogadorSelecionado)
             {
                 if (!LogisticaVars.aplicouPrimeiroToque)
