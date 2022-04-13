@@ -6,6 +6,11 @@ using Cinemachine;
 
 public class GameplayOff : MonoBehaviour
 {
+    /* Abreviacoes:
+        MJ: movimentacaoDoJogador
+        MG: movimentacaoDoGoleiro
+        UI: UIMetodosGameplay
+     */
     bool comecarContagemJogada, comecarContagemSelecao;
 
     GameObject canvas;
@@ -117,19 +122,8 @@ public class GameplayOff : MonoBehaviour
 
         TempoJogo();
 
-        if (LogisticaVars.m_especialAtualT1 >= LogisticaVars.m_maxEspecial || LogisticaVars.m_especialAtualT2 >= LogisticaVars.m_maxEspecial)
-        {
-            if (LogisticaVars.m_especialAtualT1 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT1Disponivel && LogisticaVars.vezJ1)
-            {
-                LogisticaVars.m_especialAtualT1 = LogisticaVars.m_maxEspecial;
-                LogisticaVars.especialT1Disponivel = true;
-            }
-            else if(LogisticaVars.m_especialAtualT2 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT2Disponivel && LogisticaVars.vezJ2)
-            {
-                LogisticaVars.m_especialAtualT2 = LogisticaVars.m_maxEspecial;
-                LogisticaVars.especialT2Disponivel = true;
-            }
-        }
+        if (LogisticaVars.especialT1Disponivel && LogisticaVars.vezJ1 || LogisticaVars.especialT2Disponivel && LogisticaVars.vezJ2) ui.especialBt.interactable = true;
+        else ui.especialBt.interactable = false;
 
         if (comecarContagemSelecao)
         {
@@ -143,19 +137,19 @@ public class GameplayOff : MonoBehaviour
 
             if (LogisticaVars.vezJ1)
             {
-                if ((LogisticaVars.m_especialAtualT1 / LogisticaVars.m_maxEspecial <= 1) && !LogisticaVars.aplicouEspecial)
-                {
-                    LogisticaVars.m_especialAtualT1 += Time.deltaTime * 3;
-                    BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
-                }
+                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT1 += Time.deltaTime * 5;
+
+                if (LogisticaVars.m_especialAtualT1 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT1Disponivel) 
+                { LogisticaVars.m_especialAtualT1 = LogisticaVars.m_maxEspecial;  LogisticaVars.especialT1Disponivel = true; }
+                BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
             }
             else
             {
-                if ((LogisticaVars.m_especialAtualT2 / LogisticaVars.m_maxEspecial <= 1) && !LogisticaVars.aplicouEspecial)
-                {
-                    LogisticaVars.m_especialAtualT2 += Time.deltaTime * 0f; //mudar para 0.5f
-                    BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
-                }
+                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT2 += Time.deltaTime * 0f; //mudar para 0.5f
+                
+                if(LogisticaVars.m_especialAtualT2 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT2Disponivel)
+                { LogisticaVars.m_especialAtualT2 = LogisticaVars.m_maxEspecial; LogisticaVars.especialT2Disponivel = true; }
+                BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
             }
         }
 
@@ -323,22 +317,29 @@ public class GameplayOff : MonoBehaviour
         Instantiate(ui.miraEspecial, FindObjectOfType<Camera>().WorldToScreenPoint(GameObject.FindGameObjectWithTag("Direcao Especial").transform.position,
             Camera.MonoOrStereoscopicEye.Mono), Quaternion.identity, canvas.transform.GetChild(2));
 
+
+        LogisticaVars.cameraJogador.m_Priority = 0;
+        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(2).GetComponent<CinemachineVirtualCamera>();
+        LogisticaVars.cameraJogador.m_Priority = 99;
+
         ui.especialBt.gameObject.SetActive(false);
         ui.travarMiraBt.gameObject.SetActive(true);
-        events.SituacaoGameplay("especial");
+        events.SituacaoGameplay("acionar camera especial");
         events.OnAplicarRotinas("rotina tempo especial");
     }
     void FimEspecial()
     {
+        bola.GetComponent<Rigidbody>().useGravity = true;
+        Physics.gravity = Vector3.down * 9.81f;
         Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
+        Destroy(GameObject.FindGameObjectWithTag("Trajetoria Especial"));
         events.OnAplicarMetodosUiSemBotao("fim especial");
-        LogisticaVars.m_colJogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().
-            GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = 0;
-        LogisticaVars.m_colJogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().
-            GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_FrequencyGain = 0;
+        LogisticaVars.cameraJogador.m_Priority = 0;
+        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
+        LogisticaVars.cameraJogador.m_Priority = 99;
 
         LogisticaVars.especial = false;
-        LogisticaVars.aplicouEspecial = true;
+        //LogisticaVars.aplicouEspecial = true;
     }
     #endregion
 
@@ -374,6 +375,7 @@ public class GameplayOff : MonoBehaviour
 
         LogisticaVars.bolaPermaneceNaPequenaArea = LogisticaVars.auxChuteAoGol = LogisticaVars.acionouChuteAoGol = false;
         LogisticaVars.lateral = LogisticaVars.foraFundo = false;
+        LogisticaVars.continuaSendoFora = false;
 
         LogisticaVars.primeiraJogada = true;
         LogisticaVars.aplicouPrimeiroToque = false;
@@ -388,6 +390,10 @@ public class GameplayOff : MonoBehaviour
         LogisticaVars.jogadaDepoisGol = true;
         LogisticaVars.primeiraJogada = true;
         LogisticaVars.aplicouPrimeiroToque = false;
+
+        Physics.gravity = Vector3.down * 9.81f;
+        if (LogisticaVars.vezJ1) BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
+        else BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
     }
     #endregion
 

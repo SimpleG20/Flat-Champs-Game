@@ -47,6 +47,7 @@ TagManager:
   - Camera TM D
   - Camera TM E
   - Direcao Especial
+  - Trajetoria Especial
   layers:
   - Default
   - TransparentFX

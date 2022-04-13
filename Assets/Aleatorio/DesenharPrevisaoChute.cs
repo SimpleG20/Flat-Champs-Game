@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DesenharPrevisaoChute : MonoBehaviour
 {
-    public LineRenderer linerenderer;
+    [SerializeField] LineRenderer linerenderer;
     float vertexCount;
     int vetor;
 
@@ -19,6 +19,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
     private void Start()
     {
         bola = FindObjectOfType<FisicaBola>();
+        input = FindObjectOfType<InputManager>();
 
         Point1 = bola.transform;
         if (LogisticaVars.especial) Point3 = GameObject.FindGameObjectWithTag("Direcao Especial").transform;
@@ -31,7 +32,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
     {
         if (!LogisticaVars.aplicouEspecial)
         {
-            Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
+            if(FindObjectOfType<MiraEspecial>().MiraTravada()) Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
 
             var pointList = new List<Vector3>();
             for (float ratio = 0; ratio <= 1; ratio += 1 / vertexCount)
@@ -82,9 +83,9 @@ public class DesenharPrevisaoChute : MonoBehaviour
         float step = 0;
 
         yield return new WaitForSeconds(0.01f);
-        step += 1.25f;
+        step += 2.5f;
         bola.transform.position = Vector3.MoveTowards(bola.transform.position, caminho[vetor], step);
-        if (bola.transform.position == caminho[caminho.Count - 1]) { LogisticaVars.aplicouEspecial = false; Destroy(gameObject); }
+        if (bola.transform.position == caminho[caminho.Count - 1]) { EventsManager.current.SituacaoGameplay("fim especial"); Destroy(gameObject); }
         else
         {
             if (bola.transform.position == caminho[vetor]) vetor++;

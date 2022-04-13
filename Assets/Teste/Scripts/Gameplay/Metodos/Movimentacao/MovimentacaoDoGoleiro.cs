@@ -77,7 +77,7 @@ public class MovimentacaoDoGoleiro : MonoBehaviour
     {
         switch (s)
         {
-            case "aplicar chute do goleiro":
+            case "MG: aplicar chute do goleiro":
                 AplicarChuteGoleiro();
                 break;
         }

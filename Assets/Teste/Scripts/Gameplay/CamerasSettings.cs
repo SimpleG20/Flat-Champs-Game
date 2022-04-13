@@ -41,7 +41,7 @@ public class CamerasSettings : MonoBehaviour
             case "desabilitar camera tiro de meta":
                 DesabilitarCamerasMenosJogador();
                 break;
-            case "especial":
+            case "acionar camera especial":
                 AcionarCameraEspecial();
                 break;
             case "fim especial":
@@ -167,10 +167,11 @@ public class CamerasSettings : MonoBehaviour
     void AcionarCameraEspecial()
     {
         //AplicarNoise(LogisticaVars.cameraJogador, Resources.Load("Packages/com.unity.cinemachine/Presets/Noise/6D Shake") as NoiseSettings);
-        EditarNoise(torcida.GetComponent<CinemachineVirtualCamera>(), 2, 0.06f);
-        LogisticaVars.cameraJogador.m_Lens.FieldOfView = 30;
-        LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetChild(0).localEulerAngles = new Vector3(LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetChild(0).localEulerAngles.x/2,
-            LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetChild(0).localEulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetChild(0).localEulerAngles.z);
+        EditarNoise(LogisticaVars.cameraJogador.GetComponent<CinemachineVirtualCamera>(), 2, 0.06f);
+        if (LogisticaVars.vezJ1) LogisticaVars.cameraJogador.m_LookAt = GameObject.FindGameObjectWithTag("Gol2").transform;
+        else LogisticaVars.cameraJogador.LookAt = GameObject.FindGameObjectWithTag("Gol1").transform;
+
+        LogisticaVars.cameraJogador.m_Priority = 99;
     }
 
     void DesabilitarCamerasMenosJogador()
@@ -188,6 +189,7 @@ public class CamerasSettings : MonoBehaviour
     public IEnumerator EsperarTransicaoParaMudarBlend(CinemachineBlendDefinition.Style c)
     {
         yield return new WaitUntil(() => camPrincipal.IsBlending);
+        LogisticaVars.cameraJogador.m_Lens.FieldOfView = 60;
         MudarBlendCamera(c);
     }
     IEnumerator EsperarTransicaoCameraFora()

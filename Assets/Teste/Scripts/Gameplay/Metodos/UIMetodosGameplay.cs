@@ -33,6 +33,8 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
                 EstadoBotoesJogador(b);
                 EstadoBotoesCentral(b);
                 barraChuteJogador.SetActive(b);
+                especialBt.gameObject.SetActive(b);
+                if(LogisticaVars.especial) { chuteEspecialBt.gameObject.SetActive(b); }
                 break; 
             case "especial":
                 Especial();
@@ -52,7 +54,7 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
     {
         switch (s)
         {
-            case "bola rasteira":
+            case "UI: bola rasteira":
                 BolaRasteira();
                 break;
         }
@@ -122,6 +124,7 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
                 break;
             case "chute ao gol":
                 //print("Ui: Chute ao Gol");
+                FindObjectOfType<CamerasSettings>().MudarBlendCamera(CinemachineBlendDefinition.Style.Cut);
                 EstadoBotoesJogador(false);
                 EstadoBotoesGoleiro(false); 
                 goleiroPosicionadoBt.gameObject.SetActive(false);
@@ -264,7 +267,7 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
         EstadoBotoesGoleiro(false);
         EstadoBotoesCentral(false);
         centralBotoes.SetActive(true);
-        //chuteEspecialBt.gameObject.SetActive(true);
+        barraChuteJogador.SetActive(false);
         travarMiraBt.gameObject.SetActive(true);
         joystick.SetActive(true);
     }

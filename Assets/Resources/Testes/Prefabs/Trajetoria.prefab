@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 1593135170192847994}
   m_Layer: 0
   m_Name: Trajetoria
-  m_TagString: Untagged
+  m_TagString: Trajetoria Especial
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

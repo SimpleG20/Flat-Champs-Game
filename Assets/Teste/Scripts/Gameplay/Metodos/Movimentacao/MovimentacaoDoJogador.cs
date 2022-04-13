@@ -49,7 +49,7 @@ public class MovimentacaoDoJogador : MonoBehaviour
 
         #region Medir Chute
         if (JogadorVars.m_medirChute && LogisticaVars.jogadorSelecionado && !LogisticaVars.jogoParado || 
-            JogadorVars.m_medirChute && LogisticaVars.continuaSendoFora)
+            JogadorVars.m_medirChute && LogisticaVars.continuaSendoFora || JogadorVars.m_medirChute && LogisticaVars.jogadorSelecionado && !LogisticaVars.aplicouPrimeiroToque)
         {
             float parametro = JogadorMetodos.MedirChute();
 
@@ -60,7 +60,7 @@ public class MovimentacaoDoJogador : MonoBehaviour
         }
         else
         {
-            //print("JogoParado: " + LogisticaVars.jogoParado + "Continua Fora: " + LogisticaVars.continuaSendoFora);
+            // print("JogoParado: " + LogisticaVars.jogoParado + "Continua Fora: " + LogisticaVars.continuaSendoFora);
             if (JogadorVars.m_aplicarChute && LogisticaVars.jogadorSelecionado)
             {
                 if (!LogisticaVars.aplicouPrimeiroToque)
@@ -154,16 +154,16 @@ public class MovimentacaoDoJogador : MonoBehaviour
     {
         switch (s)
         {
-            case "aplicar chute do jogador":
+            case "MJ: aplicar chute do jogador":
                 AplicarChute();
                 break;
-            case "acionar lateral":
+            case "MJ: acionar lateral":
                 AcionarChuteLateral();
                 break;
-            case "acionar escanteio":
+            case "MJ: acionar escanteio":
                 AcionarChuteEscanteio();
                 break;
-            case "aplicar especial":
+            case "MJ: aplicar especial":
                 AplicarChuteEspecial();
                 break;
         }
@@ -192,17 +192,17 @@ public class MovimentacaoDoJogador : MonoBehaviour
     }
     private void AplicarChuteEspecial()
     {
-        Vector3 chute = new Vector3(bola.direcaoBola.x,
-            bola.direcaoBola.y / bola.direcaoBola.magnitude * 350f,
-            bola.direcaoBola.z / bola.direcaoBola.magnitude * 135f);
-        //print(chute);
-        bola.m_rbBola.AddForce(chute, ForceMode.Impulse);
+        print("Aplicar Especial");
+        bola.GetComponent<Rigidbody>().useGravity = false;
+        Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
+        EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
+
         LogisticaVars.aplicouEspecial = true;
 
         if (LogisticaVars.vezJ1) LogisticaVars.ultimoToque = 1;
         else LogisticaVars.ultimoToque = 2;
 
-        EventsManager.current.SituacaoGameplay("fim especial");
+        //EventsManager.current.SituacaoGameplay("fim especial");
     }
     #endregion
 

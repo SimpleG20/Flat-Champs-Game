@@ -74,7 +74,7 @@ public static class LogisticaVars
     #endregion
 
     #region Outros
-    public static float m_especialAtualT1, m_especialAtualT2, m_maxEspecial = 500;
+    public static float m_especialAtualT1, m_especialAtualT2, m_maxEspecial = 25;
     public static int placarT1, placarT2, jogadas, ultimoToque;
     public static int moeda, ultimaPosse;
 

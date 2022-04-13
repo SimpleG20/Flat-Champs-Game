@@ -73,15 +73,6 @@ public class FisicaJogador : MonoBehaviour
         #region Caso outros botoes Colidam com o Player
         if (collision.gameObject.CompareTag("Player Selecionado"))
         {
-            if (collision.gameObject.layer != gameObject.layer)
-            {
-                //print("Bate neles mesmo!!");
-                if (LogisticaVars.vezJ1) LogisticaVars.m_especialAtualT1 += 10;
-                else LogisticaVars.m_especialAtualT2 += 10;
-                print("Mais Especial!!");
-            }
-            else print("Batida entre amigos");
-
             Vector3 vetorDirecao;
             float quantidadeMovimento, velocidadeImpacto;
 
@@ -89,6 +80,16 @@ public class FisicaJogador : MonoBehaviour
             velocidadeImpacto = collision.gameObject.GetComponent<Rigidbody>().velocity.magnitude;
             //print("Velocidade Impacto Jogador: " + velocidadeImpacto);
             quantidadeMovimento = velocidadeImpacto * m_rigidbody.mass;
+
+            if (collision.gameObject.layer != gameObject.layer)
+            {
+                //print("Bate neles mesmo!!");
+                if (LogisticaVars.vezJ1) LogisticaVars.m_especialAtualT1 += (quantidadeMovimento / 2);
+                else LogisticaVars.m_especialAtualT2 += (quantidadeMovimento / 2);
+                print("Mais Especial!!");
+            }
+            else print("Batida entre amigos");
+
 
             collision.gameObject.GetComponent<Rigidbody>().AddForce(vetorDirecao.normalized * quantidadeMovimento * 1.5f, ForceMode.Impulse);
         }

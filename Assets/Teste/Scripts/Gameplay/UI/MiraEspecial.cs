@@ -12,7 +12,7 @@ public class MiraEspecial : MonoBehaviour
 
     [Header("Movimentacao")]
     [SerializeField] GameObject trajetoria;
-    GameObject gol, direcaoEspecial;
+    GameObject direcaoEspecial;
     Vector3 startPos;
 
     float speedMira, distancia;
@@ -60,28 +60,35 @@ public class MiraEspecial : MonoBehaviour
         #region Movimentacao
         distancia = (direcaoEspecial.transform.position - startPos).magnitude;
 
-        if (distancia < 3) speedMira = 1.5f;
-        else speedMira = 2f;
+        if (distancia < 3) speedMira = 1.2f;
+        else speedMira = 2.5f;
 
         if (MovimentacaoDoJogador.pc)
         {
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
-
-            direcaoEspecial.transform.Translate(new Vector3(h, v, 0) * Time.deltaTime * speedMira);
-
-            if (new Vector2(h, v).magnitude == 0 && !travouMira)
+            if (!travouMira)
             {
-                StartCoroutine(Voltar());
+                float h = Input.GetAxis("Horizontal");
+                float v = Input.GetAxis("Vertical");
+
+                direcaoEspecial.transform.Translate(new Vector3(h, v, 0) * Time.deltaTime * speedMira);
+
+                if (new Vector2(h, v).magnitude == 0 && direcaoEspecial.transform.position != startPos)
+                {
+                    StartCoroutine(Voltar());
+                }
             }
+            
         }
         else
         {
-            direcaoEspecial.transform.Translate(new Vector3(-joystick.vX, joystick.vY, 0) * Time.deltaTime * speedMira);
-
-            if (new Vector2(joystick.vX, joystick.vY).magnitude == 0 && !travouMira && direcaoEspecial.transform.position != gol.transform.position)
+            if (!travouMira)
             {
-                StartCoroutine(Voltar());
+                direcaoEspecial.transform.Translate(new Vector3(joystick.vX, joystick.vY, 0) * Time.deltaTime * speedMira);
+
+                if (new Vector2(joystick.vX, joystick.vY).magnitude == 0 && direcaoEspecial.transform.position != startPos)
+                {
+                    StartCoroutine(Voltar());
+                }
             }
         }
 
@@ -101,12 +108,18 @@ public class MiraEspecial : MonoBehaviour
         }
     }
 
+    public bool MiraTravada()
+    {
+        return travouMira;
+    }
+
     IEnumerator Voltar()
     {
         float step = 0;
 
         yield return new WaitForSeconds(0.01f);
         step += 0.1f;
-        direcaoEspecial.transform.position = Vector3.MoveTowards(direcaoEspecial.transform.position, startPos, step);
+        if(LogisticaVars.vezJ1) direcaoEspecial.transform.position = Vector3.MoveTowards(direcaoEspecial.transform.position, GameObject.FindGameObjectWithTag("Gol2").transform.position, step);
+        else direcaoEspecial.transform.position = Vector3.MoveTowards(direcaoEspecial.transform.position, GameObject.FindGameObjectWithTag("Gol1").transform.position, step);
     }
 }

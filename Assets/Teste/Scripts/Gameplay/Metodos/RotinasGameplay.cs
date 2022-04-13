@@ -158,14 +158,13 @@ public class RotinasGameplay : MonoBehaviour
         EventsManager.current.OnAplicarMetodosUiSemBotao("especial");
         //UIMetodosGameplay.Especial();
 
-        yield return new WaitForSeconds(30); //15
+        yield return new WaitForSeconds(LogisticaVars.m_maxEspecial); //15
         if (!LogisticaVars.aplicouEspecial)
         {
             Debug.Log("Tempo para o Especial acabou :(");
             Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
+            Destroy(GameObject.FindGameObjectWithTag("Trajetoria Especial"));
             events.OnAplicarMetodosUiSemBotao("fim especial");
-
-            Physics.gravity = new Vector3(0, -9.81f, 0);
             LogisticaVars.aplicouEspecial = true;
         }
     }
