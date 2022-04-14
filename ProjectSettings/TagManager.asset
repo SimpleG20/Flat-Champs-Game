@@ -28,7 +28,6 @@ TagManager:
   - Placar
   - Tempo
   - Imagem Formatos Player
-  - Direcao Bola
   - Botao Mover Player
   - Cores Primarias
   - Bola
@@ -48,6 +47,8 @@ TagManager:
   - Camera TM E
   - Direcao Especial
   - Trajetoria Especial
+  - Ball
+  - Direcional Chute
   layers:
   - Default
   - TransparentFX

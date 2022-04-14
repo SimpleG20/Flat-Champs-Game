@@ -1396,6 +1396,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 988982138}
+  - component: {fileID: 988982139}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -1425,6 +1426,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &988982139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988982137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36ee80fd64fcd564e8ffd9711cb7582d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mover: 0
+  aplicouChute: 0
+  jogador: {fileID: 1026842511324674652}
+  bola: {fileID: 7396909480683683261}
+  direcionalBola: {fileID: 1194575320}
+  erro: 0
+  forcaChute: 0
+  anguloBola: 0
+  anguloChute: 0
+  alturaChute: 0
+  distancia: 0
+  ultimaDirecao: {x: 0, y: 0, z: 0}
 --- !u!1 &1158374236
 GameObject:
   m_ObjectHideFlags: 0
@@ -1515,13 +1540,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1194575321}
+  - component: {fileID: 3608642031875898453}
   m_Layer: 0
   m_Name: Pivot Direcional Bola
-  m_TagString: Untagged
+  m_TagString: Direcional Chute
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1194575321
 Transform:
   m_ObjectHideFlags: 0
@@ -1529,14 +1555,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1194575320}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 80327818}
   m_Father: {fileID: 0}
   m_RootOrder: 12
-  m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1213258635
 GameObject:
   m_ObjectHideFlags: 0
@@ -3373,6 +3399,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &3608642031875898453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194575320}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb356de2fe9b8747ad53fd6a30635ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &3626320010400609480
 Rigidbody:
   m_ObjectHideFlags: 0

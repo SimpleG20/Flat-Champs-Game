@@ -60,6 +60,8 @@ public class FisicaJogador : MonoBehaviour
         {
             if (!p)
             {
+                if (LogisticaVars.jogadorSelecionado) 
+                    if(!LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>().m_correndo) JogadorVars.m_esperandoContato = false;
                 /*if (LogisticaVars.redirecionamentoAutomatico) FindObjectOfType<FisicaBola>().RedirecionarJogadorEscolhido(FindObjectOfType<FisicaBola>().transform);*/
                 p = true;
                 m_podeVirar = true;

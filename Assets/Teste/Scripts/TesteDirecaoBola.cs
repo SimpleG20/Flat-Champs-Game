@@ -44,7 +44,7 @@ public class TesteDirecaoBola : MonoBehaviour
 
 
         #region Ajustes
-        if (anguloChute > 90) anguloChute = 90;
+        if (anguloChute > 90) anguloChute= 90;
         if (anguloDirJogadorBola > anguloChute) anguloDirJogadorBola = 0;
         if (senoJogador < 0) anguloJogador = 360 - anguloJogador;
         if (direcaoJogadorBola.z < 0) anguloBolaJogador = 360 - anguloBolaJogador;

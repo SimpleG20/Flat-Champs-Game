@@ -13,7 +13,7 @@ public class GameplayOff : MonoBehaviour
      */
     bool comecarContagemJogada, comecarContagemSelecao;
 
-    GameObject canvas;
+    GameObject canvas, direcionalChute;
     Vector3 posGol1, posGol2;
 
     CinemachineBrain camPrincipal;
@@ -31,6 +31,7 @@ public class GameplayOff : MonoBehaviour
         canvas = GameObject.Find("Canvas");
         posGol1 = GameObject.FindGameObjectWithTag("Gol1").transform.position;
         posGol2 = GameObject.FindGameObjectWithTag("Gol2").transform.position;
+        direcionalChute = GameObject.FindGameObjectWithTag("Direcional Chute");
 
         events = EventsManager.current;
         events.onSituacaoGameplay += Situacoes;
@@ -105,6 +106,7 @@ public class GameplayOff : MonoBehaviour
             case "direcionar jogador":
                 DirecionamentoAuto();
                 break;
+            
             case "selecionar outro":
                 SelecionarOutroJogador();
                 break;
@@ -154,6 +156,8 @@ public class GameplayOff : MonoBehaviour
         }
 
         if (LogisticaVars.tempoJogada >= 20) events.OnTrocarVez();
+
+        
     }
 
     void TempoJogo()
@@ -199,7 +203,6 @@ public class GameplayOff : MonoBehaviour
             LogisticaVars.redirecionamentoAutomatico = false;
         }
     }
-
     
 
     #region Situacoes Gameplay

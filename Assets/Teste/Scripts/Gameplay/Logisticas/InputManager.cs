@@ -34,12 +34,13 @@ public class InputManager : MonoBehaviour
 
                 if(Input.touches[i].phase == TouchPhase.Moved && rightTouch == Input.touches[i].fingerId)
                 {
-                    if(LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 || LogisticaVars.auxChuteAoGol || LogisticaVars.especial)
+                    direcaoRight = Vector2.ClampMagnitude(touchPosB - posInicialTouchB, 1);
+                    if (LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 || LogisticaVars.auxChuteAoGol || LogisticaVars.especial)
                     {
-                        direcaoRight = Vector2.ClampMagnitude(touchPosB - posInicialTouchB, 1);
-                        if(LogisticaVars.auxChuteAoGol){
+                        //direcaoRight = Vector2.ClampMagnitude(touchPosB - posInicialTouchB, 1);
+                        /*if(LogisticaVars.auxChuteAoGol){
                             FindObjectOfType<TesteDirecaoBola>().alturaChute = FindObjectOfType<TesteDirecaoBola>().alturaChute + direcaoRight.y *  Time.deltaTime;
-                        }
+                        }*/
                     }
                 }
 

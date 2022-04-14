@@ -5,7 +5,7 @@ using UnityEngine;
 public class FisicaBola : MonoBehaviour
 {
     public float forca, m_velocidadeBola;
-    private float tempoNaPequenaArea, m_quantidadeDeMovimentoBola;
+    private float tempoNaPequenaArea;// m_quantidadeDeMovimentoBola;
 
     //public GameObject direcao;
 
@@ -24,7 +24,7 @@ public class FisicaBola : MonoBehaviour
 
     private Vector3 vetorVelocidadeNormalizado, vetorForcaFat, vetorforcaNormal, vetorForcaResistente, vetorForcaPeso;
     private bool p;
-    private bool posicionouJogador;
+    //private bool posicionouJogador;
 
     void Start()
     {
@@ -51,7 +51,7 @@ public class FisicaBola : MonoBehaviour
         {
             m_posicaoJogador = LogisticaVars.m_jogadorEscolhido.transform.position;
 
-            if(!LogisticaVars.especial) direcaoBola = new Vector3(transform.position.x - LogisticaVars.m_jogadorEscolhido.transform.position.x, 0, transform.position.z - LogisticaVars.m_jogadorEscolhido.transform.position.z);
+            //if(!LogisticaVars.especial) direcaoBola = new Vector3(transform.position.x - LogisticaVars.m_jogadorEscolhido.transform.position.x, 0, transform.position.z - LogisticaVars.m_jogadorEscolhido.transform.position.z);
             //if(!LogisticaVars.especial) direcaoBola = new Vector3(JogadorVars.direcaoChute.x + cosBola, 0, JogadorVars.direcaoChute.z);
 
             m_vetorDistanciaDoJogador = transform.position - m_posicaoJogador;
@@ -67,9 +67,26 @@ public class FisicaBola : MonoBehaviour
         //else direcao.SetActive(false);
         #endregion
 
+        #region Direcao Chute
+        if (m_vetorDistanciaDoJogador.magnitude < 2f && JogadorVars.m_esperandoContato)// && JogadorVars.m_aplicarChute)
+        {
+            Vector3 ultimaDirecao = FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
+            float qntMovimento = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 2.5f;
+
+            m_rbBola.AddForce(ultimaDirecao * qntMovimento, ForceMode.Impulse);
+            LogisticaVars.m_rbJogadorEscolhido.AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
+            //aplicouChute = true;
+            JogadorVars.m_esperandoContato = false;
+            JogadorVars.m_toqueBola = true;
+            m_encostouJogador = true;
+        }
+        #endregion
+
         #region Dinamica da Bola
         if (m_bolaNoChao)
         {
+            //if (LogisticaVars.mostrarDirecaoBola && !FindObjectOfType<DirecionalDaBola>().gameObject.activeSelf) FindObjectOfType<DirecionalDaBola>().gameObject.SetActive(true);
+
             if (m_rbBola.velocity.magnitude < 0.05f) vetorVelocidadeNormalizado = new Vector3(0, 0, 0);
             else vetorVelocidadeNormalizado = new Vector3(-m_rbBola.velocity.x / m_rbBola.velocity.magnitude, 0, -m_rbBola.velocity.z / m_rbBola.velocity.magnitude);
 
@@ -101,6 +118,7 @@ public class FisicaBola : MonoBehaviour
         }
         else
         {
+            
             //if (m_rbBola.velocity.magnitude != 0) m_bolaCorrendo = true;
         }
         #endregion
@@ -193,39 +211,7 @@ public class FisicaBola : MonoBehaviour
             }
             #endregion
 
-            /*if (m_logisticaDoJogo.jogoParado) m_logisticaDoJogo.jogoParado = false;*/
             if (m_rbBola.freezeRotation) m_rbBola.freezeRotation = false;
-        }
-
-        if (LogisticaVars.jogadorSelecionado)
-        {
-            if (collision.gameObject.name == LogisticaVars.m_jogadorEscolhido.name)
-            {
-                GetComponent<SphereCollider>().material.bounciness = 0;
-                //print("Bounciness: " + GetComponent<SphereCollider>().material.bounciness);
-                m_encostouJogador = true;
-
-                #region Ricochete
-                //Vector3 ricocheteB;
-                float vImpacto = collision.gameObject.GetComponent<Rigidbody>().velocity.magnitude;
-
-                m_quantidadeDeMovimentoBola = (vImpacto * m_rbBola.mass);
-
-                /*if (LogisticaVars.bolaRasteira)
-                {
-                    //ricocheteB = FindObjectOfType<DirecionalDaBola>().direcaoBola.normalized * m_quantidadeDeMovimentoBola / 2.5f;
-                    m_rbBola.AddForce(FindObjectOfType<DirecionalDaBola>().direcaoBola.normalized * m_quantidadeDeMovimentoBola / 2.5f, ForceMode.Impulse);
-                }*/
-
-                /*else
-                    ricocheteB = new Vector3(-m_vetorDistanciaDoJogador.normalized.x * m_quantidadeDeMovimentoBola / 2.5f, 7, -m_vetorDistanciaDoJogador.normalized.z * m_quantidadeDeMovimentoBola / 2.5f);*/
-
-                m_rbBola.AddForce(direcaoBola.normalized * m_quantidadeDeMovimentoBola / 5f, ForceMode.Impulse);
-                JogadorVars.m_toqueBola = true;
-                StartCoroutine(VoltarBounce());
-                //GetComponent<SphereCollider>().material.bounciness = 1;
-                #endregion
-            }
         }
     }
     private void OnCollisionExit(Collision collision)
