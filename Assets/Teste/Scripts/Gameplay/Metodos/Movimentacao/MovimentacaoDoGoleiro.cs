@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MovimentacaoDoGoleiro : MonoBehaviour
+public class MovimentacaoDoGoleiro : MovimentacaoJogadores
 {
-    InputManager joystickManager;
     EventsManager events;
 
     void Start()
@@ -17,8 +16,6 @@ public class MovimentacaoDoGoleiro : MonoBehaviour
         GoleiroVars.m_sensibilidadeChute = 10;
         GoleiroVars.m_sensibilidade = GameManager.Instance.m_config.m_camSensibilidade;
 
-        joystickManager = FindObjectOfType<InputManager>();
-
         events = EventsManager.current;
         events.onAplicarMetodosUiComBotao += BotoesGoleiro;
     }
@@ -27,14 +24,11 @@ public class MovimentacaoDoGoleiro : MonoBehaviour
     {
         if(LogisticaVars.m_goleiroGameObject != null)
         {
-            #region Angulo Goleiro
-            GoleiroVars.m_anguloGoleiro = -LogisticaVars.m_goleiroGameObject.transform.rotation.eulerAngles.y + 90;
-            if (LogisticaVars.m_goleiroGameObject.transform.rotation.eulerAngles.y > 90)
-                GoleiroVars.m_anguloGoleiro = -LogisticaVars.m_goleiroGameObject.transform.rotation.eulerAngles.y + 90 + 360;
-            GoleiroVars.m_senoGoleiro = Mathf.Sin(GoleiroVars.m_anguloGoleiro * (Mathf.PI / 180));
-            GoleiroVars.m_cosGoleiro = Mathf.Cos(GoleiroVars.m_anguloGoleiro * (Mathf.PI / 180));
+            #region Direcao Goleiro
+            SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
             #endregion
 
+            #region Chute
             if (GoleiroVars.m_medirChute)
             {
                 if (GoleiroVars.m_forcaGoleiro >= GoleiroVars.m_maxForca) GoleiroVars.m_forcaGoleiro = GoleiroVars.m_maxForca;
@@ -46,16 +40,16 @@ public class MovimentacaoDoGoleiro : MonoBehaviour
             {
                 if (GoleiroVars.m_aplicarChute)
                 {
-                    if (LogisticaVars.goleiroT1) GoleiroMetodos.ChuteNormal(LogisticaVars.bolaRasteiraT1);
-                    else GoleiroMetodos.ChuteNormal(LogisticaVars.bolaRasteiraT2);
+                    GoleiroMetodos.ChuteNormal();
                     GoleiroVars.m_aplicarChute = false;
                 }
             }
+            #endregion
 
             #region Movimentacao
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
-            Vector3 dir;
+            Vector3 dir = Vector3.zero;
 
             if (GoleiroVars.m_medirChute) LogisticaVars.m_goleiroGameObject.transform.Rotate(Vector3.up * GoleiroVars.m_sensibilidadeChute * Time.deltaTime * joystickManager.direcaoRight.x, Space.World); 
             else LogisticaVars.m_goleiroGameObject.transform.Rotate(Vector3.up * GoleiroVars.m_sensibilidade * Time.deltaTime * joystickManager.direcaoRight.x, Space.World);
@@ -63,11 +57,13 @@ public class MovimentacaoDoGoleiro : MonoBehaviour
             if (!LogisticaVars.tiroDeMeta)
             {
                 if (MovimentacaoDoJogador.pc) dir = new Vector3(h * GoleiroVars.m_speed * Time.deltaTime, -v * GoleiroVars.m_speed * Time.deltaTime, 0);
-                else dir = new Vector3(joystickManager.vX * GoleiroVars.m_speed * Time.deltaTime, -joystickManager.vY * GoleiroVars.m_speed * Time.deltaTime, 0);
-
+                else
+                {
+                    if(GoleiroVars.m_movimentar) 
+                        dir = new Vector3(joystickManager.vX * GoleiroVars.m_speed * Time.deltaTime, -joystickManager.vY * GoleiroVars.m_speed * Time.deltaTime, 0);
+                }
                 LogisticaVars.m_goleiroGameObject.transform.Translate(dir, Space.Self);
             }
-            
             #endregion
         }
     }

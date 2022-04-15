@@ -151,7 +151,7 @@ public class SelecaoMetodos : MonoBehaviour
         foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>()) Destroy(l.gameObject);
 
         AjustarCameraParaSelecao(-1);
-        LogisticaVars.escolherOutroJogador = LogisticaVars.prontoParaEscolher = false;
+        LogisticaVars.escolherOutroJogador = false;
         LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", false);
         LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", true);
         ui.sairSelecaoBt.gameObject.SetActive(false);
@@ -237,7 +237,7 @@ public class SelecaoMetodos : MonoBehaviour
         //LogisticaVars.m_jogadorEscolhido.GetComponentInChildren<AudioListener>().enabled = true;
         LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>().enabled = true;
 
-        LogisticaVars.m_colJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetComponent<MeshCollider>();
+        //LogisticaVars.m_colJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetComponent<MeshCollider>();
         LogisticaVars.m_rbJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.GetComponent<Rigidbody>();
 
         //Ativar o indicador de jogador selecionado
@@ -269,8 +269,8 @@ public class SelecaoMetodos : MonoBehaviour
 
     void TrocarVez()
     {
-        if (LogisticaVars.vezJ1) LogisticaVars.ultimaPosse = 1;
-        else LogisticaVars.ultimaPosse = 2;
+        /*if (LogisticaVars.vezJ1) LogisticaVars.ultimaPosse = 1;
+        else LogisticaVars.ultimaPosse = 2;*/
 
         events.SituacaoGameplay("jogo parado");
         bool aux = LogisticaVars.vezJ1;

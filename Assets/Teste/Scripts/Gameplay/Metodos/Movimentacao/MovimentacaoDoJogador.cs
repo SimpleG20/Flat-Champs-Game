@@ -3,34 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MovimentacaoDoJogador : MonoBehaviour
+public class MovimentacaoDoJogador : MovimentacaoJogadores
 {
-    const float maxAlturaChute = 4;
-    public float senoJogador, cosJogador, distanciaDaBola, maxAnguloParaChute, alturaChute;
-    public float anguloBola, anguloJogador, anguloBolaJogador, anguloDirJogadorBola;
-    float step, velocidadeBarraChute, erro;
+    float step, velocidadeBarraChute;
 
-    Vector3 direcaoJogadorBola, direcaoBola, ultimaDirecao;
-
-    GameObject direcional;
-
-    [SerializeField] Toggle dispositivo;
     public static bool pc;
+    [SerializeField] Toggle dispositivo;
 
     UIMetodosGameplay ui;
-    InputManager joystickManager;
-    FisicaBola bola;
     FisicaJogador fisica;
 
     void Start()
     {
-        joystickManager = FindObjectOfType<InputManager>();
         ui = FindObjectOfType<UIMetodosGameplay>();
-        bola = FindObjectOfType<FisicaBola>();
-        direcional = GameObject.FindGameObjectWithTag("Direcional Chute");
-        direcional.SetActive(false);
 
-        JogadorVars.ajusteDirecao = -40;
         JogadorVars.m_maxForca = 360;
         JogadorVars.m_forca = 50;
 
@@ -47,56 +33,10 @@ public class MovimentacaoDoJogador : MonoBehaviour
 
     void Update()
     {
-        #region Angulo Jogador
-        if(LogisticaVars.jogadorSelecionado)
+        #region Direcao Jogador
+        if(!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
         {
-            senoJogador = -LogisticaVars.m_jogadorEscolhido.transform.up.z;
-            cosJogador = -LogisticaVars.m_jogadorEscolhido.transform.up.x;
-            JogadorVars.direcaoChute = new Vector3(cosJogador, 0, senoJogador);
-            distanciaDaBola = (bola.transform.position - LogisticaVars.m_jogadorEscolhido.transform.position).magnitude;
-
-            erro = Mathf.Clamp(distanciaDaBola, 0, 10);
-            maxAnguloParaChute = (360 / Mathf.Pow(distanciaDaBola, 2)) + Mathf.Pow(((distanciaDaBola - 2) / distanciaDaBola) + 1.25f, 2) + erro;
-            anguloJogador = Mathf.Acos(JogadorVars.direcaoChute.x) * Mathf.Rad2Deg;
-            anguloBolaJogador = Mathf.Acos(bola.m_vetorDistanciaDoJogador.x / bola.m_vetorDistanciaDoJogador.magnitude) * Mathf.Rad2Deg;
-            anguloDirJogadorBola = Mathf.Acos((bola.m_vetorDistanciaDoJogador.x * JogadorVars.direcaoChute.x + JogadorVars.direcaoChute.z * bola.m_vetorDistanciaDoJogador.z) /
-                (bola.m_vetorDistanciaDoJogador.magnitude * JogadorVars.direcaoChute.magnitude)) * Mathf.Rad2Deg;
-
-
-            if (!LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || !LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2)
-                alturaChute += joystickManager.direcaoRight.y * Time.deltaTime;
-            else alturaChute = 0;
-            if (alturaChute >= maxAlturaChute) alturaChute = maxAlturaChute;
-            if (alturaChute <= 0) alturaChute = 0;
-
-            #region Ajustes
-            if (maxAnguloParaChute > 90) maxAnguloParaChute = 90;
-            if (anguloDirJogadorBola > maxAnguloParaChute) { direcional.SetActive(false); }
-            else
-            {
-                if (bola.m_bolaNoChao && !bola.m_bolaCorrendo && LogisticaVars.mostrarDirecaoBola && !direcional.activeSelf) direcional.SetActive(true);
-                else if (!bola.m_bolaNoChao) direcional.SetActive(false);
-            }
-            if (senoJogador < 0) anguloJogador = 360 - anguloJogador;
-            if (bola.m_vetorDistanciaDoJogador.z < 0) anguloBolaJogador = 360 - anguloBolaJogador;
-            if (anguloBolaJogador == 360) anguloBolaJogador = 0;
-
-            if (anguloJogador < anguloBolaJogador)
-            {
-                if (anguloJogador < 0 || anguloJogador > 0) anguloDirJogadorBola = -anguloDirJogadorBola;
-            }
-            else
-            {
-                if (anguloJogador > 360 - maxAnguloParaChute) anguloDirJogadorBola = -anguloDirJogadorBola;
-            }
-
-            anguloBola = -(anguloDirJogadorBola / maxAnguloParaChute) * 90 + anguloBolaJogador;
-            direcaoBola = new Vector3(Mathf.Cos(anguloBola * Mathf.Deg2Rad), Mathf.Tan(alturaChute / maxAlturaChute * 40 * Mathf.Deg2Rad), Mathf.Sin(anguloBola * Mathf.Deg2Rad));
-            #endregion
-
-            Debug.DrawRay(LogisticaVars.m_jogadorEscolhido.transform.position, JogadorVars.direcaoChute * 5, Color.red);
-            Debug.DrawRay(LogisticaVars.m_jogadorEscolhido.transform.position, bola.m_vetorDistanciaDoJogador, Color.blue);
-            Debug.DrawRay(bola.transform.position, direcaoBola, Color.green);
+            if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido);
         }
         #endregion
 
@@ -104,38 +44,49 @@ public class MovimentacaoDoJogador : MonoBehaviour
         if (LogisticaVars.jogadorSelecionado && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2 && !LogisticaVars.especial || LogisticaVars.escolherOutroJogador)
         {
             fisica = LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>();
-            if (JogadorVars.m_rotacionar && !pc)
+            if (fisica.m_podeVirar)
             {
-                if (fisica.m_podeVirar && !JogadorVars.m_medirChute)
+                JogadorVars.jCorrendo = false;
+                if (pc)
                 {
-                    if (LogisticaVars.escolherOutroJogador)
+                    float h = Input.GetAxis("Horizontal");
+                    if(h == 0) JogadorVars.m_rotacionar = false;
+                    else JogadorVars.m_rotacionar = true;
+
+                    if (!JogadorVars.m_medirChute)
                     {
-                        LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                        if (LogisticaVars.escolherOutroJogador)
+                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                        else
+                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidade * Time.deltaTime);
                     }
                     else
                     {
-                        LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.m_sensibilidade * Time.deltaTime);
+                        LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
                     }
                 }
-                else if (fisica.m_podeVirar && JogadorVars.m_medirChute)
+                else
                 {
-                    LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                    if (JogadorVars.m_rotacionar)
+                    {
+                        if (!JogadorVars.m_medirChute)
+                        {
+                            if (LogisticaVars.escolherOutroJogador)
+                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                            else
+                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.m_sensibilidade * Time.deltaTime);
+                        }
+                        else
+                        {
+                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                        }
+                    }
                 }
             }
-
-            float h = Input.GetAxis("Horizontal");
-            if (h != 0 && pc)
+            else
             {
-                JogadorVars.m_rotacionar = true;
-                if (fisica.m_podeVirar && !JogadorVars.m_medirChute)
-                {
-                    if (LogisticaVars.escolherOutroJogador) LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
-                    else LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidade * Time.deltaTime);
-                }
-                else if (fisica.m_podeVirar && JogadorVars.m_medirChute)
-                    LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                JogadorVars.jCorrendo = true;
             }
-            else if (h == 0 && pc) JogadorVars.m_rotacionar = false;
         }
         #endregion
 
@@ -165,7 +116,7 @@ public class MovimentacaoDoJogador : MonoBehaviour
                     EventsManager.current.SituacaoGameplay("jogo normal");
                 }
                 if (JogadorVars.m_forca > JogadorVars.m_forcaMin)
-                    JogadorMetodos.ChuteNormal(JogadorVars.direcaoChute);
+                    JogadorMetodos.ChuteNormal(GetUltimaDirecao());
                 else JogadorMetodos.ChuteMalSucedido();
 
                 JogadorMetodos.PosChute();
@@ -173,14 +124,13 @@ public class MovimentacaoDoJogador : MonoBehaviour
         }
         #endregion
 
-        
     }
 
     void FixedUpdate()
     {
         if (LogisticaVars.jogadorSelecionado && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
         {
-            if (LogisticaVars.redirecionamentoAutomatico && !JogadorVars.m_rotacionar && !JogadorVars.m_medirChute)
+            if (LogisticaVars.redirecionamentoAutomatico && !JogadorVars.m_rotacionar && !JogadorVars.m_medirChute && JogadorVars.jCorrendo)
             {
                 if (!LogisticaVars.continuaSendoFora && !LogisticaVars.escolherOutroJogador)
                 {
@@ -233,19 +183,17 @@ public class MovimentacaoDoJogador : MonoBehaviour
     private void AplicarChute()
     {
         JogadorVars.m_aplicarChute = true;
-        ultimaDirecao = direcaoBola;
+        //ultimaDirecao = direcaoBola;
     }
     private void AcionarChuteEscanteio()
     {
-        if (LogisticaVars.vezJ1) JogadorMetodos.AplicarChuteEscanteio(LogisticaVars.bolaRasteiraT1);
-        else JogadorMetodos.AplicarChuteEscanteio(LogisticaVars.bolaRasteiraT2);
+        JogadorMetodos.AplicarChuteEscanteio();
         LogisticaVars.jogoParado = false;
         EventsManager.current.OnAplicarRotinas("rotina sair escanteio");
     }
     private void AcionarChuteLateral()
     {
-        if (LogisticaVars.vezJ1) JogadorMetodos.AplicarChuteLateral(LogisticaVars.bolaRasteiraT1);
-        else JogadorMetodos.AplicarChuteLateral(LogisticaVars.bolaRasteiraT2);
+        JogadorMetodos.AplicarChuteLateral();
         LogisticaVars.jogoParado = false;
         EventsManager.current.OnAplicarRotinas("rotina sair lateral");
     }
@@ -278,19 +226,6 @@ public class MovimentacaoDoJogador : MonoBehaviour
     }
     #endregion
 
-    public float GetAnguloBola()
-    {
-        return anguloBola;
-    }
-    public Vector3 GetUltimaDirecao()
-    {
-        return ultimaDirecao;
-    }
-    public Vector3 GetDirecaoChute()
-    {
-
-        return direcaoBola;
-    }
     public void PcOuMobile()
     {
         if (dispositivo.isOn) pc = true;

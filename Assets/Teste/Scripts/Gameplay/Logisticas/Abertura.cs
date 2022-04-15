@@ -343,6 +343,7 @@ public class Abertura : MonoBehaviour
 
     void SetarVariaveisGameplay()
     {
+        LogisticaVars.tempoMaxJogada = 20;
         print("Setar Variaveis da Gameplay");
         switch (modoJogo)
         {
@@ -363,12 +364,11 @@ public class Abertura : MonoBehaviour
                 break;
         }
 
-        LogisticaVars.m_trocouVez = false;
-        LogisticaVars.jogadorSelecionado = LogisticaVars.jogadaDepoisGol = false;
+        LogisticaVars.jogadorSelecionado = false;
         LogisticaVars.aplicouPrimeiroToque = false;
 
         LogisticaVars.m_tempoSelecaoAnimator = ui.tempoEscolhaGO.GetComponent<Animator>();
-        LogisticaVars.m_especialAnimator = ui.especialBt.gameObject.GetComponent<Animator>();
+        //LogisticaVars.m_especialAnimator = ui.especialBt.gameObject.GetComponent<Animator>();
         LogisticaVars.bolaRasteiraT1 = LogisticaVars.bolaRasteiraT2 = false;
     }
 

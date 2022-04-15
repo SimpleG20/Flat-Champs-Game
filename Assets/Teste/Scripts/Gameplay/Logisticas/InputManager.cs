@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
@@ -8,28 +10,56 @@ public class InputManager : MonoBehaviour
     Vector2 touchPosA;
     Vector2 touchPosB, posInicialTouchB;
     public Vector2 direcaoLeft, direcaoRight;
-    public Transform center;
-    public Transform handle;
+    [SerializeField] Transform center;
+    [SerializeField] Transform handle;
 
     public float vX, vY;
-    public float numeroDeToques;
+    [SerializeField] float numeroDeToques;
 
-    public bool voltar;
+    [SerializeField] bool voltar;
+    bool printR, printL;
 
     private int leftTouch = 99, rightTouch = 99;
 
+    GraphicRaycaster m_Raycaster;
+    PointerEventData m_PointerEventData;
+    EventSystem m_EventSystem;
+
+    private void Start()
+    {
+        m_Raycaster = GameObject.Find("Canvas").GetComponent<GraphicRaycaster>();
+        m_EventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+    }
 
     void FixedUpdate()
     {
+        m_PointerEventData = new PointerEventData(m_EventSystem);
+        m_PointerEventData.position = Input.mousePosition;
+        List<RaycastResult> results = new List<RaycastResult>();
+        m_Raycaster.Raycast(m_PointerEventData, results);
+
         for (int i = 0; i < Input.touches.Length; i++)
         {
             if (Input.touches[i].position.x > Screen.width / 2)
             {
                 touchPosB = Input.touches[i].position;
+                
                 if(Input.touches[i].phase == TouchPhase.Began)
                 {
+                    printR = true;
                     rightTouch = Input.touches[i].fingerId;
-                    posInicialTouchB = touchPosB;
+                    foreach (RaycastResult result in results)
+                    {
+                        if (result.gameObject.layer == 5 && touchPosB == new Vector2(result.gameObject.transform.position.x, result.gameObject.transform.position.y))
+                        {
+                            print("UI");
+                        }
+                        else if(result.gameObject.layer != 5 && touchPosB != new Vector2(result.gameObject.transform.position.x, result.gameObject.transform.position.y))
+                        {
+                            posInicialTouchB = touchPosB;
+                        }
+                    }
+                    
                 }
 
                 if(Input.touches[i].phase == TouchPhase.Moved && rightTouch == Input.touches[i].fingerId)
@@ -46,6 +76,8 @@ public class InputManager : MonoBehaviour
 
                 if (Input.touches[i].phase == TouchPhase.Ended && rightTouch == Input.touches[i].fingerId)
                 {
+                    if (printR) print("Dedo Direito saiu da Tela");
+                    printR = false;
                     direcaoRight = Vector2.zero;
                 }
             }
@@ -54,6 +86,7 @@ public class InputManager : MonoBehaviour
                 touchPosA = Input.touches[i].position;
                 if (Input.touches[i].phase == TouchPhase.Began)
                 {
+                    printL = true;
                     leftTouch = Input.touches[i].fingerId;
                     if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
                     {
@@ -82,7 +115,10 @@ public class InputManager : MonoBehaviour
                 }
                 else if (Input.touches[i].phase == TouchPhase.Ended && leftTouch == Input.touches[i].fingerId)
                 {
+                    if (printL) print("Dedo esquerdo saiu da tela");
+                    printL = false;
                     GoleiroVars.m_movimentar = JogadorVars.m_rotacionar = false;
+                    direcaoLeft = Vector2.zero;
                     vX = 0;
                     vY = 0;
                     handle.localPosition = new Vector3(0, 0, 0);

@@ -6,11 +6,13 @@ using Cinemachine;
 
 public class GoleiroMetodos: MonoBehaviour
 {
-    public static UIMetodosGameplay ui;
+    static MovimentacaoDoGoleiro mG;
+    static UIMetodosGameplay ui;
     static EventsManager events;
 
     void Start()
     {
+        mG = FindObjectOfType<MovimentacaoDoGoleiro>();
         ui = FindObjectOfType<UIMetodosGameplay>();
         events = EventsManager.current;
         events.onAplicarMetodosUiComBotao += BotoesGoleiro;
@@ -48,31 +50,25 @@ public class GoleiroMetodos: MonoBehaviour
 
         events.OnAplicarMetodosUiComBotao("bola rasteira");
     }
-    public static void ChuteAutomatico(bool bolaRasteira)
+    public static void ChuteAutomatico()
     {
         Debug.Log("Chute Automatico");
         Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
         bola.constraints = RigidbodyConstraints.None;
 
-        if (bolaRasteira)
-            bola.AddForce(new Vector3(GoleiroVars.m_cosGoleiro, 0.0f, GoleiroVars.m_senoGoleiro) * 15, ForceMode.Impulse);
-        else
-            bola.AddForce(new Vector3(GoleiroVars.m_cosGoleiro, 0.8f, GoleiroVars.m_senoGoleiro) * 15, ForceMode.Impulse);
+        bola.AddForce(mG.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
 
         ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;
 
         events.OnAplicarRotinas("rotina pos chute goleiro");
     }
-    public static void ChuteNormal(bool bolaRasteira)
+    public static void ChuteNormal()
     {
         Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
         bola.constraints = RigidbodyConstraints.None;
 
-        if (bolaRasteira)
-            bola.AddForce(new Vector3(GoleiroVars.m_cosGoleiro, 0.0f, GoleiroVars.m_senoGoleiro) * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
-        else
-            bola.AddForce(new Vector3(GoleiroVars.m_cosGoleiro, 0.8f, GoleiroVars.m_senoGoleiro) * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
+        bola.AddForce(mG.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
 
         ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;

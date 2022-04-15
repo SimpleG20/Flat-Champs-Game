@@ -155,7 +155,7 @@ public class GameplayOff : MonoBehaviour
             }
         }
 
-        if (LogisticaVars.tempoJogada >= 20) events.OnTrocarVez();
+        if (LogisticaVars.tempoJogada >= LogisticaVars.tempoMaxJogada) events.OnTrocarVez();
 
         
     }
@@ -376,7 +376,7 @@ public class GameplayOff : MonoBehaviour
         bola.RedirecionarJogadores(true);
         bola.RedirecionarGoleiros();
 
-        LogisticaVars.bolaPermaneceNaPequenaArea = LogisticaVars.auxChuteAoGol = LogisticaVars.acionouChuteAoGol = false;
+        LogisticaVars.bolaPermaneceNaPequenaArea = LogisticaVars.auxChuteAoGol = false;
         LogisticaVars.lateral = LogisticaVars.foraFundo = false;
         LogisticaVars.continuaSendoFora = false;
 
@@ -389,8 +389,6 @@ public class GameplayOff : MonoBehaviour
         LogisticaVars.golT2 = false;
         LogisticaVars.golT1 = false;
         LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
-        LogisticaVars.posGol = false;
-        LogisticaVars.jogadaDepoisGol = true;
         LogisticaVars.primeiraJogada = true;
         LogisticaVars.aplicouPrimeiroToque = false;
 
@@ -400,7 +398,7 @@ public class GameplayOff : MonoBehaviour
     }
     #endregion
 
-    public static void BolaNaPequenaArea(int i)
+    public static void BolaNaPequenaArea(int i) //Rever
     {
         Debug.Log("Bola permanece na pequena Area");
         EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);

@@ -40,7 +40,6 @@ public class LinkarBotaoComIcone : MonoBehaviour
 
         LogisticaVars.escolherOutroJogador = false;
         LogisticaVars.jogadorSelecionado = true;
-        LogisticaVars.prontoParaEscolher = false;
 
         JogadorMetodos.ResetarValoresChute();
     }

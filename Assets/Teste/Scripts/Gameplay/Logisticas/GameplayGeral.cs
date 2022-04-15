@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameplayGeral : MonoBehaviour
 {
+    /*
     EventsManager events;
     FisicaBola bola;
 
@@ -139,22 +140,22 @@ public class GameplayGeral : MonoBehaviour
         if (LogisticaVars.fundo1 && LogisticaVars.ultimoToque == 1)
         {
             Debug.Log("Escanteio");
-            /*if (LogisticaVars.m_goleiroGameObject != null)
+            if (LogisticaVars.m_goleiroGameObject != null)
             {
                 LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
                 GoleiroMetodos.ComponentesParaGoleiro(false);
                 LogisticaVars.m_goleiroGameObject = null;
-            }*/
+            }
         }
         if (LogisticaVars.fundo2 && LogisticaVars.ultimoToque == 2) //Fundo2
         {
             Debug.Log("Escanteio");
-            /*if (LogisticaVars.m_goleiroGameObject != null)
+            if (LogisticaVars.m_goleiroGameObject != null)
             {
                 LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
                 GoleiroMetodos.ComponentesParaGoleiro(false);
                 LogisticaVars.m_goleiroGameObject = null;
-            }*/
+            }
         }
         LogisticaVars.foraFundo = false;
         events.OnAplicarRotinas("tempo chute escanteio");
@@ -197,4 +198,5 @@ public class GameplayGeral : MonoBehaviour
         LogisticaVars.continuaSendoFora = true;
     }
     #endregion
+*/
 }

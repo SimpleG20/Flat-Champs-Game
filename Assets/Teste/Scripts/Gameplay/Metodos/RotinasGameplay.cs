@@ -106,12 +106,10 @@ public class RotinasGameplay : MonoBehaviour
     #region Chutes Automaticos
     IEnumerator TempoParaTirarBolaDaPequenaArea()
     {
-
         yield return new WaitForSeconds(9);
         if (LogisticaVars.bolaPermaneceNaPequenaArea)
         {
-            if (LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2) GoleiroMetodos.ChuteAutomatico(true);
-            else GoleiroMetodos.ChuteAutomatico(false);
+            GoleiroMetodos.ChuteAutomatico();
             LogisticaVars.bolaPermaneceNaPequenaArea = false;
         }
     }
@@ -120,8 +118,7 @@ public class RotinasGameplay : MonoBehaviour
         yield return new WaitForSeconds(11);
         if (LogisticaVars.tiroDeMeta)
         {
-            if (LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2) GoleiroMetodos.ChuteAutomatico(true);
-            else GoleiroMetodos.ChuteAutomatico(false);
+            GoleiroMetodos.ChuteAutomatico();
         }
     }
     IEnumerator TempoParaLateral()
@@ -242,7 +239,6 @@ public class RotinasGameplay : MonoBehaviour
             //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
             events.OnAplicarMetodosUiComBotao("bola rasteira");
         }
-        LogisticaVars.esperandoTrocas = false;
         LogisticaVars.trocarVez = false;
 
         yield return new WaitForSeconds(1);
@@ -275,7 +271,6 @@ public class RotinasGameplay : MonoBehaviour
         ui.barraChuteGoleiro.SetActive(false);
 
         LogisticaVars.defenderGoleiro = true;
-        LogisticaVars.acionouChuteAoGol = false;
 
         yield return new WaitForSeconds(8);
         if (LogisticaVars.goleiroT1 && LogisticaVars.defenderGoleiro || LogisticaVars.goleiroT2 && LogisticaVars.defenderGoleiro)
@@ -307,7 +302,7 @@ public class RotinasGameplay : MonoBehaviour
         if (LogisticaVars.goleiroT2) LogisticaVars.m_goleiroGameObject.transform.position = new Vector3(0, LogisticaVars.m_goleiroGameObject.transform.position.y, FindObjectOfType<Abertura>().PosicaoGoleiro(2).z);
         else LogisticaVars.m_goleiroGameObject.transform.position = new Vector3(0, LogisticaVars.m_goleiroGameObject.transform.position.y, FindObjectOfType<Abertura>().PosicaoGoleiro(1).z);
 
-        LogisticaVars.goleiroT2 = LogisticaVars.goleiroT1 = LogisticaVars.m_goleiroEscolhido = false;
+        LogisticaVars.goleiroT2 = LogisticaVars.goleiroT1 = false;
         LogisticaVars.m_goleiroGameObject = null;
     }
     #endregion
@@ -318,8 +313,6 @@ public class RotinasGameplay : MonoBehaviour
         Debug.Log("Spawnar Lateral");
 
         yield return new WaitForSeconds(1.5f);
-
-        LogisticaVars.esperandoTrocas = false;
 
         if (lateral == "lateral direita")
         {
@@ -368,8 +361,6 @@ public class RotinasGameplay : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
-
-        LogisticaVars.esperandoTrocas = false;
 
         events.SituacaoGameplay("desabilitar camera lateral");
 
@@ -478,7 +469,6 @@ public class RotinasGameplay : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        LogisticaVars.esperandoTrocas = false;
         bola.m_toqueChao = false;
         
         events.SituacaoGameplay("desabilitar camera lateral");
@@ -494,7 +484,6 @@ public class RotinasGameplay : MonoBehaviour
         events.SituacaoGameplay("jogo normal");
         LogisticaVars.continuaSendoFora = false;
         LogisticaVars.tiroDeMeta = false;
-        LogisticaVars.esperandoTrocas = false;
         JogadorMetodos.ResetarValoresChute();
 
         bola.RedirecionarJogadores(true);

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -77,7 +76,7 @@ public class FisicaBola : MonoBehaviour
             LogisticaVars.m_rbJogadorEscolhido.AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
             //aplicouChute = true;
             JogadorVars.m_esperandoContato = false;
-            JogadorVars.m_toqueBola = true;
+            //JogadorVars.m_toqueBola = true;
             m_encostouJogador = true;
         }
         #endregion
@@ -262,7 +261,7 @@ public class FisicaBola : MonoBehaviour
         }
         #endregion
         #region Linha de Fundo
-        if (other.gameObject.CompareTag("Linha Fundo G1") && !LogisticaVars.posGol)
+        if (other.gameObject.CompareTag("Linha Fundo G1") && !LogisticaVars.gol)
         {
             LogisticaVars.foraFundo = true;
             LogisticaVars.fundo1 = true;
@@ -309,7 +308,7 @@ public class FisicaBola : MonoBehaviour
             m_rbBola.freezeRotation = true;
             m_rbBola.velocity = Vector3.zero;
         }
-        if (other.gameObject.CompareTag("Linha Fundo G2") && !LogisticaVars.posGol)
+        if (other.gameObject.CompareTag("Linha Fundo G2") && !LogisticaVars.gol)
         {
             LogisticaVars.foraFundo = true;
             LogisticaVars.fundo1 = false;
@@ -378,7 +377,7 @@ public class FisicaBola : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("PequenaArea1") && !LogisticaVars.posGol)
+        if (other.CompareTag("PequenaArea1")) // && !LogisticaVars.posGol)
         {
             if (tempoNaPequenaArea > 2.5f && !LogisticaVars.bolaPermaneceNaPequenaArea && LogisticaVars.bolaEntrouPequenaArea)
             {
@@ -388,7 +387,7 @@ public class FisicaBola : MonoBehaviour
                 LogisticaVars.bolaEntrouPequenaArea = false;
             }
         }
-        if (other.CompareTag("PequenaArea2") && !LogisticaVars.posGol)
+        if (other.CompareTag("PequenaArea2")) // && !LogisticaVars.posGol)
         {
             if (tempoNaPequenaArea > 2.5f && !LogisticaVars.bolaPermaneceNaPequenaArea && LogisticaVars.bolaEntrouPequenaArea)
             {

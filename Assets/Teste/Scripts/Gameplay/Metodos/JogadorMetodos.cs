@@ -5,13 +5,15 @@ using UnityEngine.UI;
 
 public class JogadorMetodos: MonoBehaviour
 {
-    public static UIMetodosGameplay ui;
-    public static float velocidadeBarra;
+    static MovimentacaoDoJogador mJ;
+    static UIMetodosGameplay ui;
+    //static float velocidadeBarra;
 
     private void Start()
     {
+        mJ = FindObjectOfType<MovimentacaoDoJogador>();
         ui = FindObjectOfType<UIMetodosGameplay>();
-        velocidadeBarra = GameManager.Instance.m_config.m_velocidadeBarraChute;
+        //velocidadeBarra = GameManager.Instance.m_config.m_velocidadeBarraChute;
     }
 
     public static float MedirChute()
@@ -83,10 +85,6 @@ public class JogadorMetodos: MonoBehaviour
     }
     public static void PosChute()
     {
-        JogadorVars.m_forca = 50;
-        JogadorVars.m_maxForca = 360;
-        EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForca);
-
         if (LogisticaVars.auxChuteAoGol)
         {
             Debug.Log("MovimentacaoDoJogador: AposChuteAoGol()");
@@ -98,6 +96,7 @@ public class JogadorMetodos: MonoBehaviour
         else LogisticaVars.jogadas++;
         JogadorVars.m_aplicarChute = false;
 
+        ResetarValoresChute();
         if (LogisticaVars.jogadas == 3) EventsManager.current.OnAplicarRotinas("rotina 3 jogadas");
     }
 
@@ -113,42 +112,34 @@ public class JogadorMetodos: MonoBehaviour
 
     public static void AutoChuteEscanteio()
     {
-        if (LogisticaVars.vezJ1) AplicarChuteEscanteio(LogisticaVars.bolaRasteiraT1);
-        else AplicarChuteEscanteio(LogisticaVars.bolaRasteiraT2);
+        AplicarChuteEscanteio();
         LogisticaVars.jogoParado = false;
     }
     public static void AutoChuteLateral()
     {
-        if (LogisticaVars.vezJ1) AplicarChuteLateral(LogisticaVars.bolaRasteiraT1);
-        else AplicarChuteLateral(LogisticaVars.bolaRasteiraT2);
+        AplicarChuteLateral();
         LogisticaVars.jogoParado = false;
     }
 
-    public static void AplicarChuteEscanteio(bool bolaRasteira)
+    public static void AplicarChuteEscanteio()
     {
         Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
         bola.constraints = RigidbodyConstraints.None;
 
-        if (bolaRasteira)
-            bola.AddForce(new Vector3(JogadorVars.m_cosJogadorEscolhido, 0.0f, JogadorVars.m_senoJogadorEscolhido) * JogadorVars.m_forca, ForceMode.Impulse);
-        else
-            bola.AddForce(new Vector3(JogadorVars.m_cosJogadorEscolhido, 0.75f, JogadorVars.m_senoJogadorEscolhido) * JogadorVars.m_forca, ForceMode.Impulse);
+        bola.AddForce(mJ.GetUltimaDirecao() * JogadorVars.m_forca, ForceMode.Impulse);
 
-        JogadorVars.m_forca = 50;
-        JogadorVars.m_maxForca = 250;
-        EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForca);
+        /*JogadorVars.m_forca = 50;
+        JogadorVars.m_maxForca = 360;
+        EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForca);*/
 
         EventsManager.current.OnAplicarRotinas("rotina sair escanteio");
     }
-    public static void AplicarChuteLateral(bool bolaRasteira)
+    public static void AplicarChuteLateral()
     {
         Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
         bola.constraints = RigidbodyConstraints.None;
 
-        if (bolaRasteira)
-            bola.AddForce(new Vector3(JogadorVars.m_cosJogadorEscolhido, 0, JogadorVars.m_senoJogadorEscolhido) * 29, ForceMode.Impulse);
-        else
-            bola.AddForce(new Vector3(JogadorVars.m_cosJogadorEscolhido, 0.6f, JogadorVars.m_senoJogadorEscolhido) * 25, ForceMode.Impulse);
+        bola.AddForce(mJ.GetUltimaDirecao() * 27.5f, ForceMode.Impulse);
 
         EventsManager.current.OnAplicarRotinas("rotina sair lateral");
     }

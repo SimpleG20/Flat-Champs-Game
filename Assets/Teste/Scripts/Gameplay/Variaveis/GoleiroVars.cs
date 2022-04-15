@@ -1,24 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class GoleiroVars 
 {
-    [Header("Angulo")]
-    public static float m_anguloGoleiro;
-    public static float m_senoGoleiro, m_cosGoleiro;
-
     [Header("Chutar")]
-    public static float m_maxForca;
-    public static float m_forcaGoleiro;
-    public static bool m_medirChute, m_aplicarChute;
+    public static float m_maxForca;     //MovimentacaoGoleiro, GoleiroMetodos
+    public static float m_forcaGoleiro; //MovimentacaoGoleiro, GoleiroMetodos
+    public static bool m_medirChute;    //MovimentacaoGoleiro
+    public static bool m_aplicarChute;  //MovimentacaoGoleiro
 
     [Header("Rotacionar")]
-    public static float m_sensibilidade;
-    public static float m_sensibilidadeChute;
-    public static bool m_rotacionar;
+    public static float m_sensibilidade;        //MovimentacaoGoleiro
+    public static float m_sensibilidadeChute;   //MovimentacaoGoleiro
 
     [Header("Movimentacao")]
-    public static bool m_movimentar;
-    public static float m_speed;
+    public static bool m_movimentar;    //MovimentacaoGoleiro, InputManager
+    public static float m_speed;        //MovimentacaoGoleiro
 }
