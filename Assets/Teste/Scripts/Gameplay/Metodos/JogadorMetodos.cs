@@ -69,7 +69,8 @@ public class JogadorMetodos: MonoBehaviour
     public static void ChuteNormal(Vector3 direcaoChute)
     {
         LogisticaVars.m_jogadorEscolhido.GetComponent<Rigidbody>().AddForce(direcaoChute * JogadorVars.m_forca, ForceMode.Impulse);
-        JogadorVars.m_esperandoContato = true;
+        //JogadorVars.m_esperandoContato = true;
+
         /*if (JogadorVars.m_forca <= 200) { JogadorVars.m_fatorAtritoBola = 1.8f; JogadorVars.m_fatorAtritoJogador = 0.8f; }
         if (JogadorVars.m_forca > 200 && JogadorVars.m_forca <= 300) { JogadorVars.m_fatorAtritoBola = 2.6f; JogadorVars.m_fatorAtritoJogador = 1.1f; }
         if (JogadorVars.m_forca > 300 && JogadorVars.m_forca <= 400) { JogadorVars.m_fatorAtritoBola = 3.2f; JogadorVars.m_fatorAtritoJogador = 3.4f; }
@@ -98,6 +99,20 @@ public class JogadorMetodos: MonoBehaviour
 
         ResetarValoresChute();
         if (LogisticaVars.jogadas == 3) EventsManager.current.OnAplicarRotinas("rotina 3 jogadas");
+    }
+
+    public static void AumentarEspecial(float qnt, bool trocou)
+    {
+        if (!trocou)
+        {
+            if (LogisticaVars.vezJ1) LogisticaVars.m_especialAtualT1 += (qnt/ 2);
+            else LogisticaVars.m_especialAtualT2 += (qnt / 2);
+        }
+        else
+        {
+            if (!LogisticaVars.vezJ1) { LogisticaVars.m_especialAtualT1 += (qnt / 2); LogisticaVars.m_especialAtualT2 -= (qnt / 2); }
+            else { LogisticaVars.m_especialAtualT2 += (qnt / 2); LogisticaVars.m_especialAtualT1 -= (qnt / 2); }
+        }
     }
 
     public static void EncherBarraChuteJogador(float forca, float maxForca)

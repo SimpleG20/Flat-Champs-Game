@@ -49,10 +49,6 @@ public class FisicaBola : MonoBehaviour
         if (LogisticaVars.m_jogadorEscolhido != null)
         {
             m_posicaoJogador = LogisticaVars.m_jogadorEscolhido.transform.position;
-
-            //if(!LogisticaVars.especial) direcaoBola = new Vector3(transform.position.x - LogisticaVars.m_jogadorEscolhido.transform.position.x, 0, transform.position.z - LogisticaVars.m_jogadorEscolhido.transform.position.z);
-            //if(!LogisticaVars.especial) direcaoBola = new Vector3(JogadorVars.direcaoChute.x + cosBola, 0, JogadorVars.direcaoChute.z);
-
             m_vetorDistanciaDoJogador = transform.position - m_posicaoJogador;
         }
 
@@ -61,22 +57,17 @@ public class FisicaBola : MonoBehaviour
 
         if (vetorForcaResistente.magnitude != 0 || !m_bolaNoChao) m_bolaCorrendo = true;
         else m_bolaCorrendo = false;
-
-        //if (m_vetorDistanciaDoJogador.magnitude < 7 && LogisticaVars.mostrarDirecaoBola && LogisticaVars.jogadorSelecionado) direcao.SetActive(true);
-        //else direcao.SetActive(false);
         #endregion
 
         #region Direcao Chute
         if (m_vetorDistanciaDoJogador.magnitude < 2f && JogadorVars.m_esperandoContato)// && JogadorVars.m_aplicarChute)
         {
             Vector3 ultimaDirecao = FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
-            float qntMovimento = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 2.5f;
+            float qntMovimento = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 2.25f;
 
             m_rbBola.AddForce(ultimaDirecao * qntMovimento, ForceMode.Impulse);
             LogisticaVars.m_rbJogadorEscolhido.AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
-            //aplicouChute = true;
             JogadorVars.m_esperandoContato = false;
-            //JogadorVars.m_toqueBola = true;
             m_encostouJogador = true;
         }
         #endregion
@@ -174,13 +165,6 @@ public class FisicaBola : MonoBehaviour
         m_rbBola.velocity = Vector3.zero;
         m_rbBola.freezeRotation = true;
         transform.position = new Vector3(0, 0.55f, 0);
-    }
-
-    IEnumerator VoltarBounce()
-    {
-        yield return new WaitForSeconds(0.5f);
-        GetComponent<SphereCollider>().material.bounciness = 1;
-        //print("Bounciness: " + GetComponent<SphereCollider>().material.bounciness);
     }
 
     private void OnCollisionEnter(Collision collision)

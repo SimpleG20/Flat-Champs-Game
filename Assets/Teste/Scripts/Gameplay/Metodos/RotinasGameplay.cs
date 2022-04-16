@@ -79,7 +79,7 @@ public class RotinasGameplay : MonoBehaviour
 
     IEnumerator TrocarVezPos3Jogadas()
     {
-        print("Rotina trocar pos 3 jogadas");
+        //print("Rotina trocar pos 3 jogadas");
         yield return new WaitForSeconds(0.01f);
         if (!bola.m_bolaCorrendo)
         {
@@ -221,7 +221,7 @@ public class RotinasGameplay : MonoBehaviour
     {
         events.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
         
-        Debug.Log("Trocando a vez");
+        //Debug.Log("Trocando a vez");
 
         yield return new WaitForSeconds(1f);
         if (!LogisticaVars.desabilitouDadosJogador)
@@ -239,10 +239,12 @@ public class RotinasGameplay : MonoBehaviour
             //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
             events.OnAplicarMetodosUiComBotao("bola rasteira");
         }
-        LogisticaVars.trocarVez = false;
+        
 
         yield return new WaitForSeconds(1);
+
         events.SituacaoGameplay("jogo normal");
+        LogisticaVars.trocarVez = false;
     }
     IEnumerator TempoParaSelecao()
     {

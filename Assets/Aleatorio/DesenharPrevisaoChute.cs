@@ -32,7 +32,11 @@ public class DesenharPrevisaoChute : MonoBehaviour
     {
         if (!LogisticaVars.aplicouEspecial)
         {
-            if(FindObjectOfType<MiraEspecial>().MiraTravada()) Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
+            if (FindObjectOfType<MiraEspecial>().MiraTravada())
+            {
+                if (MovimentacaoDoJogador.pc) Point2.Translate(new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0) * Time.deltaTime * 2);
+                else Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
+            }
 
             var pointList = new List<Vector3>();
             for (float ratio = 0; ratio <= 1; ratio += 1 / vertexCount)

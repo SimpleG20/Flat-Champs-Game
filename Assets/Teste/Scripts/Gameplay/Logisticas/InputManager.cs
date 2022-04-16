@@ -16,7 +16,6 @@ public class InputManager : MonoBehaviour
     public float vX, vY;
     [SerializeField] float numeroDeToques;
 
-    [SerializeField] bool voltar;
     bool printR, printL;
 
     private int leftTouch = 99, rightTouch = 99;

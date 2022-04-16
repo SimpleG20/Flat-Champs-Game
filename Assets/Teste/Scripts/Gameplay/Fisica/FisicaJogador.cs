@@ -62,7 +62,6 @@ public class FisicaJogador : MonoBehaviour
             {
                 if (LogisticaVars.jogadorSelecionado) 
                     if(!LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>().m_correndo) JogadorVars.m_esperandoContato = false;
-                /*if (LogisticaVars.redirecionamentoAutomatico) FindObjectOfType<FisicaBola>().RedirecionarJogadorEscolhido(FindObjectOfType<FisicaBola>().transform);*/
                 p = true;
                 m_podeVirar = true;
             }
@@ -86,8 +85,7 @@ public class FisicaJogador : MonoBehaviour
             if (collision.gameObject.layer != gameObject.layer)
             {
                 //print("Bate neles mesmo!!");
-                if (LogisticaVars.vezJ1) LogisticaVars.m_especialAtualT1 += (quantidadeMovimento / 2);
-                else LogisticaVars.m_especialAtualT2 += (quantidadeMovimento / 2);
+                JogadorMetodos.AumentarEspecial(quantidadeMovimento, LogisticaVars.trocarVez);
                 print("Mais Especial!!");
             }
             else print("Batida entre amigos");

@@ -236,6 +236,7 @@ public class SelecaoMetodos : MonoBehaviour
         
         //LogisticaVars.m_jogadorEscolhido.GetComponentInChildren<AudioListener>().enabled = true;
         LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>().enabled = true;
+        JogadorVars.m_fisica = LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>();
 
         //LogisticaVars.m_colJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetComponent<MeshCollider>();
         LogisticaVars.m_rbJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.GetComponent<Rigidbody>();
@@ -269,9 +270,6 @@ public class SelecaoMetodos : MonoBehaviour
 
     void TrocarVez()
     {
-        /*if (LogisticaVars.vezJ1) LogisticaVars.ultimaPosse = 1;
-        else LogisticaVars.ultimaPosse = 2;*/
-
         events.SituacaoGameplay("jogo parado");
         bool aux = LogisticaVars.vezJ1;
         LogisticaVars.vezJ1 = LogisticaVars.vezJ2;

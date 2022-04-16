@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Abertura : MonoBehaviour
 {
-    public int jogo;
-    public bool connected;
+    [SerializeField] int jogo;
+    [SerializeField] bool connected;
 
     [SerializeField] GameObject bola;
 
@@ -368,8 +368,16 @@ public class Abertura : MonoBehaviour
         LogisticaVars.aplicouPrimeiroToque = false;
 
         LogisticaVars.m_tempoSelecaoAnimator = ui.tempoEscolhaGO.GetComponent<Animator>();
-        //LogisticaVars.m_especialAnimator = ui.especialBt.gameObject.GetComponent<Animator>();
         LogisticaVars.bolaRasteiraT1 = LogisticaVars.bolaRasteiraT2 = false;
+
+        MovimentacaoDoJogador mJ = FindObjectOfType<MovimentacaoDoJogador>();
+        mJ.SetBola(FindObjectOfType<FisicaBola>());
+        mJ.SetInput(FindObjectOfType<InputManager>());
+        mJ.SetDirecional(GameObject.FindGameObjectWithTag("Direcional Chute"), false);
+        MovimentacaoDoGoleiro mG = FindObjectOfType<MovimentacaoDoGoleiro>();
+        mG.SetBola(FindObjectOfType<FisicaBola>());
+        mG.SetInput(FindObjectOfType<InputManager>());
+        mG.SetDirecional(GameObject.FindGameObjectWithTag("Direcional Chute"), true);
     }
 
     public Vector3 PosicaoGoleiro(int i)

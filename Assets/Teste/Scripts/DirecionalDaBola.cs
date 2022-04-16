@@ -22,13 +22,13 @@ public class DirecionalDaBola : MonoBehaviour
             if (LogisticaVars.jogadorSelecionado)
             {
                 transform.position = bola.transform.position;
-                transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoJogador.GetAnguloBola(), Mathf.Atan(movimentacaoDoJogador.GetDirecaoChute().y) * Mathf.Rad2Deg);
+                transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoJogador.GetAnguloBola(), Mathf.Atan(movimentacaoDoJogador.GetDirecaoBola().y) * Mathf.Rad2Deg);
             }
         }
         else
         {
             transform.position = bola.transform.position;
-            transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoGoleiro.GetAnguloBola(), Mathf.Atan(movimentacaoDoGoleiro.GetDirecaoChute().y) * Mathf.Rad2Deg);
+            transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoGoleiro.GetAnguloBola(), Mathf.Atan(movimentacaoDoGoleiro.GetDirecaoBola().y) * Mathf.Rad2Deg);
         }
         
     }

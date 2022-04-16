@@ -24,9 +24,9 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
     {
         if(LogisticaVars.m_goleiroGameObject != null)
         {
-            #region Direcao Goleiro
+            /*#region Direcao Goleiro
             SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
-            #endregion
+            #endregion*/
 
             #region Chute
             if (GoleiroVars.m_medirChute)

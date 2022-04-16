@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class JogadorVars
 {
+    public static FisicaJogador m_fisica;
+
     [Header("Logica")]
     public static bool m_chuteAoGol;        //JogadorMetodos
-    public static bool jCorrendo;           //MovimentacaoJogador
+    public static bool m_correndo;          //MovimentacaoJogador
 
     [Header("Chutar")]
     public static float m_maxForca;         //MovimentacaoJogador, JogadorMetodos, GoleiroMetodos

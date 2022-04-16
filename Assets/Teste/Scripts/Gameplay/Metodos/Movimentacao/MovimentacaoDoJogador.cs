@@ -11,7 +11,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     [SerializeField] Toggle dispositivo;
 
     UIMetodosGameplay ui;
-    FisicaJogador fisica;
+    //FisicaJogador fisica;
 
     void Start()
     {
@@ -34,19 +34,22 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     void Update()
     {
         #region Direcao Jogador
-        if(!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
+        if (LogisticaVars.jogoComecou)
         {
-            if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido);
+            if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido);
+            else
+            {
+                if (LogisticaVars.m_goleiroGameObject != null) SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
+            }
         }
         #endregion
 
         #region Movimentacao
         if (LogisticaVars.jogadorSelecionado && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2 && !LogisticaVars.especial || LogisticaVars.escolherOutroJogador)
         {
-            fisica = LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>();
-            if (fisica.m_podeVirar)
+
+            if (JogadorVars.m_fisica.m_podeVirar)
             {
-                JogadorVars.jCorrendo = false;
                 if (pc)
                 {
                     float h = Input.GetAxis("Horizontal");
@@ -85,7 +88,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
             }
             else
             {
-                JogadorVars.jCorrendo = true;
+                //JogadorVars.m_correndo = true;
             }
         }
         #endregion
@@ -116,7 +119,13 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                     EventsManager.current.SituacaoGameplay("jogo normal");
                 }
                 if (JogadorVars.m_forca > JogadorVars.m_forcaMin)
-                    JogadorMetodos.ChuteNormal(GetUltimaDirecao());
+                {
+                    JogadorVars.m_esperandoContato = true;
+                    JogadorVars.m_correndo = true;
+                    JogadorMetodos.ChuteNormal(direcaoChute);
+                    ultimaDirecao = direcaoBola;
+                    StartCoroutine(EsperarJogadorParar());
+                }
                 else JogadorMetodos.ChuteMalSucedido();
 
                 JogadorMetodos.PosChute();
@@ -130,9 +139,9 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         if (LogisticaVars.jogadorSelecionado && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
         {
-            if (LogisticaVars.redirecionamentoAutomatico && !JogadorVars.m_rotacionar && !JogadorVars.m_medirChute && JogadorVars.jCorrendo)
+            if (LogisticaVars.redirecionamentoAutomatico && !JogadorVars.m_rotacionar && !JogadorVars.m_medirChute)
             {
-                if (!LogisticaVars.continuaSendoFora && !LogisticaVars.escolherOutroJogador)
+                if (!LogisticaVars.continuaSendoFora && !LogisticaVars.escolherOutroJogador && !JogadorVars.m_correndo)
                 {
                     step += 1.5f * Time.deltaTime;
                     GameObject.Find("RotacaoCamera").transform.position =
@@ -155,7 +164,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
 
 
     #region Metodos usados para os Botoes do Jogador
-    private void BotoesJogador(string s)
+    void BotoesJogador(string s)
     {
         switch (s)
         {
@@ -180,24 +189,24 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         JogadorVars.m_medirChute = b;
     }
-    private void AplicarChute()
+    void AplicarChute()
     {
         JogadorVars.m_aplicarChute = true;
         //ultimaDirecao = direcaoBola;
     }
-    private void AcionarChuteEscanteio()
+    void AcionarChuteEscanteio()
     {
         JogadorMetodos.AplicarChuteEscanteio();
         LogisticaVars.jogoParado = false;
         EventsManager.current.OnAplicarRotinas("rotina sair escanteio");
     }
-    private void AcionarChuteLateral()
+    void AcionarChuteLateral()
     {
         JogadorMetodos.AplicarChuteLateral();
         LogisticaVars.jogoParado = false;
         EventsManager.current.OnAplicarRotinas("rotina sair lateral");
     }
-    private void AplicarChuteEspecial()
+    void AplicarChuteEspecial()
     {
         print("Aplicar Especial");
         bola.GetComponent<Rigidbody>().useGravity = false;
@@ -215,16 +224,24 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         if (!ui.mostrarDirecionalBolaBt.isOn)
         {
-            direcional.SetActive(true);
+            direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
             LogisticaVars.mostrarDirecaoBola = true;
         }
         else
         {
-            direcional.SetActive(false);
+            direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
             LogisticaVars.mostrarDirecaoBola = false;
         }
     }
     #endregion
+
+    IEnumerator EsperarJogadorParar()
+    {
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !JogadorVars.m_fisica.m_correndo);
+        JogadorVars.m_correndo = false;
+        JogadorVars.m_esperandoContato = false;
+    }
 
     public void PcOuMobile()
     {
