@@ -6,13 +6,13 @@ using Cinemachine;
 
 public class GoleiroMetodos: MonoBehaviour
 {
-    static MovimentacaoDoGoleiro mG;
+    static MovimentacaoDoJogador mJ;
     static UIMetodosGameplay ui;
     static EventsManager events;
 
     void Start()
     {
-        mG = FindObjectOfType<MovimentacaoDoGoleiro>();
+        mJ = FindObjectOfType<MovimentacaoDoJogador>();
         ui = FindObjectOfType<UIMetodosGameplay>();
         events = EventsManager.current;
         events.onAplicarMetodosUiComBotao += BotoesGoleiro;
@@ -56,7 +56,7 @@ public class GoleiroMetodos: MonoBehaviour
         Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
         bola.constraints = RigidbodyConstraints.None;
 
-        bola.AddForce(mG.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
+        bola.AddForce(mJ.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
 
         ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;
@@ -68,7 +68,7 @@ public class GoleiroMetodos: MonoBehaviour
         Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
         bola.constraints = RigidbodyConstraints.None;
 
-        bola.AddForce(mG.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
+        bola.AddForce(mJ.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
 
         ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;

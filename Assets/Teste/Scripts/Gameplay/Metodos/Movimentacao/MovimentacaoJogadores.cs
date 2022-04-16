@@ -28,16 +28,18 @@ public class MovimentacaoJogadores : MonoBehaviour
         cosJogador = -jogador.transform.up.x;
         direcaoChute = new Vector3(cosJogador, 0, senoJogador);
         distanciaDaBola = (bola.transform.position - jogador.transform.position).magnitude;
-        direcaoJogadorBola = bola.transform.position - jogador.transform.position;
+        direcaoJogadorBola = new Vector3(bola.transform.position.x - jogador.transform.position.x, 0, bola.transform.position.z - jogador.transform.position.z).normalized;
 
-        erro = Mathf.Clamp(distanciaDaBola, 0, 10);
+        if (distanciaDaBola >= 2) erro = Mathf.Sqrt((distanciaDaBola - 2) * distanciaDaBola);
+        else erro = 0;
+
         maxAnguloParaChute = (360 / Mathf.Pow(distanciaDaBola, 2)) + Mathf.Pow(((distanciaDaBola - 2) / distanciaDaBola) + 1.25f, 2) + erro;
         anguloJogador = Mathf.Acos(direcaoChute.x) * Mathf.Rad2Deg;
         anguloBolaJogador = Mathf.Acos(direcaoJogadorBola.x / direcaoJogadorBola.magnitude) * Mathf.Rad2Deg;
-        anguloDirJogadorBola = Mathf.Acos((direcaoJogadorBola.x * direcaoChute.x + direcaoChute.z * direcaoJogadorBola.z) / 
+        anguloDirJogadorBola = Mathf.Acos(((direcaoJogadorBola.x * direcaoChute.x) + (direcaoJogadorBola.y * direcaoChute.y) + (direcaoChute.z * direcaoJogadorBola.z)) /
             (direcaoJogadorBola.magnitude * direcaoChute.magnitude)) * Mathf.Rad2Deg;
 
-
+        #region Altura
         if (!LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || !LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2)
         {
             if (MovimentacaoDoJogador.pc) alturaChute += Input.GetAxis("Vertical") * Time.deltaTime;
@@ -46,20 +48,21 @@ public class MovimentacaoJogadores : MonoBehaviour
         else alturaChute = 0;
         if (alturaChute >= maxAlturaChute) alturaChute = maxAlturaChute;
         if (alturaChute <= 0) alturaChute = 0;
+        #endregion
 
         #region Ajustes
         if (maxAnguloParaChute > 90) maxAnguloParaChute = 90;
-        if (anguloDirJogadorBola > maxAnguloParaChute) 
-        { 
-            if (direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false; 
+        if (anguloDirJogadorBola > maxAnguloParaChute)
+        {
+            if (direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
         }
         else
         {
             if (LogisticaVars.mostrarDirecaoBola)
             {
-                if (bola.m_bolaNoChao && !bola.m_bolaCorrendo && !JogadorVars.m_esperandoContato && !direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) 
+                if (bola.m_bolaNoChao && !bola.m_bolaCorrendo && !JogadorVars.m_esperandoContato && !direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
                     direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
-                if ((!bola.m_bolaNoChao || JogadorVars.m_esperandoContato || bola.m_bolaCorrendo || LogisticaVars.especial) && direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) 
+                if ((!bola.m_bolaNoChao || JogadorVars.m_esperandoContato || bola.m_bolaCorrendo || LogisticaVars.especial) && direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
                     direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
             }
             else
@@ -68,7 +71,7 @@ public class MovimentacaoJogadores : MonoBehaviour
             }
         }
         if (senoJogador < 0) anguloJogador = 360 - anguloJogador;
-        if (bola.m_vetorDistanciaDoJogador.z < 0) anguloBolaJogador = 360 - anguloBolaJogador;
+        if (direcaoJogadorBola.z < 0) anguloBolaJogador = 360 - anguloBolaJogador;
         if (anguloBolaJogador == 360) anguloBolaJogador = 0;
 
         if (anguloJogador < anguloBolaJogador)
@@ -77,12 +80,14 @@ public class MovimentacaoJogadores : MonoBehaviour
         }
         else
         {
-            if (anguloJogador > 360 - maxAnguloParaChute) anguloDirJogadorBola = -anguloDirJogadorBola;
+            if (direcaoJogadorBola.z > 0 || anguloBolaJogador == 0)
+            {
+                if (anguloJogador > 360 - maxAnguloParaChute) anguloDirJogadorBola = -anguloDirJogadorBola;
+            }
         }
-
-        anguloBola = -(anguloDirJogadorBola / maxAnguloParaChute) * 90 + anguloBolaJogador;
         #endregion
 
+        anguloBola = -(anguloDirJogadorBola / maxAnguloParaChute) * 90 + anguloBolaJogador;
         direcaoBola = new Vector3(Mathf.Cos(anguloBola * Mathf.Deg2Rad), Mathf.Tan(alturaChute / maxAlturaChute * 40 * Mathf.Deg2Rad), Mathf.Sin(anguloBola * Mathf.Deg2Rad));
 
         /*Debug.DrawRay(jogador.transform.position, direcaoChute, Color.green);
@@ -110,7 +115,7 @@ public class MovimentacaoJogadores : MonoBehaviour
     }
     public Vector3 GetUltimaDirecao()
     {
-        if (LogisticaVars.continuaSendoFora) ultimaDirecao = direcaoBola;
+        if (LogisticaVars.continuaSendoFora || LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2) ultimaDirecao = direcaoBola;
 
         //ultimaDirecao = direcaoBola;
         if (LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2)

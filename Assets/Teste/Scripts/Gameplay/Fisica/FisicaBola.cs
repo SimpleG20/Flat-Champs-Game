@@ -62,6 +62,9 @@ public class FisicaBola : MonoBehaviour
         #region Direcao Chute
         if (m_vetorDistanciaDoJogador.magnitude < 2f && JogadorVars.m_esperandoContato)// && JogadorVars.m_aplicarChute)
         {
+            if (LogisticaVars.m_jogadorEscolhido.layer == 8) LogisticaVars.ultimoToque = 1;
+            else LogisticaVars.ultimoToque = 2;
+
             Vector3 ultimaDirecao = FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
             float qntMovimento = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 2.25f;
 

@@ -34,13 +34,13 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     void Update()
     {
         #region Direcao Jogador
-        if (LogisticaVars.jogoComecou)
+        if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
         {
-            if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido);
-            else
-            {
-                if (LogisticaVars.m_goleiroGameObject != null) SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
-            }
+            if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido);
+        }
+        else
+        {
+            if (LogisticaVars.m_goleiroGameObject != null) SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
         }
         #endregion
 
