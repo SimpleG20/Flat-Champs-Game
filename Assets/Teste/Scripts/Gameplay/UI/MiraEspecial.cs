@@ -83,9 +83,9 @@ public class MiraEspecial : MonoBehaviour
         {
             if (!travouMira)
             {
-                direcaoEspecial.transform.Translate(new Vector3(joystick.vX, joystick.vY, 0) * Time.deltaTime * speedMira);
+                direcaoEspecial.transform.Translate(new Vector3(joystick.valorX_Esq, joystick.valorY_Esq, 0) * Time.deltaTime * speedMira);
 
-                if (new Vector2(joystick.vX, joystick.vY).magnitude == 0 && direcaoEspecial.transform.position != startPos)
+                if (new Vector2(joystick.valorX_Esq, joystick.valorY_Esq).magnitude == 0 && direcaoEspecial.transform.position != startPos)
                 {
                     StartCoroutine(Voltar());
                 }

@@ -24,6 +24,7 @@ public class MovimentacaoJogadores : MonoBehaviour
         if(bola == null) bola = FindObjectOfType<FisicaBola>();
         if (joystickManager == null) joystickManager = FindObjectOfType<InputManager>();
 
+        #region Dados
         senoJogador = -jogador.transform.up.z;
         cosJogador = -jogador.transform.up.x;
         direcaoChute = new Vector3(cosJogador, 0, senoJogador);
@@ -38,6 +39,7 @@ public class MovimentacaoJogadores : MonoBehaviour
         anguloBolaJogador = Mathf.Acos(direcaoJogadorBola.x / direcaoJogadorBola.magnitude) * Mathf.Rad2Deg;
         anguloDirJogadorBola = Mathf.Acos(((direcaoJogadorBola.x * direcaoChute.x) + (direcaoJogadorBola.y * direcaoChute.y) + (direcaoChute.z * direcaoJogadorBola.z)) /
             (direcaoJogadorBola.magnitude * direcaoChute.magnitude)) * Mathf.Rad2Deg;
+        #endregion
 
         #region Altura
         if (!LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || !LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2)
@@ -52,24 +54,35 @@ public class MovimentacaoJogadores : MonoBehaviour
 
         #region Ajustes
         if (maxAnguloParaChute > 90) maxAnguloParaChute = 90;
-        if (anguloDirJogadorBola > maxAnguloParaChute)
+
+        #region Visualizacao
+        if (distanciaDaBola > 10)
         {
             if (direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
         }
         else
         {
-            if (LogisticaVars.mostrarDirecaoBola)
-            {
-                if (bola.m_bolaNoChao && !bola.m_bolaCorrendo && !JogadorVars.m_esperandoContato && !direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
-                    direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
-                if ((!bola.m_bolaNoChao || JogadorVars.m_esperandoContato || bola.m_bolaCorrendo || LogisticaVars.especial) && direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
-                    direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
-            }
-            else
+            if (anguloDirJogadorBola > maxAnguloParaChute)
             {
                 if (direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
             }
+            else
+            {
+                if (LogisticaVars.mostrarDirecaoBola)
+                {
+                    if (bola.m_bolaNoChao && !bola.m_bolaCorrendo && !JogadorVars.m_esperandoContato && !direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
+                        direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
+                    if ((!bola.m_bolaNoChao || JogadorVars.m_esperandoContato || bola.m_bolaCorrendo || LogisticaVars.especial) && direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
+                        direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+                }
+                else
+                {
+                    if (direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled) direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+                }
+            }
         }
+        #endregion
+
         if (senoJogador < 0) anguloJogador = 360 - anguloJogador;
         if (direcaoJogadorBola.z < 0) anguloBolaJogador = 360 - anguloBolaJogador;
         if (anguloBolaJogador == 360) anguloBolaJogador = 0;

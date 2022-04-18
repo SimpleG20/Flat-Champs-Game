@@ -75,13 +75,13 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                         if (!JogadorVars.m_medirChute)
                         {
                             if (LogisticaVars.escolherOutroJogador)
-                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
                             else
-                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.m_sensibilidade * Time.deltaTime);
+                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidade * Time.deltaTime);
                         }
                         else
                         {
-                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.vX * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
                         }
                     }
                 }

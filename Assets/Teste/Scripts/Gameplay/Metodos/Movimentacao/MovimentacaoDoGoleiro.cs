@@ -60,7 +60,7 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
                 else
                 {
                     if(GoleiroVars.m_movimentar) 
-                        dir = new Vector3(joystickManager.vX * GoleiroVars.m_speed * Time.deltaTime, -joystickManager.vY * GoleiroVars.m_speed * Time.deltaTime, 0);
+                        dir = new Vector3(joystickManager.valorX_Esq * GoleiroVars.m_speed * Time.deltaTime, -joystickManager.valorY_Esq * GoleiroVars.m_speed * Time.deltaTime, 0);
                 }
                 LogisticaVars.m_goleiroGameObject.transform.Translate(dir, Space.Self);
             }

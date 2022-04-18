@@ -1808,7 +1808,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4293135097384364411}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Local Icones
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3321,6 +3321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aadf9f9118ca2b5448fdffda61c408f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  j: {fileID: 0}
   dispositivo: {fileID: 9193912499879970999}
 --- !u!114 &8769879917605159079
 MonoBehaviour:
@@ -3414,6 +3415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f52e3de1ae990f40975d83edb186b59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  j: {fileID: 0}
 --- !u!114 &4888950959211445576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3901,7 +3903,7 @@ GameObject:
   - component: {fileID: 2751639362693684116}
   - component: {fileID: 2751639362693684117}
   - component: {fileID: 2751639362693684202}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5372,10 +5374,9 @@ MonoBehaviour:
   direcaoRight: {x: 0, y: 0}
   center: {fileID: 632857764206723865}
   handle: {fileID: 632857765050192453}
-  vX: 0
-  vY: 0
+  valorX_Esq: 0
+  valorY_Esq: 0
   numeroDeToques: 0
-  voltar: 0
 --- !u!1 &3686903611725340613
 GameObject:
   m_ObjectHideFlags: 0
@@ -7005,7 +7006,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4941141781337737626}
   - component: {fileID: 4941141781337737605}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Placar e Tempo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12863,7 +12864,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2519398475851061036}
   - component: {fileID: 7933404031413210262}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: UI Gameplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}

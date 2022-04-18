@@ -1,46 +1,25 @@
+using System.Collections;
 using UnityEngine;
 
 public class CrowdMovement : MonoBehaviour
 {
-    public bool golT1, golT2, acionouTempo;
-    public float tempo, seno, modulo;
-    public Vector3 posInicial;
+    public GameObject torcedor;
+    public float tempo;
+    public bool m, gol;
 
-    private void Start()
+
+    private void Update()
     {
-        posInicial = gameObject.transform.position;
+        if (m)
+        {
+            gol = true;
+            foreach (GameObject t in GameObject.FindGameObjectsWithTag("TorcidaAleatoria"))
+            {
+                float random = Random.Range(0.5f, 2.5f);
+                LeanTween.moveLocalY(t, random, 0.1f + random / 10).setEaseLinear().setLoopPingPong(20); //Em media 15 segundos
+            }
+            m = false;
+        }
     }
 
-    void Update()
-    {
-        if (golT1)
-        {
-            seno = Mathf.Sin(tempo);
-            modulo = Mathf.Sqrt(Mathf.Pow(seno, 2));
-
-            if (tempo > Mathf.PI) tempo = 0;
-            tempo += Time.deltaTime * 5;
-
-            if (tempo > (Mathf.PI / 2)) seno = -seno;
-            else seno = modulo;
-
-            if(this.gameObject.tag == "Torcida1")
-            {
-                transform.position = new Vector3(posInicial.x, posInicial.y + seno, posInicial.z);
-            }
-            if(this.gameObject.tag == "TorcidaAleatoria")
-            {
-                int i = Random.Range(0, 9);
-                if (i == 1) transform.position = new Vector3(posInicial.x, posInicial.y + seno, posInicial.z);
-            }
-        }
-        else
-        {
-            transform.position = posInicial;
-            tempo = 0;
-            seno = modulo = 0;
-        }
-        
-
-    }
 }
