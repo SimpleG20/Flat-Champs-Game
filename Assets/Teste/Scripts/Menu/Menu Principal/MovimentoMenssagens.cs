@@ -5,21 +5,35 @@ using TMPro;
 
 public class MovimentoMenssagens : MonoBehaviour
 {
-    [SerializeField] float speed;
-    [SerializeField] float limite, inicio;
+    [SerializeField] List<string> mensagens;
+    public string mensagem;
+    [SerializeField] float tempo, limite, inicio;
+    int indice;
 
-    void FixedUpdate()
+    void Start()
     {
-        transform.position += Vector3.right * speed * Time.deltaTime;
+        inicio = transform.position.x;
+    }
 
-        if(speed > 0)
+    private void Update()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, new Vector3(limite, transform.position.y, 0), tempo);
+
+        if (transform.position.x == limite)
         {
-            if (transform.position.x > limite) transform.position = new Vector3(inicio, transform.position.y, transform.position.z);
+            indice++;
+            if (indice >= mensagens.Count) indice = 0;
+
+            GetComponent<TextMeshProUGUI>().text = mensagens[indice];
+            float aux = limite;
+            limite = inicio;
+            inicio = aux;
         }
-        else
-        {
-            if (transform.position.x < limite) transform.position = new Vector3(inicio, transform.position.y, transform.position.z);
-        }
-        
+    }
+
+    [ContextMenu("Mensagem")]
+    void Mensagem()
+    {
+        mensagens.Add(mensagem);
     }
 }

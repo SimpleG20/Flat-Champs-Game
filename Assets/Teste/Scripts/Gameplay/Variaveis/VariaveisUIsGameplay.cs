@@ -10,10 +10,11 @@ public class VariaveisUIsGameplay : MonoBehaviour
     public GameObject m_placar;
     public GameObject aberturaGO, golMarcadoGO;
     public GameObject numeroJogadasGO, tempoJogadaGO, tempoEscolhaGO;
-    public GameObject centralBotoes, botaoBaixo, botaoMeio, botaoCima, botaoLivre, botaoLivre2, botaoLivre3;
+    public GameObject centralBotoes, botaoBaixo, botaoMeio, botaoCima, botaoDiagonal, botaoLivre1, botaoLivre2;
     public GameObject joystick, miraEspecial, iconePequeno, iconeMedio, iconeGrande, inibidorMoverJogadorGO;
     public Button pausarBt;
     public Gradient gradienteChute, gradEscpecial;
+    public bool clicouUi;
 
     [Header("UI jogador")]
     public GameObject moverJogadorBt;

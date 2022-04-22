@@ -170,7 +170,7 @@ public class LevelManager : MonoBehaviour
 
         if (numeroRecompensas >= 5) botaoPegarRecompensas.SetActive(true);
 
-        print(posPrimeiroSlot / FindObjectOfType<ScrollRect>().content.sizeDelta.x);
+        //print(posPrimeiroSlot / FindObjectOfType<ScrollRect>().content.sizeDelta.x);
 
         if (posPrimeiroSlot > 2000)
             scrollbar.value = posPrimeiroSlot / scroll.content.sizeDelta.x;

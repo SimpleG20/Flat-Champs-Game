@@ -43,7 +43,7 @@ public class GoleiroMetodos: MonoBehaviour
         else 
         {
             LogisticaVars.m_goleiroGameObject.transform.GetChild(2).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
-            EncherBarraChuteGoleiro(JogadorVars.m_forca, JogadorVars.m_maxForca);
+            EncherBarraChuteGoleiro(JogadorVars.m_forca, JogadorVars.m_maxForcaAtual);
         }
         //LogisticaVars.m_goleiroGameObject.GetComponentInChildren<AudioListener>().enabled = situacao;
         if (situacao == false) ui.barraChuteGoleiro.SetActive(situacao);

@@ -48,22 +48,22 @@ public class JogadorMetodos: MonoBehaviour
         if (LogisticaVars.continuaSendoFora == true)
         {
             JogadorVars.m_forca = 0;
-            JogadorVars.m_maxForca = 45;
+            JogadorVars.m_maxForcaAtual = JogadorVars.m_maxForcaFora;
         }
 
         if (JogadorVars.m_chuteAoGol == true)
         {
             JogadorVars.m_forca = 50;
-            JogadorVars.m_maxForca = 620;
+            JogadorVars.m_maxForcaAtual = JogadorVars.m_maxForcaChuteAoGol;
         }
 
         if(!JogadorVars.m_chuteAoGol && !LogisticaVars.continuaSendoFora)
         {
             JogadorVars.m_forca = 50;
-            JogadorVars.m_maxForca = 360;
+            JogadorVars.m_maxForcaAtual = JogadorVars.m_maxForcaNormal;
         }
 
-        EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForca);
+        EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForcaAtual);
         //Debug.Log("Forca: " + JogadorVars.m_forca + " Max: " + JogadorVars.m_maxForca);
     }
     public static void ChuteNormal(Vector3 direcaoChute)

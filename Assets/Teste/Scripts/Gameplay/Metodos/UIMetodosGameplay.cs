@@ -57,6 +57,14 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
             case "UI: bola rasteira":
                 BolaRasteira();
                 break;
+            case "click":
+                clicouUi = true;
+                //print("Clicou UI");
+                break;
+            case "unclick":
+                clicouUi = false;
+                //print("Deixou de clicar UI");
+                break;
         }
     }
 
@@ -78,9 +86,9 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
                 especialBt.gameObject.SetActive(true);
                 botaoBaixo.SetActive(false);
                 botaoCima.SetActive(false);
-                botaoLivre.SetActive(false);
+                botaoDiagonal.SetActive(false);
                 botaoLivre2.SetActive(false);
-                botaoLivre3.SetActive(false);
+                botaoLivre1.SetActive(false);
                 botaoMeio.SetActive(true);
 
                 moverJogadorBt.SetActive(true);
@@ -97,9 +105,9 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
                 botaoCima.SetActive(true);
                 botaoMeio.SetActive(false);
                 botaoBaixo.SetActive(false);
-                botaoLivre.SetActive(false);
+                botaoDiagonal.SetActive(false);
                 botaoLivre2.SetActive(false);
-                botaoLivre3.SetActive(false);
+                botaoLivre1.SetActive(false);
 
                 sairSelecaoBt.gameObject.SetActive(true);
                 joystick.SetActive(true);
@@ -129,7 +137,7 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
                 EstadoBotoesGoleiro(false); 
                 goleiroPosicionadoBt.gameObject.SetActive(false);
                 especialBt.gameObject.SetActive(false);
-                botaoLivre.SetActive(false);
+                botaoDiagonal.SetActive(false);
 
                 botaoMeio.SetActive(true);
                 botaoLivre2.SetActive(true);
@@ -216,9 +224,9 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
         botaoBaixo.SetActive(b);
         botaoMeio.SetActive(b);
         botaoCima.SetActive(b);
-        botaoLivre.SetActive(b);
+        botaoDiagonal.SetActive(b);
         botaoLivre2.SetActive(b);
-        botaoLivre3.SetActive(b);
+        botaoLivre1.SetActive(b);
     }
     void EstadoBotoesJogador(bool b)
     {

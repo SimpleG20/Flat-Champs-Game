@@ -19,16 +19,15 @@ public class ConfigurationManager : MonoBehaviour
     [SerializeField] List<Sprite> m_ilustracoesMenu, m_ilustracoesJogador, m_ilustracoesTime, m_ilustracoesConfig, m_ilustracoesGameplay;
 
     [Header("Camera")]
-    [SerializeField] GameObject m_jogadorTeste;
     [SerializeField] Toggle toggleSensibilidade;
     [SerializeField] TMP_InputField m_camSensiblidadeInput;
     [SerializeField] TMP_InputField m_camPosYInput;
     [SerializeField] TMP_InputField m_camAnguloInput;
 
     [Header("Sons")]
-    [SerializeField] Slider m_somTorcidaSlider;
-    [SerializeField] Slider m_somInterfaceSlider, m_somMusicasSlider, m_somEfeitosSlider;
-    [SerializeField] TextMeshProUGUI m_torcidaInput, m_interfaceInput, m_musicaInput, m_efetioInput;
+    [SerializeField] Slider m_somTorcida_slider;
+    [SerializeField] Slider m_somInterface_slider, m_somMusicas_slider, m_somEfeitos_slider;
+    [SerializeField] TextMeshProUGUI m_torcidaInput_tx, m_interfaceInput_tx, m_musicaInput_tx, m_efetioInput_tx;
 
     [Header("Grafico")]
     [SerializeField] List<Toggle> m_resolucoesToggles;
@@ -40,7 +39,11 @@ public class ConfigurationManager : MonoBehaviour
     [SerializeField] GameObject m_pivotCam;
 
     [Header("Gameplay")]
-    [SerializeField] Image barraChute;
+    [SerializeField] GameObject joystick_teste;
+    [SerializeField] Slider velChute_slider;
+    [SerializeField] TextMeshProUGUI velChute_tx;
+    [SerializeField] Image barraChute_img;
+    [SerializeField] Gradient grad;
     
 
     //[Header("Datas")]
@@ -55,9 +58,7 @@ public class ConfigurationManager : MonoBehaviour
 
     int m_volumeTorcida, m_volumeInterface, m_volumeMusica, m_volumeEfeito;
     public int m_idiomaAtual, m_resolucaoAtual;
-    bool m_mudouCor, m_aplicarCor, testarBarra, testarSensibilidade;
-
-    
+    bool m_mudouCor, m_aplicarCor, testarBarra, testarSensibilidade, movimentarHandle;
 
     //bool m_altaRes, m_mediaRes, m_baixaRes, m_lngPt, m_lngEng, m_lngEsp, m_lngFra,
 
@@ -70,8 +71,11 @@ public class ConfigurationManager : MonoBehaviour
     {
         //SetarVariaveis();
         m_camSensiblidadeInput.text = Regex.Replace(m_camSensiblidadeInput.text, @"[^0-9 .]", "");
-        m_camAnguloInput.text = Regex.Replace(m_camAnguloInput.text, @"[^0-9 .]", "");
-        m_camPosYInput.text = Regex.Replace(m_camPosYInput.text, @"[^0-9 .]", "");
+        m_camAnguloInput.text = Regex.Replace(m_camAnguloInput.text, @"[^0-9 .-]", "");
+        m_camPosYInput.text = Regex.Replace(m_camPosYInput.text, @"[^0-9 .-]", "");
+
+        barraChute_img.fillAmount = 50 / JogadorVars.m_maxForcaNormal;
+        barraChute_img.color = grad.Evaluate(0.2f);
     }
 
     public void Default()
@@ -87,15 +91,15 @@ public class ConfigurationManager : MonoBehaviour
         #endregion
 
         #region Som
-        m_somTorcidaSlider.value = m_volumeTorcida = 50;
-        m_somMusicasSlider.value = m_volumeMusica = 50;
-        m_somInterfaceSlider.value = m_volumeInterface = 50;
-        m_somEfeitosSlider.value = m_volumeEfeito = 50;
+        m_somTorcida_slider.value = m_volumeTorcida = 50;
+        m_somMusicas_slider.value = m_volumeMusica = 50;
+        m_somInterface_slider.value = m_volumeInterface = 50;
+        m_somEfeitos_slider.value = m_volumeEfeito = 50;
 
-        m_torcidaInput.text = m_volumeTorcida.ToString();
-        m_interfaceInput.text = m_volumeInterface.ToString();
-        m_musicaInput.text = m_volumeMusica.ToString();
-        m_efetioInput.text = m_volumeEfeito.ToString();
+        m_torcidaInput_tx.text = m_volumeTorcida.ToString();
+        m_interfaceInput_tx.text = m_volumeInterface.ToString();
+        m_musicaInput_tx.text = m_volumeMusica.ToString();
+        m_efetioInput_tx.text = m_volumeEfeito.ToString();
         #endregion
 
         #region grafico
@@ -126,24 +130,47 @@ public class ConfigurationManager : MonoBehaviour
         #endregion
 
         #region Gameplay
-
+        m_velocidadeBarra = 1;
+        velChute_slider.value = 1;
+        velChute_tx.text = m_velocidadeBarra.ToString("F2");
         #endregion
     }
 
     private void Update()
     {
-        if(GameManager.Instance.m_sceneManager.cenaAtual == "configuracoes")
+        if(GameManager.Instance.m_sceneManager.cenaAtual == "Configuracoes")
         {
-            if (testarBarra) barraChute.fillAmount += ((12 * m_velocidadeBarra * Time.deltaTime) / 360);
-            if (testarSensibilidade) m_jogadorTeste.transform.Rotate(Vector3.forward * 1 * m_camSensibilidade * Time.deltaTime);
+            if (testarBarra) 
+            {
+                barraChute_img.fillAmount += (12 * m_velocidadeBarra / JogadorVars.m_maxForcaNormal);
+                barraChute_img.color = grad.Evaluate(barraChute_img.fillAmount);
+            }
+            if (testarSensibilidade)
+            {
+                RotacionarCamera();
+            }
         }
     }
 
     #region Testes
     public void TestarSensibilidade()
     {
-        if (toggleSensibilidade.isOn) testarSensibilidade = true;
-        else { testarSensibilidade = false; m_jogadorTeste.transform.eulerAngles = new Vector3(-90, 0, 0); }
+        if (toggleSensibilidade.isOn) 
+        { 
+            m_camSensiblidadeInput.transform.parent.gameObject.SetActive(false);
+            m_camAnguloInput.transform.parent.gameObject.SetActive(false);
+            m_camPosYInput.transform.parent.gameObject.SetActive(false);
+            testarSensibilidade = true; 
+            joystick_teste.SetActive(true); 
+        }
+        else 
+        {
+            m_camSensiblidadeInput.transform.parent.gameObject.SetActive(true);
+            m_camAnguloInput.transform.parent.gameObject.SetActive(true);
+            m_camPosYInput.transform.parent.gameObject.SetActive(true);
+            testarSensibilidade = false; 
+            VoltarCamera(); 
+        }
     }
     public void TestarBarraChute()
     {
@@ -152,18 +179,53 @@ public class ConfigurationManager : MonoBehaviour
     public void DefaultBarra()
     {
         testarBarra = false;
-        barraChute.fillAmount = 0.2f;
+        barraChute_img.fillAmount = 50 / JogadorVars.m_maxForcaNormal;
+        barraChute_img.color = grad.Evaluate(barraChute_img.fillAmount);
+    }
+    void DemostracaoCamera(int i)
+    {
+        if(i == 1) m_pivotCam.transform.localPosition = Vector3.up * m_camPosY;
+        else m_pivotCam.transform.eulerAngles = Vector3.right * m_camAngulo;
     }
     #endregion
 
-    public void MudarValorVelocidadeBarra(Slider slider)
+    public void ValorVelocidadeBarra()
     {
-        m_velocidadeBarra = slider.value;
+        velChute_tx.text = m_velocidadeBarra.ToString("F2");
     }
-    public void ValorVelocidadeBarra(TextMeshProUGUI text)
+    public void MudarValorVelocidadeBarra()
     {
-        text.text = m_velocidadeBarra.ToString();
+        m_velocidadeBarra = velChute_slider.value;
     }
+
+    public void MovimentarHandle(bool b)
+    {
+        movimentarHandle = b;
+    }
+    void RotacionarCamera()
+    {
+        for(int i = 0; i < Input.touches.Length; i++)
+        {
+            if (Input.touches[i].position.x < Screen.width / 2 && movimentarHandle)
+            {
+                Vector2 dir = Vector2.ClampMagnitude(Input.touches[i].position - new Vector2(joystick_teste.transform.position.x, joystick_teste.transform.position.y), 120);
+                float vx = Mathf.Clamp(dir.x/120, -1, 1);
+                joystick_teste.transform.GetChild(1).localPosition = new Vector2(vx * 120, 0);
+                m_pivotCam.transform.Rotate(Vector3.up * vx * Time.deltaTime * m_camSensibilidade, Space.World);
+            }
+            else
+            {
+                joystick_teste.transform.GetChild(1).localPosition = Vector3.zero;
+            }
+        }
+    }
+    void VoltarCamera()
+    {
+        m_pivotCam.transform.eulerAngles = new Vector3(m_camAngulo, 0, 0);
+        joystick_teste.transform.GetChild(1).localPosition = Vector3.zero;
+        joystick_teste.SetActive(false);
+    }
+    
     public void MudarPagina(bool b)
     {
         setaAnt.SetActive(true);
@@ -223,36 +285,6 @@ public class ConfigurationManager : MonoBehaviour
     }
     #endregion
 
-    void DemostracaoCamera(int i)
-    {
-        if(i == 1) m_pivotCam.transform.localPosition = Vector3.up * m_camPosY;
-        else m_pivotCam.transform.eulerAngles = Vector3.right * m_camAngulo;
-    }
-    public void MaximoMinimoValorCamera(int i)
-    {
-        switch (i)
-        {
-            case 1:
-                if (int.Parse(m_camSensiblidadeInput.text) >= 100)
-                    m_camSensiblidadeInput.text = "100";
-                else if (int.Parse(m_camSensiblidadeInput.text) <= 0)
-                    m_camSensiblidadeInput.text = "0";
-                break;
-            case 2:
-                if (float.Parse(m_camPosYInput.text) >= 2f)
-                    m_camPosYInput.text = "2";
-                else if (float.Parse(m_camPosYInput.text) <= -1f)
-                    m_camPosYInput.text = "-1";
-                break;
-            case 3:
-                if (float.Parse(m_camAnguloInput.text) >= 7.5f)
-                    m_camAnguloInput.text = "7,5";
-                else if (float.Parse(m_camAnguloInput.text) <= -20f)
-                    m_camAnguloInput.text = "-20";
-                break;
-        }
-    }
-
     #region Setar Valores
     public void MudarCameraConfig(int i)
     {
@@ -260,6 +292,11 @@ public class ConfigurationManager : MonoBehaviour
         {
             case 1:
                 m_camSensibilidade = int.Parse(m_camSensiblidadeInput.text);
+                if (m_camSensibilidade < 5)
+                {
+                    m_camSensibilidade = 5;
+                    m_camSensiblidadeInput.text = "5";
+                }
                 break;
             case 2:
                 m_camPosY = float.Parse(m_camPosYInput.text);
@@ -276,20 +313,20 @@ public class ConfigurationManager : MonoBehaviour
         switch (i)
         {
             case 1:
-                m_volumeTorcida = int.Parse(m_somTorcidaSlider.value.ToString());
-                m_torcidaInput.text = m_volumeTorcida.ToString();
+                m_volumeTorcida = int.Parse(m_somTorcida_slider.value.ToString());
+                m_torcidaInput_tx.text = m_volumeTorcida.ToString();
                 break;
             case 2:
-                m_volumeInterface = int.Parse(m_somInterfaceSlider.value.ToString());
-                m_interfaceInput.text = m_volumeInterface.ToString();
+                m_volumeInterface = int.Parse(m_somInterface_slider.value.ToString());
+                m_interfaceInput_tx.text = m_volumeInterface.ToString();
                 break;
             case 3:
-                m_volumeMusica = int.Parse(m_somMusicasSlider.value.ToString());
-                m_musicaInput.text = m_volumeMusica.ToString();
+                m_volumeMusica = int.Parse(m_somMusicas_slider.value.ToString());
+                m_musicaInput_tx.text = m_volumeMusica.ToString();
                 break;
             case 4:
-                m_volumeEfeito = int.Parse(m_somEfeitosSlider.value.ToString());
-                m_efetioInput.text = m_volumeEfeito.ToString();
+                m_volumeEfeito = int.Parse(m_somEfeitos_slider.value.ToString());
+                m_efetioInput_tx.text = m_volumeEfeito.ToString();
                 break;
         }
     } //Colorcar os sons
@@ -395,7 +432,30 @@ public class ConfigurationManager : MonoBehaviour
         }
         AtualizarToggles(i, m_corTogglesGameplay);
     }
-    
+    public void MaximoMinimoValorCamera(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                if (int.Parse(m_camSensiblidadeInput.text) >= 100)
+                    m_camSensiblidadeInput.text = "100";
+                else if (int.Parse(m_camSensiblidadeInput.text) <= 0)
+                    m_camSensiblidadeInput.text = "0";
+                break;
+            case 2:
+                if (float.Parse(m_camPosYInput.text) >= 2f)
+                    m_camPosYInput.text = "2";
+                else if (float.Parse(m_camPosYInput.text) <= -1f)
+                    m_camPosYInput.text = "-1";
+                break;
+            case 3:
+                if (float.Parse(m_camAnguloInput.text) >= 7.5f)
+                    m_camAnguloInput.text = "7,5";
+                else if (float.Parse(m_camAnguloInput.text) <= -20f)
+                    m_camAnguloInput.text = "-20";
+                break;
+        }
+    }
     #endregion
 
     #region Final e Comeco
@@ -498,6 +558,8 @@ public class ConfigurationManager : MonoBehaviour
         config.m_camPosY = m_camPosY;
         config.m_camAngulo = m_camAngulo;
 
+        config.m_velocidadeBarraChute = m_velocidadeBarra;
+
         if (m_mudouCor) m_aplicarCor = true;
         //SaveSystem.SaveConfigurations(config);
     }
@@ -532,23 +594,33 @@ public class ConfigurationManager : MonoBehaviour
         m_volumeEfeito = config.m_somEfeito;
         m_volumeTorcida = config.m_somTorcida;
 
+        m_camSensiblidadeInput.transform.parent.gameObject.SetActive(true);
+        m_camAnguloInput.transform.parent.gameObject.SetActive(true);
+        m_camPosYInput.transform.parent.gameObject.SetActive(true);
+        joystick_teste.SetActive(false);
         m_camSensiblidadeInput.text = m_camSensibilidade.ToString();
         m_camPosYInput.text = m_camPosY.ToString();
         m_camAnguloInput.text = m_camAngulo.ToString();
 
-        m_somTorcidaSlider.value = m_volumeTorcida;
-        m_somMusicasSlider.value = m_volumeMusica;
-        m_somInterfaceSlider.value = m_volumeInterface;
-        m_somEfeitosSlider.value = m_volumeEfeito;
+        m_somTorcida_slider.value = m_volumeTorcida;
+        m_somMusicas_slider.value = m_volumeMusica;
+        m_somInterface_slider.value = m_volumeInterface;
+        m_somEfeitos_slider.value = m_volumeEfeito;
 
-        m_torcidaInput.text = m_volumeTorcida.ToString();
-        m_interfaceInput.text = m_volumeInterface.ToString();
-        m_musicaInput.text = m_volumeMusica.ToString();
-        m_efetioInput.text = m_volumeEfeito.ToString();
+        m_torcidaInput_tx.text = m_volumeTorcida.ToString();
+        m_interfaceInput_tx.text = m_volumeInterface.ToString();
+        m_musicaInput_tx.text = m_volumeMusica.ToString();
+        m_efetioInput_tx.text = m_volumeEfeito.ToString();
+
 
         toggleSensibilidade.isOn = false;
-        TestarSensibilidade();
+        //TestarSensibilidade();
         DefaultBarra();
+
+        if (config.m_velocidadeBarraChute == 0) config.m_velocidadeBarraChute = 1;
+        m_velocidadeBarra = config.m_velocidadeBarraChute;
+        velChute_tx.text = m_velocidadeBarra.ToString("F2");
+        velChute_slider.value = m_velocidadeBarra;
 
         /*switch (m_resolucaoAtual)
         {

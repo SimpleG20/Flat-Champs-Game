@@ -17,7 +17,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         ui = FindObjectOfType<UIMetodosGameplay>();
 
-        JogadorVars.m_maxForca = 360;
+        JogadorVars.m_maxForcaAtual = 360;
         JogadorVars.m_forca = 50;
 
         JogadorVars.m_sensibilidadeChute = 10;
@@ -99,10 +99,10 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
         {
             float parametro = JogadorMetodos.MedirChute();
 
-            if (JogadorVars.m_forca >= JogadorVars.m_maxForca) JogadorVars.m_forca = JogadorVars.m_maxForca;
+            if (JogadorVars.m_forca >= JogadorVars.m_maxForcaAtual) JogadorVars.m_forca = JogadorVars.m_maxForcaAtual;
             else JogadorVars.m_forca += (parametro * velocidadeBarraChute);
 
-            JogadorMetodos.EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForca);
+            JogadorMetodos.EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForcaAtual);
         }
         else
         {
