@@ -78,13 +78,9 @@ public class FisicaBola : MonoBehaviour
         #region Dinamica da Bola
         if (m_bolaNoChao)
         {
-            //if (LogisticaVars.mostrarDirecaoBola && !FindObjectOfType<DirecionalDaBola>().gameObject.activeSelf) FindObjectOfType<DirecionalDaBola>().gameObject.SetActive(true);
 
             if (m_rbBola.velocity.magnitude < 0.05f) vetorVelocidadeNormalizado = new Vector3(0, 0, 0);
             else vetorVelocidadeNormalizado = new Vector3(-m_rbBola.velocity.x / m_rbBola.velocity.magnitude, 0, -m_rbBola.velocity.z / m_rbBola.velocity.magnitude);
-
-            /*if (m_bolaCorrendo) vetorForcaFat = new Vector3(AtributosFisicos.coefAtritoDiBola * vetorforcaNormal.y, 0, AtributosFisicos.coefAtritoDiBola * vetorforcaNormal.y);
-            else vetorForcaFat = new Vector3(AtributosFisicos.coefAtritoEsBola * vetorforcaNormal.y, 0, AtributosFisicos.coefAtritoEsBola * vetorforcaNormal.y);*/
 
             if (vetorVelocidadeNormalizado.magnitude != 0) vetorForcaFat = new Vector3(AtributosFisicos.coefAtritoDiBola * vetorforcaNormal.y, 0, AtributosFisicos.coefAtritoDiBola * vetorforcaNormal.y);
             else vetorForcaFat = new Vector3(AtributosFisicos.coefAtritoEsBola * vetorforcaNormal.y, 0, AtributosFisicos.coefAtritoEsBola * vetorforcaNormal.y);
