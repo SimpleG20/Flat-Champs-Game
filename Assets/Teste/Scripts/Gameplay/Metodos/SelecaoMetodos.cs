@@ -278,14 +278,6 @@ public class SelecaoMetodos : MonoBehaviour
         LogisticaVars.tempoJogada = 0;
         LogisticaVars.jogadas = 0;
 
-        /*if (LogisticaVars.escolherOutroJogador)
-        {
-            foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>()) Destroy(l.gameObject);
-            AjustarCameraParaSelecao(-1);
-            LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", false);
-            LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", true);
-        }*/
-
         LogisticaVars.escolherOutroJogador = false;
         LogisticaVars.desabilitouDadosJogador = false;
 

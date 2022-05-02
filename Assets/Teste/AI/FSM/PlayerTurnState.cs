@@ -4,22 +4,14 @@ using UnityEngine;
 
 public class PlayerTurnState : State
 {
-    public PlayerTurnState(StateSystem system) : base(system) { }
+    public PlayerTurnState(StateSystem system, AISystem ai) : base(system, ai) 
+    { }
 
     public override IEnumerator Start()
     {
         _system.contagem = true;
         Debug.Log("Jogador: Waiting for an action");
         yield break;
-    }
-
-    public override IEnumerator Direcionar()
-    {
-        float randomAngulo = Random.Range(0, 90);
-        Debug.Log("Jogador: Random Direcionamento " + randomAngulo);
-        yield return new WaitForSeconds(1);
-
-        _system.OnEsperar();
     }
 
     public override IEnumerator Mover()
@@ -49,7 +41,7 @@ public class PlayerTurnState : State
     public override IEnumerator End()
     {
         base.End();
-        _system.SetState(new AITurnState(_system));
+        _system.SetState(new AITurnState(_system, _iSystem));
         yield break;
     }
 }

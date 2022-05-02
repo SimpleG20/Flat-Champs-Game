@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BeginState : State
 {
-    public BeginState(StateSystem system) : base(system) { }
+    public BeginState(StateSystem system, AISystem ai) : base(system, ai) 
+    { }
 
     public override IEnumerator Start()
     {
@@ -13,7 +14,7 @@ public class BeginState : State
 
         int quemComeca = Random.Range(0, 2);
 
-        if (quemComeca == 1) _system.SetState(new PlayerTurnState(_system));
-        else _system.SetState(new AITurnState(_system));
+        if (quemComeca == 1) _system.SetState(new PlayerTurnState(_system, _iSystem));
+        else _system.SetState(new AITurnState(_system, _iSystem));
     }
 }

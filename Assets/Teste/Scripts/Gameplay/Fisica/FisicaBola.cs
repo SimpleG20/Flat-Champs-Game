@@ -13,10 +13,10 @@ public class FisicaBola : MonoBehaviour
     public bool m_bolaNoChao, m_toqueChao, m_encostouJogador;
     private bool m_contagemPequenaArea;
 
-    
+
     [Header("Vetores da Bola")]
-    public Vector3 m_posLateral;
-    public Vector3 m_posicaoFundo, m_posicaoJogador, m_vetorDistanciaDoJogador, m_vetorVelocidade, direcaoBola;
+    public Vector3 m_pos;
+    public Vector3 m_posLateral, m_posicaoFundo, m_posicaoJogador, m_vetorDistanciaDoJogador, m_vetorVelocidade, direcaoBola;
 
     [Header("Rigidbody")]
     public Rigidbody m_rbBola;
@@ -34,8 +34,9 @@ public class FisicaBola : MonoBehaviour
     }
 
     void FixedUpdate()
-    {        
+    {
         #region Dados Bola
+        m_pos = transform.position;
         if (LogisticaVars.bolaRasteiraT1 && LogisticaVars.vezJ1 || LogisticaVars.bolaRasteiraT2 && LogisticaVars.vezJ2) m_rbBola.constraints = RigidbodyConstraints.FreezePositionY;
         else m_rbBola.constraints = RigidbodyConstraints.None;
 

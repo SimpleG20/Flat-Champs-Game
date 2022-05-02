@@ -10,7 +10,7 @@ public class StateSystem : StateMachine
 
     private void Start()
     {
-        SetState(new BeginState(this));
+        SetState(new BeginState(this, FindObjectOfType<AISystem>()));
     }
 
     private void Update()
@@ -43,11 +43,6 @@ public class StateSystem : StateMachine
     public void OnEsperar()
     {
         StartCoroutine(_state.Esperar());
-    }
-
-    public void OnDirecionar()
-    {
-        StartCoroutine(_state.Direcionar());
     }
 
     public void OnEnd()

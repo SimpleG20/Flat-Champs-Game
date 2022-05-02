@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class AITurnState : State
 {
-    public AITurnState(StateSystem system) : base(system) { }
+    public AITurnState(StateSystem system, AISystem ai) : base(system, ai)
+    { }
 
     public override IEnumerator Start()
     {
@@ -15,43 +16,26 @@ public class AITurnState : State
         _system.OnEsperar();
     }
 
-    public override IEnumerator Direcionar()
-    {
-        float randomAngulo = Random.Range(0, 90);
-        Debug.Log("AI: Random Direcionamento " + randomAngulo);
-        yield return new WaitForSeconds(1);
-
-        _system.OnMover();
-    }
-
     public override IEnumerator Mover()
     {
-        float randomForca = Random.Range(50, 420);
-        Debug.Log("AI: Random Forca " + randomForca);
-        _system.jogadas++;
+        AIDecision decisao = new AIDecision();
+        decisao.SetAction(new AIMovement(_iSystem), AIDecision.Decisao.MOVER);
 
-        yield return new WaitForSeconds(1);
-
-        if (_system.jogadas == 3)
-        {
-            _system.OnEnd();
-        }
-        else
-        {
-            _system.OnEsperar();
-        }
+        yield break;
     }
 
     public override IEnumerator Especial()
     {
-        Debug.Log("AI: Especial");
+        AIDecision decisao = new AIDecision();
+        //decisao.SetAction(new AISpecial(_iSystem), AIDecision.Decisao.ESPECIAL);
         _system.OnEnd();
         yield break;
     }
 
     public override IEnumerator Chutar()
     {
-        Debug.Log("AI: Chute");
+        AIDecision decisao = new AIDecision();
+        //decisao.SetAction(new AIStrike(_iSystem), AIDecision.Decisao.CHUTAR);
         _system.OnEnd();
         yield break;
     }
@@ -59,6 +43,9 @@ public class AITurnState : State
     public override IEnumerator Esperar()
     {
         Debug.Log("AI: Nothing, just waiting");
+
+        //Escolher o Jogador mais perto da bola
+
         yield return new WaitForSeconds(2);
 
         int random = Random.Range(0, 4);
@@ -69,7 +56,7 @@ public class AITurnState : State
                 _system.OnEsperar();
                 break;
             case 1:
-                _system.OnDirecionar();
+                _system.OnMover();
                 break;
             case 2:
                 _system.OnChutar();
@@ -83,7 +70,7 @@ public class AITurnState : State
     public override IEnumerator End()
     {
         base.End();
-        _system.SetState(new PlayerTurnState(_system));
+        _system.SetState(new PlayerTurnState(_system, _iSystem));
         yield break;
     }
 }

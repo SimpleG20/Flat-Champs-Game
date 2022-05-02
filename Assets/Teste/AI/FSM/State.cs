@@ -4,10 +4,12 @@ using UnityEngine;
 
 public abstract class State
 {
+    protected readonly AISystem _iSystem;
     protected readonly StateSystem _system;
-    public State(StateSystem system)
+    public State(StateSystem system, AISystem ai)
     {
         _system = system;
+        _iSystem = ai;
     }
 
     public virtual IEnumerator Start()
@@ -21,11 +23,6 @@ public abstract class State
     }
 
     public virtual IEnumerator Mover()
-    {
-        yield break;
-    }
-
-    public virtual IEnumerator Direcionar()
     {
         yield break;
     }

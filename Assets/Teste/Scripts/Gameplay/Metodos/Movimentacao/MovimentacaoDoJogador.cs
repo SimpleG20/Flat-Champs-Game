@@ -143,23 +143,38 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
             {
                 if (!LogisticaVars.continuaSendoFora && !LogisticaVars.escolherOutroJogador && !JogadorVars.m_correndo)
                 {
-                    step += 1.5f * Time.deltaTime;
-                    GameObject.Find("RotacaoCamera").transform.position =
-                        Vector3.MoveTowards((LogisticaVars.m_jogadorEscolhido.transform.position - LogisticaVars.m_jogadorEscolhido.transform.up), GameObject.FindGameObjectWithTag("Bola").transform.position, step);
-
-                    Vector3 direction = GameObject.Find("RotacaoCamera").transform.position - LogisticaVars.m_jogadorEscolhido.transform.position;
-                    Quaternion rotation = Quaternion.LookRotation(direction);
-                    LogisticaVars.m_jogadorEscolhido.transform.rotation = rotation;
-                    LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
+                    AutoRedirecionamento();
                 }
             }
             else
             {
                 step = 0;
-                GameObject.Find("RotacaoCamera").transform.position =
+                if (GameManager.Instance.m_jogadorAi)
+                {
+                    if(LogisticaVars.vezJ2) 
+                        GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorAi.transform.up + LogisticaVars.m_jogadorAi.transform.position;
+                    else 
+                        GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorEscolhido.transform.up + LogisticaVars.m_jogadorEscolhido.transform.position;
+                }
+                else
+                {
+                    GameObject.Find("RotacaoCamera").transform.position =
                     -LogisticaVars.m_jogadorEscolhido.transform.up + LogisticaVars.m_jogadorEscolhido.transform.position;
+                }
             }
         }
+    }
+
+    private void AutoRedirecionamento()
+    {
+        step += 1.5f * Time.deltaTime;
+        GameObject.Find("RotacaoCamera").transform.position =
+            Vector3.MoveTowards((LogisticaVars.m_jogadorEscolhido.transform.position - LogisticaVars.m_jogadorEscolhido.transform.up), GameObject.FindGameObjectWithTag("Bola").transform.position, step);
+
+        Vector3 direction = GameObject.Find("RotacaoCamera").transform.position - LogisticaVars.m_jogadorEscolhido.transform.position;
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        LogisticaVars.m_jogadorEscolhido.transform.rotation = rotation;
+        LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
     }
 
 

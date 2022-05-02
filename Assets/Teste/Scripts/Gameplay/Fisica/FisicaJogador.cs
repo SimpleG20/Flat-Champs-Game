@@ -109,10 +109,5 @@ public class FisicaJogador : MonoBehaviour
             collision.gameObject.GetComponent<Rigidbody>().AddForce(vetorDirecao.normalized * quantidadeMovimento / 1.25f , ForceMode.Impulse);
         }
         #endregion
-
-        /*if (collision.gameObject.CompareTag("Bola"))
-        {
-            m_rigidbody.AddForce(vetorVelocidadeNormalizado * 90, ForceMode.Impulse);
-        }*/
     }
 }
