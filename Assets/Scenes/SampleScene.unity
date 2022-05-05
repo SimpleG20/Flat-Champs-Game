@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.17292978, g: 0.21611474, b: 0.29808515, a: 1}
+  m_IndirectSpecularColor: {r: 0.18373528, g: 0.22913685, b: 0.30467853, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2136,13 +2136,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.7055031, y: -0.19861543, z: 0.215798, w: 0.6451733}
+  m_LocalRotation: {x: 0.36729106, y: -0.25032327, z: -0.20740628, w: 0.8714461}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 84.916, y: -212.95499, z: -178.84001}
+  m_LocalEulerAnglesHint: {x: 32.433, y: -44.221, z: -40.253}
 --- !u!1 &740021524
 GameObject:
   m_ObjectHideFlags: 0
@@ -2610,6 +2610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 988982138}
+  - component: {fileID: 988982139}
   m_Layer: 0
   m_Name: Cenario
   m_TagString: Untagged
@@ -2644,6 +2645,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &988982139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988982137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c32e944670be4f44899739e9361c4df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tamanhoX: 40
+  tamanhoZ: 85
+  tiroDeMetaPosG1: {x: 0, y: 0, z: 0}
+  tiroDeMetaPosG2: {x: 0, y: 0, z: 0}
 --- !u!1 &1019276268
 GameObject:
   m_ObjectHideFlags: 0
@@ -4506,25 +4523,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d099fba73a9c654abfdf2b5222b7396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anguloJogador: 0
+  _decisaoAtual: 0
   fatorExtraChute: 1
   magnitudeChute: 0
   menorDistanciaAoGol_JogadoresAmigos: 1000
   menorDistancia_JogadoresInimigos: 1000
-  decisao: 0
+  xCampo: 0
+  zCampo: 0
+  _passouBola: 0
   golPos: {x: 0, y: 0, z: 0}
-  posDestino: {x: 0, y: 0, z: 0}
+  posTarget: {x: 0, y: 0, z: 0}
   posParaChute: {x: 0, y: 0, z: 0}
   rotacaoAnt: {x: 0, y: 0, z: 0, w: 0}
   layerMask:
     serializedVersion: 2
     m_Bits: 768
   rotacaoCamera: {fileID: 0}
+  ai_player: {fileID: 1026842511324674652}
   jogadorAmigo_MaisPerto:
   - {fileID: 448531166}
   - {fileID: 1069394934}
   - {fileID: 183153816}
   - {fileID: 315822618}
+  - {fileID: 1026842511324674652}
   jogadorInimigo_MaisPerto:
   - {fileID: 1162356955}
   - {fileID: 1748155934}
@@ -4532,7 +4553,6 @@ MonoBehaviour:
   - {fileID: 8281502}
   - {fileID: 3753308540384745296}
   bola: {fileID: 0}
-  stateSystem: {fileID: 0}
 --- !u!114 &1771889037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4548,6 +4568,8 @@ MonoBehaviour:
   jogadas: 0
   tempoJogada: 0
   contagem: 0
+  comecar: 0
+  _estadoAtual: 0
 --- !u!4 &1771889038
 Transform:
   m_ObjectHideFlags: 0
@@ -4556,7 +4578,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1771889035}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.0925894, y: -6.400034, z: 3.6719797}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

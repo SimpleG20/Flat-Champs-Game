@@ -4,44 +4,46 @@ using UnityEngine;
 
 public abstract class State
 {
-    protected readonly AISystem _iSystem;
-    protected readonly StateSystem _system;
-    public State(StateSystem system, AISystem ai)
+    protected readonly AISystem _AiSystem;
+    protected readonly StateSystem _StateSystem;
+    public State(StateSystem state, AISystem ai)
     {
-        _system = system;
-        _iSystem = ai;
+        _StateSystem = state;
+        _AiSystem = ai;
     }
 
-    public virtual IEnumerator Start()
+    public virtual IEnumerator Estado_Start()
     {
         yield break;
     }
 
-    public virtual IEnumerator Chutar()
+    public virtual IEnumerator Estado_ChutarNormal()
     {
         yield break;
     }
 
-    public virtual IEnumerator Mover()
+    public virtual IEnumerator Estado_Chutar_ao_Gol()
     {
         yield break;
     }
 
-    public virtual IEnumerator Esperar()
+    public virtual IEnumerator Estado_Mover()
     {
         yield break;
     }
 
-    public virtual IEnumerator Especial()
+    public virtual IEnumerator Estado_Esperar()
     {
         yield break;
     }
 
-    public virtual IEnumerator End()
+    public virtual IEnumerator Estado_Especial()
     {
-        _system.jogadas = 0;
-        _system.contagem = false;
-        _system.tempoJogada = 0;
+        yield break;
+    }
+
+    public virtual IEnumerator Estado_End()
+    {
         yield break;
     }
 }

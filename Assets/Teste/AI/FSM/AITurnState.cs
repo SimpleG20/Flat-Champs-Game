@@ -4,73 +4,86 @@ using UnityEngine;
 
 public class AITurnState : State
 {
-    public AITurnState(StateSystem system, AISystem ai) : base(system, ai)
+    public AITurnState(StateSystem state, AISystem ai) : base(state, ai)
     { }
 
-    public override IEnumerator Start()
+    public override IEnumerator Estado_Start()
     {
-        _system.contagem = true;
-        Debug.Log("AI: Choose");
+        _StateSystem.jogadas = 0;
+        _StateSystem.tempoJogada = 0;
+        _StateSystem.contagem = true;
+        Debug.Log("--------------------------------------");
+        Debug.Log("AI: TURN");
         yield return new WaitForSeconds(1);
 
-        _system.OnEsperar();
+        _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_DECISAO;
+        _StateSystem.OnEsperar();
     }
 
-    public override IEnumerator Mover()
+    public override IEnumerator Estado_Mover()
     {
-        AIDecision decisao = new AIDecision();
-        decisao.SetAction(new AIMovement(_iSystem), AIDecision.Decisao.MOVER);
-
+        Debug.Log("AI: MOVER");
+        _AiSystem.SetAction(new AIMovement(_AiSystem, _AiSystem.ai_player));
         yield break;
     }
 
-    public override IEnumerator Especial()
+    public override IEnumerator Estado_ChutarNormal()
     {
-        AIDecision decisao = new AIDecision();
-        //decisao.SetAction(new AISpecial(_iSystem), AIDecision.Decisao.ESPECIAL);
-        _system.OnEnd();
+        _AiSystem.SetAction(new AIStrike(_AiSystem, _AiSystem.ai_player));
+        //_StateSystem.OnEnd();
         yield break;
     }
 
-    public override IEnumerator Chutar()
+    public override IEnumerator Estado_Chutar_ao_Gol()
     {
-        AIDecision decisao = new AIDecision();
-        //decisao.SetAction(new AIStrike(_iSystem), AIDecision.Decisao.CHUTAR);
-        _system.OnEnd();
+        _AiSystem.SetAction(new AIStrike(_AiSystem, _AiSystem.ai_player));
+        //_StateSystem.OnChutar_ao_Gol();
         yield break;
     }
 
-    public override IEnumerator Esperar()
+    public override IEnumerator Estado_Especial()
     {
-        Debug.Log("AI: Nothing, just waiting");
+        _AiSystem.SetAction(new AISpecial(_AiSystem, _AiSystem.ai_player));
+        //_StateSystem.OnEnd();
+        yield break;
+    }
 
-        //Escolher o Jogador mais perto da bola
+    public override IEnumerator Estado_Esperar()
+    {
+        yield return new WaitForSeconds(0.5f);
 
-        yield return new WaitForSeconds(2);
-
-        int random = Random.Range(0, 4);
-
-        switch (random)
+        if (_StateSystem.tempoJogada >= 20/*LogisticaVars.tempoJogada >= 20*/) _StateSystem.OnEnd();
+        else
         {
-            case 0:
-                _system.OnEsperar();
-                break;
-            case 1:
-                _system.OnMover();
-                break;
-            case 2:
-                _system.OnChutar();
-                break;
-            case 3:
-                _system.OnEspecial();
-                break;
+            if(_AiSystem.GetDecisao() == AISystem.Decisao.NONE)
+            {
+                Debug.Log("AI: just waiting to choose an action");
+                //Escolher o jogador mais perto da bola
+                _StateSystem.OnDecisao();
+                Debug.Log(_AiSystem.GetDecisao());
+                _StateSystem.OnMover();
+            }
+            else
+            {
+                int random = Random.Range(0, 3);
+                if(random == 0)
+                {
+                    _StateSystem.OnEsperar();
+                }
+                else
+                {
+                    _StateSystem.OnMover();
+                }
+            }
+            
         }
     }
 
-    public override IEnumerator End()
+    public override IEnumerator Estado_End()
     {
-        base.End();
-        _system.SetState(new PlayerTurnState(_system, _iSystem));
+        _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_JOGADOR;
+        _StateSystem.contagem = false;
+        _StateSystem.SetState(new PlayerTurnState(_StateSystem, _AiSystem));
         yield break;
     }
 }

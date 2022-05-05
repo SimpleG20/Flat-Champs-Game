@@ -211,7 +211,7 @@ public class SelecaoMetodos : MonoBehaviour
     {
         GameObject jogador = null;
         float distancia, distanciaMenor;
-        distanciaMenor = 150;
+        distanciaMenor = 1000;
 
         foreach (GameObject Jg in jogadores)
         {

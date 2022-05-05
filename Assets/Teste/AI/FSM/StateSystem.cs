@@ -4,17 +4,30 @@ using UnityEngine;
 
 public class StateSystem : StateMachine
 {
+    public enum Estado{ ESPERANDO_JOGADOR, ESPERANDO_DECISAO, DECISAO_TOMADA, MOVER, CHUTAR, CHUTAR_GOL, ESPECIAL }
+
     public int jogadas;
     public float tempoJogada;
-    public bool contagem;
+    public bool contagem, comecar;
 
-    private void Start()
+    public Estado _estadoAtual;
+
+
+    AISystem AiSystem;
+
+    private void Awake()
     {
-        SetState(new BeginState(this, FindObjectOfType<AISystem>()));
+        AiSystem = FindObjectOfType<AISystem>();
     }
 
     private void Update()
     {
+        if (comecar)
+        {
+            SetState(new BeginState(this, AiSystem));
+            comecar = false;
+        }
+
         if (contagem)
         {
             tempoJogada += Time.deltaTime;
@@ -22,32 +35,50 @@ public class StateSystem : StateMachine
         }
     }
 
+    #region Estado conforme a situacao da Bola
+    
+    #endregion
 
-    #region Execucao State
+
+    #region Execucao States
+    public void OnDecisao()
+    {
+        AiSystem.TomarDecisao();
+    }
+
     [ContextMenu("Mover Player")]
     public void OnMover()
     {
-        StartCoroutine(_state.Mover());
+        StartCoroutine(_state.Estado_Mover());
     }
 
-    public void OnChutar()
+    public void OnChutarNormal()
     {
-        StartCoroutine(_state.Chutar());
+        _estadoAtual = Estado.CHUTAR;
+        StartCoroutine(_state.Estado_ChutarNormal());
+    }
+
+    public void OnChutar_ao_Gol()
+    {
+        _estadoAtual = Estado.CHUTAR_GOL;
+        StartCoroutine(_state.Estado_Chutar_ao_Gol());
     }
 
     public void OnEspecial()
     {
-        StartCoroutine(_state.Especial());
+        _estadoAtual = Estado.ESPECIAL;
+        StartCoroutine(_state.Estado_Especial());
     }
 
     public void OnEsperar()
     {
-        StartCoroutine(_state.Esperar());
+        _estadoAtual = Estado.ESPERANDO_JOGADOR;
+        StartCoroutine(_state.Estado_Esperar());
     }
 
     public void OnEnd()
     {
-        _state.End();
+        StartCoroutine(_state.Estado_End());
     }
     #endregion
 }

@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class BeginState : State
 {
-    public BeginState(StateSystem system, AISystem ai) : base(system, ai) 
+    public BeginState(StateSystem StateSystem, AISystem ai) : base(StateSystem, ai) 
     { }
 
-    public override IEnumerator Start()
+    public override IEnumerator Estado_Start()
     {
         Debug.Log("Begin State");
         yield return new WaitForSeconds(2);
 
         int quemComeca = Random.Range(0, 2);
 
-        if (quemComeca == 1) _system.SetState(new PlayerTurnState(_system, _iSystem));
-        else _system.SetState(new AITurnState(_system, _iSystem));
+        if (quemComeca == 1) { _StateSystem.SetState(new PlayerTurnState(_StateSystem, _AiSystem)); _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_JOGADOR; }
+        else { _StateSystem.SetState(new AITurnState(_StateSystem, _AiSystem)); _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_DECISAO; }
     }
 }

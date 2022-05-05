@@ -4,21 +4,18 @@ using UnityEngine;
 
 public abstract class AIAction
 {
-    protected static GameObject ai;
-    protected static AISystem _system;
-    public AIAction(AISystem system)
+    protected readonly GameObject ai_player;
+    protected readonly AISystem ai_System;
+    public AIAction(AISystem AiSystem, GameObject ai)
     {
-        _system = system;
-        if (LogisticaVars.m_jogadorAi != null) ai = LogisticaVars.m_jogadorAi;
+        ai_System = AiSystem;
+        ai_player = ai;
     }
 
-    public void Iniciar_Movimento()
+    #region Movimento
+    public virtual void IniciarAction()
     {
-        Vector3 aiPos = ai.transform.position;
-        if (Vector3.Distance(_system.bola.m_pos, aiPos) < 4.5f) { Debug.Log("Se Arrumar para Chutar a Bola"); return; }
-        if (LogisticaVars.jogadas == 3) { Debug.Log("Trocar Vez"); return; }
-
-        _system.RotacionarPOV();
+        
     }
     public virtual void DecidirMovimento()
     {
@@ -28,7 +25,9 @@ public abstract class AIAction
     {
         yield break;
     }
+    #endregion
 
+    #region Obstaculos
     public virtual void DetectarJogadores()
     {
 
@@ -37,12 +36,19 @@ public abstract class AIAction
     {
 
     }
+    public virtual bool HaObstaculos(out bool esq, out bool dir, out bool frente)
+    {
+        esq = dir = frente = default;
+        return false;
+    }
+    #endregion
 
-    public virtual IEnumerator Rotacionar_Alvo(Vector3 alvo, bool proximaJogada)
+    #region Rotacionar
+    public virtual IEnumerator Rotacionar_Alvo(Vector3 alvo)
     {
         yield break;
     }
-    public virtual IEnumerator Rotacionar_POV()
+    public virtual IEnumerator Rotacionar_VasculharArea()
     {
         yield break;
     }
@@ -54,10 +60,30 @@ public abstract class AIAction
     {
         yield break;
     }
+    #endregion
 
+    #region Chutes
+    public virtual IEnumerator Chute_Avancar()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Chute_Chutao()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Chute_Gol()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Chute_Passe()
+    {
+        yield break;
+    }
+    #endregion
 
     public virtual void AcaoFinalizada()
     {
+        ai_System.SetDecisao(AISystem.Decisao.NONE);
         Debug.Log("Fim Acao");
     }
 }

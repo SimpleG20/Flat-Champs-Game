@@ -4,44 +4,47 @@ using UnityEngine;
 
 public class PlayerTurnState : State
 {
-    public PlayerTurnState(StateSystem system, AISystem ai) : base(system, ai) 
+    public PlayerTurnState(StateSystem StateSystem, AISystem ai) : base(StateSystem, ai) 
     { }
 
-    public override IEnumerator Start()
+    public override IEnumerator Estado_Start()
     {
-        _system.contagem = true;
-        Debug.Log("Jogador: Waiting for an action");
+        _StateSystem.jogadas = 0;
+        _StateSystem.tempoJogada = 0;
+        _StateSystem.contagem = true;
+        Debug.Log("PLAYER: TURN");
         yield break;
     }
 
-    public override IEnumerator Mover()
+    public override IEnumerator Estado_Mover()
     {
         float randomForca = Random.Range(50, 420);
-        Debug.Log("Jogador: Random Forca " + randomForca);
-        _system.jogadas++;
+        Debug.Log("PLAYER: Random Forca " + randomForca);
+        _StateSystem.jogadas++;
 
         yield return new WaitForSeconds(1);
 
-        if (_system.jogadas >= 3)
+        if (_StateSystem.jogadas >= 3)
         {
-            _system.OnEnd();
+            _StateSystem.OnEnd();
         }
         else
         {
-            _system.OnEsperar();
+            _StateSystem.OnEsperar();
         }
     }
 
-    public override IEnumerator Esperar()
+    public override IEnumerator Estado_Esperar()
     {
-        Debug.Log("Jogador: Waiting players action");
+        Debug.Log("PLAYER: Waiting players action");
         yield break;
     }
 
-    public override IEnumerator End()
+    public override IEnumerator Estado_End()
     {
-        base.End();
-        _system.SetState(new AITurnState(_system, _iSystem));
+        _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_DECISAO;
+        _StateSystem.contagem = false;
+        _StateSystem.SetState(new AITurnState(_StateSystem, _AiSystem));
         yield break;
     }
 }

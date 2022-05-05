@@ -4,36 +4,37 @@ using UnityEngine;
 
 public class AIVision : AIAction
 {
-    public AIVision(AISystem system) : base(system)
+    public AIVision(AISystem AiSystem, GameObject ai) : base(AiSystem, ai)
     {
     }
     public override void DetectarJogadores()
     {
         GameObject j;
         int index = 0;
-        foreach (GameObject a in _system.jogadorAmigo_MaisPerto)
+        foreach (GameObject a in ai_System.jogadorAmigo_MaisPerto)
         {
-            if ((_system.golPos - a.transform.position).magnitude < _system.menorDistanciaAoGol_JogadoresAmigos)
+            if ((ai_System.golPos - a.transform.position).magnitude < ai_System.menorDistanciaAoGol_JogadoresAmigos &&
+                a != ai_player)
             {
-                index = _system.jogadorAmigo_MaisPerto.IndexOf(a);
-                _system.menorDistanciaAoGol_JogadoresAmigos = (_system.golPos - a.transform.position).magnitude;
+                index = ai_System.jogadorAmigo_MaisPerto.IndexOf(a);
+                ai_System.menorDistanciaAoGol_JogadoresAmigos = (ai_System.golPos - a.transform.position).magnitude;
             }
         }
-        j = _system.jogadorAmigo_MaisPerto[index];
-        _system.jogadorAmigo_MaisPerto.RemoveAt(index);
-        _system.jogadorAmigo_MaisPerto.Insert(0, j);
+        j = ai_System.jogadorAmigo_MaisPerto[index];
+        ai_System.jogadorAmigo_MaisPerto.RemoveAt(index);
+        ai_System.jogadorAmigo_MaisPerto.Insert(0, j);
 
-        foreach (GameObject i in _system.jogadorInimigo_MaisPerto)
+        foreach (GameObject i in ai_System.jogadorInimigo_MaisPerto)
         {
-            if ((ai.transform.position - i.transform.position).magnitude < _system.menorDistancia_JogadoresInimigos)
+            if ((ai_player.transform.position - i.transform.position).magnitude < ai_System.menorDistancia_JogadoresInimigos)
             {
-                index = _system.jogadorInimigo_MaisPerto.IndexOf(i);
-                _system.menorDistancia_JogadoresInimigos = (ai.transform.position - i.transform.position).magnitude;
+                index = ai_System.jogadorInimigo_MaisPerto.IndexOf(i);
+                ai_System.menorDistancia_JogadoresInimigos = (ai_player.transform.position - i.transform.position).magnitude;
             }
         }
-        j = _system.jogadorInimigo_MaisPerto[index];
-        _system.jogadorInimigo_MaisPerto.RemoveAt(index);
-        _system.jogadorInimigo_MaisPerto.Insert(0, j);
+        j = ai_System.jogadorInimigo_MaisPerto[index];
+        ai_System.jogadorInimigo_MaisPerto.RemoveAt(index);
+        ai_System.jogadorInimigo_MaisPerto.Insert(0, j);
     }
     public override void VerificarObstaculos()
     {
@@ -44,34 +45,40 @@ public class AIVision : AIAction
         if (esq && dir && frente || !esq && !dir && !frente)
         {
             //print("Seguir em Frente");
-            _system.MoverParaPosicao();//-ai.transform.up * _system.magnitudeChute));
+            ai_System.MoverParaPosicao();
         }
         else
         {
-            int random = Random.Range(0, 11);
-            Debug.Log("Random: " + random);
-            if (random < 8) _system.RotacionarAteFicarLivre(PreferenciaParaRotacionar());
-            else { _system.fatorExtraChute = 1.75f; _system.MoverParaPosicao(); }
+            AISystem.Decisao decisao = ai_System.GetDecisao();
+            int random = Random.Range(0, 3);
+            //Debug.Log("Random: " + random);
+
+            if(decisao == AISystem.Decisao.CHUTAO || decisao == AISystem.Decisao.AVANCAR)
+            {
+                if(random < 2) { ai_System.fatorExtraChute = 1.75f; ai_System.MoverParaPosicao(); }
+                else ai_System.RotacionarAteFicarLivre(PreferenciaParaRotacionar());
+            }
+            else ai_System.RotacionarAteFicarLivre(PreferenciaParaRotacionar());
         }
     }
-    public static bool HaObstaculos(out bool Esq, out bool Dir, out bool Frente)
+    public override bool HaObstaculos(out bool Esq, out bool Dir, out bool Frente)
     {
-        Vector3 lateralD = new Vector3(ai.transform.position.x + (1.7f * -ai.transform.up.z), 0.1f, ai.transform.position.z - (1.7f * -ai.transform.up.x));
-        Vector3 lateralE = new Vector3(ai.transform.position.x - (1.7f * -ai.transform.up.z), 0.1f, ai.transform.position.z + (1.7f * -ai.transform.up.x));
+        Vector3 lateralD = new Vector3(ai_player.transform.position.x + (1.7f * -ai_player.transform.up.z), 0.1f, ai_player.transform.position.z - (1.7f * -ai_player.transform.up.x));
+        Vector3 lateralE = new Vector3(ai_player.transform.position.x - (1.7f * -ai_player.transform.up.z), 0.1f, ai_player.transform.position.z + (1.7f * -ai_player.transform.up.x));
         bool obstaculoEsq = false, obstaculoDir = false, obstaculoFrente = false;
 
         RaycastHit hit;
-        if (Physics.Raycast(lateralD, -ai.transform.up, out hit, _system.magnitudeChute, _system.layerMask))
+        if (Physics.Raycast(lateralD, -ai_player.transform.up, out hit, ai_System.magnitudeChute, ai_System.layerMask))
         {
-            if (hit.collider.gameObject.layer != ai.layer) obstaculoDir = true;
+            if (hit.collider.gameObject.layer != ai_player.layer) obstaculoDir = true;
         }
-        if (Physics.Raycast(lateralE, -ai.transform.up, out hit, _system.magnitudeChute, _system.layerMask))
+        if (Physics.Raycast(lateralE, -ai_player.transform.up, out hit, ai_System.magnitudeChute, ai_System.layerMask))
         {
-            if (hit.collider.gameObject.layer != ai.gameObject.layer) obstaculoEsq = true;
+            if (hit.collider.gameObject.layer != ai_player.gameObject.layer) obstaculoEsq = true;
         }
-        if (Physics.Raycast(ai.transform.position, -ai.transform.up, out hit, _system.magnitudeChute, _system.layerMask))
+        if (Physics.Raycast(ai_player.transform.position, -ai_player.transform.up, out hit, ai_System.magnitudeChute, ai_System.layerMask))
         {
-            if (hit.collider.gameObject.layer != ai.layer) obstaculoFrente = true;
+            if (hit.collider.gameObject.layer != ai_player.layer) obstaculoFrente = true;
         }
 
         Esq = obstaculoEsq;
@@ -82,31 +89,31 @@ public class AIVision : AIAction
     }
     public float PreferenciaParaRotacionar()
     {
-        Vector3 ai = LogisticaVars.m_jogadorAi.transform.position;
+        Vector3 aiPos = ai_player.transform.position;
 
-        if (_system.posParaChute.x < ai.x)
+        if (ai_System.posParaChute.x < aiPos.x)
         {
-            if (_system.posParaChute.z < ai.z)
+            if (ai_System.posParaChute.z < aiPos.z)
             {
-                if ((ai.z - _system.posParaChute.z) < (ai.x - _system.posParaChute.x)) return 1; //print("Direita");
+                if ((aiPos.z - ai_System.posParaChute.z) < (aiPos.x - ai_System.posParaChute.x)) return 1; //print("Direita");
                 else return -1; //print("Esquerda");
             }
             else
             {
-                if ((_system.posParaChute.z - ai.z) > (ai.x - _system.posParaChute.x)) return 1; //print("Direita");
+                if ((ai_System.posParaChute.z - aiPos.z) > (aiPos.x - ai_System.posParaChute.x)) return 1; //print("Direita");
                 else return -1; // print("Esquerda");
             }
         }
         else
         {
-            if (_system.posParaChute.z < ai.z)
+            if (ai_System.posParaChute.z < aiPos.z)
             {
-                if ((ai.z - _system.posParaChute.z) > (_system.posParaChute.x - ai.x)) return 1; //print("Direita");
+                if ((aiPos.z - ai_System.posParaChute.z) > (ai_System.posParaChute.x - aiPos.x)) return 1; //print("Direita");
                 else return -1; //print("Esquerda");
             }
             else
             {
-                if ((_system.posParaChute.z - ai.z) < (_system.posParaChute.x - ai.x)) return 1; //print("Direita");
+                if ((ai_System.posParaChute.z - aiPos.z) < (ai_System.posParaChute.x - aiPos.x)) return 1; //print("Direita");
                 else return -1;//print("Esquerda");
             }
         }
