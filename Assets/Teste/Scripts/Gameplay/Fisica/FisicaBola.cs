@@ -47,9 +47,9 @@ public class FisicaBola : MonoBehaviour
         }
         else m_bolaNoChao = true;
 
-        if (LogisticaVars.m_jogadorEscolhido != null)
+        if (LogisticaVars.m_jogadorEscolhido_Atual != null)
         {
-            m_posicaoJogador = LogisticaVars.m_jogadorEscolhido.transform.position;
+            m_posicaoJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
             m_vetorDistanciaDoJogador = transform.position - m_posicaoJogador;
         }
 
@@ -63,14 +63,30 @@ public class FisicaBola : MonoBehaviour
         #region Direcao Chute
         if (m_vetorDistanciaDoJogador.magnitude < 2f && JogadorVars.m_esperandoContato)// && JogadorVars.m_aplicarChute)
         {
-            if (LogisticaVars.m_jogadorEscolhido.layer == 8) LogisticaVars.ultimoToque = 1;
+            if (LogisticaVars.m_jogadorEscolhido_Atual.layer == 8) LogisticaVars.ultimoToque = 1;
             else LogisticaVars.ultimoToque = 2;
 
-            Vector3 ultimaDirecao = FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
-            float qntMovimento = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 2.25f;
+            if (!GameManager.Instance.m_jogadorAi)
+            {
+                Vector3 ultimaDirecao = FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
+                float forca = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 40 / 16;
 
-            m_rbBola.AddForce(ultimaDirecao * qntMovimento, ForceMode.Impulse);
-            LogisticaVars.m_rbJogadorEscolhido.AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
+                m_rbBola.AddForce(ultimaDirecao * forca, ForceMode.Impulse);
+                LogisticaVars.m_rbJogadorEscolhido.AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
+            }
+            else
+            { 
+                Vector3 ultimaDirecao = FindObjectOfType<AISystem>().direcaoChute;
+                float vel = LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().velocity.magnitude;
+                float forca = vel * 40 / 16;
+                ultimaDirecao.y /= (3/2);
+                //print("VELOCIDADE IMPACTO: " + vel);
+                print("FORCA IMPACTO: " + forca);
+
+                m_rbBola.AddForce(ultimaDirecao * forca, ForceMode.Impulse);
+                if(vel > 15) LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 100, ForceMode.Impulse);
+                else LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
+            }
             JogadorVars.m_esperandoContato = false;
             m_encostouJogador = true;
         }
@@ -131,9 +147,9 @@ public class FisicaBola : MonoBehaviour
     }
     public void RedirecionarJogadorEscolhido(Transform target)
     {
-        LogisticaVars.m_jogadorEscolhido.transform.LookAt(target);
-        LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = 
-            new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.LookAt(target);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = 
+            new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
     }
     public void RedirecionarGoleiros()
     {
@@ -217,54 +233,56 @@ public class FisicaBola : MonoBehaviour
         #region Lateral
         if (other.gameObject.CompareTag("LateralD"))
         {
-            print("Lateral");
+            //print("Lateral");
             PosicionarLateral();
             //dar uma distancia para uma cobranca sem problemas
-            if(m_vetorDistanciaDoJogador.magnitude < 4) LogisticaVars.m_jogadorEscolhido.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido.transform.position.x - 4.5f,
-                    LogisticaVars.m_jogadorEscolhido.transform.position.y, LogisticaVars.m_jogadorEscolhido.transform.position.z);
+            if(m_vetorDistanciaDoJogador.magnitude < 4) LogisticaVars.m_jogadorEscolhido_Atual.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido_Atual.transform.position.x - 4.5f,
+                    LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.z);
 
 
-            LogisticaVars.foraLateralD = true;
-            EventsManager.current.SituacaoGameplay("fora lateral");
+            //LogisticaVars.foraLateralD = true;
+            //EventsManager.current.SituacaoGameplay("fora lateral");
 
-            StartCoroutine(RotinasGameplay.SpawnarLat("lateral direita", this));
+            Gameplay._current.SetSituacao(new Lateral(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+            //StartCoroutine(RotinasGameplay.SpawnarLat("lateral direita", this));
         }
         if (other.gameObject.CompareTag("LateralE"))
         {
-            print("Lateral");
+            //print("Lateral");
             PosicionarLateral();
             //dar uma distancia para uma cobranca sem problemas
-            if (m_vetorDistanciaDoJogador.magnitude < 4)
-                LogisticaVars.m_jogadorEscolhido.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido.transform.position.x + 4.5f,
-                    LogisticaVars.m_jogadorEscolhido.transform.position.y, LogisticaVars.m_jogadorEscolhido.transform.position.z);
+            if (m_vetorDistanciaDoJogador.magnitude < 4) LogisticaVars.m_jogadorEscolhido_Atual.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido_Atual.transform.position.x + 4.5f,
+                    LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.z);
 
-            LogisticaVars.foraLateralE = true;
-            EventsManager.current.SituacaoGameplay("fora lateral");
+            //LogisticaVars.foraLateralE = true;
+            //EventsManager.current.SituacaoGameplay("fora lateral");
 
-            StartCoroutine(RotinasGameplay.SpawnarLat("lateral esquerda", this));
+            Gameplay._current.SetSituacao(new Lateral(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+            //StartCoroutine(RotinasGameplay.SpawnarLat("lateral esquerda", this));
         }
         #endregion
         #region Linha de Fundo
         if (other.gameObject.CompareTag("Linha Fundo G1") && !LogisticaVars.gol)
         {
             LogisticaVars.foraFundo = true;
-            LogisticaVars.fundo1 = true;
-            LogisticaVars.fundo2 = false;
+            //LogisticaVars.fundo1 = true;
+            //LogisticaVars.fundo2 = false;
             LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
 
             if (LogisticaVars.ultimoToque == 2) //Tiro de Meta
             {
-                print("Tiro de Meta");
+                //print("Tiro de Meta");
                 if (transform.position.x < 0) m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(1, false);
                 else m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(1, true);
                 transform.position = m_posicaoFundo;
 
-                EventsManager.current.SituacaoGameplay("fora tiro de meta");
-                StartCoroutine(RotinasGameplay.SpawnarTiroDeMeta("fundo 1", this));
+                //EventsManager.current.SituacaoGameplay("fora tiro de meta");
+                Gameplay._current.SetSituacao(new Tiro_de_Meta(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+                //StartCoroutine(RotinasGameplay.SpawnarTiroDeMeta("fundo 1", this));
             }
             else //Escanteio
             {
-                print("Escanteio");
+                //print("Escanteio");
                 if (transform.position.x < 0)
                 {
                     GameObject.Find("Bandeira Esq").transform.GetChild(0).gameObject.SetActive(false);
@@ -272,8 +290,8 @@ public class FisicaBola : MonoBehaviour
                     transform.position = m_posicaoFundo;
 
                     //dar uma distancia para uma cobranca sem problemas
-                    LogisticaVars.m_jogadorEscolhido.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido.transform.position.x + 2,
-                            LogisticaVars.m_jogadorEscolhido.transform.position.y, LogisticaVars.m_jogadorEscolhido.transform.position.z + 2);
+                    LogisticaVars.m_jogadorEscolhido_Atual.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido_Atual.transform.position.x + 2,
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.z + 2);
                 }
                 else
                 {
@@ -282,11 +300,13 @@ public class FisicaBola : MonoBehaviour
                     transform.position = m_posicaoFundo;
 
                     //dar uma distancia para uma cobranca sem problemas
-                    LogisticaVars.m_jogadorEscolhido.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido.transform.position.x - 2,
-                            LogisticaVars.m_jogadorEscolhido.transform.position.y, LogisticaVars.m_jogadorEscolhido.transform.position.z + 2);
+                    LogisticaVars.m_jogadorEscolhido_Atual.transform.position = new Vector3(LogisticaVars.m_jogadorEscolhido_Atual.transform.position.x - 2,
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.z + 2);
                 }
-                EventsManager.current.SituacaoGameplay("fora escanteio");
-                StartCoroutine(RotinasGameplay.SpawnarEscanteio("fundo 1", this));
+
+                Gameplay._current.SetSituacao(new Escanteio(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+                //EventsManager.current.SituacaoGameplay("fora escanteio");
+                //StartCoroutine(RotinasGameplay.SpawnarEscanteio("fundo 1", this));
             }
 
             m_rbBola.freezeRotation = true;
@@ -295,19 +315,20 @@ public class FisicaBola : MonoBehaviour
         if (other.gameObject.CompareTag("Linha Fundo G2") && !LogisticaVars.gol)
         {
             LogisticaVars.foraFundo = true;
-            LogisticaVars.fundo1 = false;
-            LogisticaVars.fundo2 = true;
+            //LogisticaVars.fundo1 = false;
+            //LogisticaVars.fundo2 = true;
             LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
 
             if (LogisticaVars.ultimoToque == 1) //Tiro de Meta
             {
-                print("Tiro de Meta");
+                //print("Tiro de Meta");
                 if (transform.position.x < 0) m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(2, false);
                 else m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(2, true);
                 transform.position = m_posicaoFundo;
 
-                EventsManager.current.SituacaoGameplay("fora tiro de meta");
-                StartCoroutine(RotinasGameplay.SpawnarTiroDeMeta("fundo 2", this));
+                Gameplay._current.SetSituacao(new Tiro_de_Meta(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+                //EventsManager.current.SituacaoGameplay("fora tiro de meta");
+                //StartCoroutine(RotinasGameplay.SpawnarTiroDeMeta("fundo 2", this));
             } 
             else //Escanteio
             {
@@ -319,8 +340,8 @@ public class FisicaBola : MonoBehaviour
                     transform.position = m_posicaoFundo;
 
                     //dar uma distancia para uma cobranca sem problemas
-                    LogisticaVars.m_jogadorEscolhido.transform.position += new Vector3(LogisticaVars.m_jogadorEscolhido.transform.position.x + 2,
-                            LogisticaVars.m_jogadorEscolhido.transform.position.y, LogisticaVars.m_jogadorEscolhido.transform.position.z - 2);
+                    LogisticaVars.m_jogadorEscolhido_Atual.transform.position += new Vector3(LogisticaVars.m_jogadorEscolhido_Atual.transform.position.x + 2,
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.z - 2);
                 }
                 else
                 {
@@ -329,12 +350,13 @@ public class FisicaBola : MonoBehaviour
                     transform.position = m_posicaoFundo;
 
                     //dar uma distancia para uma cobranca sem problemas
-                    LogisticaVars.m_jogadorEscolhido.transform.position += new Vector3(LogisticaVars.m_jogadorEscolhido.transform.position.x - 2,
-                            LogisticaVars.m_jogadorEscolhido.transform.position.y, LogisticaVars.m_jogadorEscolhido.transform.position.z - 2);
+                    LogisticaVars.m_jogadorEscolhido_Atual.transform.position += new Vector3(LogisticaVars.m_jogadorEscolhido_Atual.transform.position.x - 2,
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.z - 2);
                 }
 
-                EventsManager.current.SituacaoGameplay("fora escanteio");
-                StartCoroutine(RotinasGameplay.SpawnarEscanteio("fundo 2", this));
+                Gameplay._current.SetSituacao(new Escanteio(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+                //EventsManager.current.SituacaoGameplay("fora escanteio");
+                //StartCoroutine(RotinasGameplay.SpawnarEscanteio("fundo 2", this));
             }
             m_rbBola.freezeRotation = true;
             m_rbBola.velocity = Vector3.zero;
@@ -346,7 +368,7 @@ public class FisicaBola : MonoBehaviour
             print("Gol");
             LogisticaVars.gol = true;
             LogisticaVars.golT2 = true;
-            EventsManager.current.SituacaoGameplay("gol marcado");
+            //EventsManager.current.SituacaoGameplay("gol marcado");
             //PosicionarAposGol();
         }
         if (other.CompareTag("Gol2"))
@@ -354,7 +376,7 @@ public class FisicaBola : MonoBehaviour
             print("Gol");
             LogisticaVars.gol = true;
             LogisticaVars.golT1 = true;
-            EventsManager.current.SituacaoGameplay("gol marcado");
+            //EventsManager.current.SituacaoGameplay("gol marcado");
             //PosicionarAposGol();
         }
         #endregion
@@ -366,7 +388,7 @@ public class FisicaBola : MonoBehaviour
             if (tempoNaPequenaArea > 2.5f && !LogisticaVars.bolaPermaneceNaPequenaArea && LogisticaVars.bolaEntrouPequenaArea)
             {
                 GameplayOff.BolaNaPequenaArea(1);
-                EventsManager.current.OnAplicarRotinas("rotina tempo pequena area");
+                //EventsManager.current.OnAplicarRotinas("rotina tempo pequena area");
                 LogisticaVars.bolaPermaneceNaPequenaArea = true;
                 LogisticaVars.bolaEntrouPequenaArea = false;
             }
@@ -376,7 +398,7 @@ public class FisicaBola : MonoBehaviour
             if (tempoNaPequenaArea > 2.5f && !LogisticaVars.bolaPermaneceNaPequenaArea && LogisticaVars.bolaEntrouPequenaArea)
             {
                 GameplayOff.BolaNaPequenaArea(2);
-                EventsManager.current.OnAplicarRotinas("rotina tempo pequena area");
+                //EventsManager.current.OnAplicarRotinas("rotina tempo pequena area");
                 LogisticaVars.bolaPermaneceNaPequenaArea = true;
                 LogisticaVars.bolaEntrouPequenaArea = false;
             }

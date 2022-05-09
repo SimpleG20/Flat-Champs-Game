@@ -4,29 +4,31 @@ using UnityEngine;
 
 public class AISystem : AIDecision
 {
-    public enum Decisao { NONE, PASSAR_AMIGO, AVANCAR, CHUTAO, CHUTAR_GOL, ESPECIAL }
+    public enum Decisao { NONE, PASSAR_AMIGO, AVANCAR, CHUTAO, CHUTAR_GOL, ESPECIAL, CHUTE_GOLEIRO, LATERAL, ESCANTEIO }
     [SerializeField] Decisao _decisaoAtual;
 
     public const float campoVisao = 15;
-    public float fatorExtraChute = 1, magnitudeChute;
+    public float fatorExtraChute = 1, alcanceChute;
     public float menorDistanciaAoGol_JogadoresAmigos = 1000, menorDistancia_JogadoresInimigos = 1000;
     public float xCampo, zCampo;
     //public int decisao;
 
-    public bool _passouBola;
+    public bool _passouBola, _novaDecisao, _goleiroPosicionado;
 
-    public Vector3 golPos;
+    public Vector3 golPos, direcaoChute;
     public Vector3 posTarget, posParaChute;
 
     public Quaternion rotacaoAnt;
     public LayerMask layerMask;
 
-    public GameObject rotacaoCamera;
+    public GameObject rotacaoCamera, especialTarget;
+    public GameObject trajetoriaEspecial;
     public GameObject ai_player;
     public List<GameObject> jogadorAmigo_MaisPerto, jogadorInimigo_MaisPerto;
 
     public FisicaBola bola;
     StateSystem stateSystem;
+    DesenharPrevisaoChute trajetoria;
 
     private void Awake()
     {
@@ -39,6 +41,7 @@ public class AISystem : AIDecision
 
         golPos = GameObject.FindGameObjectWithTag("Gol1").transform.position;
         rotacaoCamera = GameObject.Find("RotacaoCamera");
+        especialTarget = GameObject.FindGameObjectWithTag("Direcao Especial");
 
         xCampo = dimensaoCampo.TamanhoCampo().x;
         zCampo = dimensaoCampo.TamanhoCampo().y;
@@ -50,24 +53,29 @@ public class AISystem : AIDecision
     {
         return stateSystem;
     }
-
-    public void VerificarProximaJogada()
+    public DesenharPrevisaoChute GetTrajetoriaEspecial()
     {
-        if (LogisticaVars.jogadas == 3) { stateSystem.OnEnd(); return; }
-
-        stateSystem.OnEsperar();
+        if(trajetoria != null) return trajetoria;
+        trajetoria = FindObjectOfType<DesenharPrevisaoChute>();
+        return trajetoria;
     }
 
 
     #region Decisao conforme a situacao da Bola
     public void TomarDecisao()
     {
-        //Chutao ou avancar com a bola ou passar amigo
-        if (bola.m_pos.z >= zCampo / 4) _decisaoAtual = BolaMaisRecuada();
+        if (LogisticaVars.especialT2Disponivel)
+        {
+            _decisaoAtual = Decisao.ESPECIAL;
+            if (Vector3.Distance(ai_player.transform.position, bola.m_pos) >= 3.2f) print("AI_player precisa se aproximar mais da bola para o especial");
+            return;
+        }
+
+        if (bola.m_pos.z >= zCampo / 4) { _decisaoAtual = BolaMaisRecuada(); } //print(""); print("Bola mais Recuada"); print(""); }
         else
         {
-            if (bola.m_pos.z <= -zCampo / 4) _decisaoAtual = Bola_Perto_Area();
-            else _decisaoAtual = Bola_Mais_A_Frente();
+            if (bola.m_pos.z <= -zCampo / 4.5f) { _decisaoAtual = Bola_Perto_Area(); } //print(""); print("Bola perto Area"); print(""); }
+            else { _decisaoAtual = Bola_Mais_A_Frente(); } //print(""); print("Bola mais Frente"); print(""); }
         }
     }
     Decisao BolaMaisRecuada()
@@ -99,8 +107,8 @@ public class AISystem : AIDecision
     {
         int random = Random.Range(0, 6);
 
-        if (random < 2) return Decisao.AVANCAR;
-        else if (random >= 2 && random < 5) return Decisao.CHUTAR_GOL;
+        if (random < 1) return Decisao.AVANCAR;
+        else if (random >= 1 && random < 5) return Decisao.CHUTAR_GOL;
         else return Decisao.PASSAR_AMIGO;
     }
 
@@ -117,18 +125,29 @@ public class AISystem : AIDecision
 
     #region Acoes
 
+    public void VerificarProximaJogada()
+    {
+        if (LogisticaVars.jogadas == 3) { stateSystem.OnEnd(); return; }
+
+        stateSystem.OnEsperar();
+    }
+
     #region Movimento
     public void OnIniciarMovimento()
     {
         iAction.IniciarAction();
     }
-    public void DecidirMovimento()
+    public void DecidirPosicao()
     {
-        iAction.DecidirMovimento();
+        iAction.DecidirPosicao();
     }
     public void MoverParaPosicao()
     {
         StartCoroutine(iAction.Mover_Posicao());
+    }
+    public void MoverGoleiroDefender()
+    {
+        StartCoroutine(iAction.Movimentar_Defender());
     }
     public void FimMovimento()
     {
@@ -159,6 +178,11 @@ public class AISystem : AIDecision
     {
         AIAction aux = iAction.GetType() != typeof(AIRotation) ? new AIRotation(this, ai_player) : iAction;
         StartCoroutine(aux.Rotacionar_FicarLivre(direcao));
+    }
+    public void RotacionarGoleiroDefender()
+    {
+        AIAction aux = iAction.GetType() != typeof(AIRotation) ? new AIRotation(this, ai_player) : iAction;
+        StartCoroutine(aux.Rotacionar_GoleiroDefender());
     }
     #endregion
 
@@ -203,10 +227,42 @@ public class AISystem : AIDecision
     {
         StartCoroutine(iAction.Chute_Gol());
     }
+    public void ChuteLateral()
+    {
+        StartCoroutine(iAction.Chute_Lateral());
+    }
+    public void ChuteEscanteio()
+    {
+        StartCoroutine(iAction.Chute_Escanteio());
+    }
+    public void ChuteTiroDeMeta()
+    {
+        StartCoroutine(iAction.Chute_TiroDeMeta_PequenaArea());
+    }
     #endregion
 
     #region Especial
-
+    public void EspecialInstanciarTrajetoria()
+    {
+        Instantiate(trajetoriaEspecial);
+        StartCoroutine(iAction.Especial_Instanciar());
+    }
+    public void EspecialMira()
+    {
+        StartCoroutine(iAction.Especial_Mira());
+    }
+    public void EspecialMoverTarget()
+    {
+        StartCoroutine(iAction.Especial_MoverTarget());
+    }
+    public void EspecialTrajetoria()
+    {
+        StartCoroutine(iAction.Especial_Trajetoria());
+    }
+    public void EspecialChute()
+    {
+        StartCoroutine(iAction.Especial_Chute());
+    }
     #endregion
 
     #endregion

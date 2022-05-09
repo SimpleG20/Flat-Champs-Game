@@ -68,7 +68,7 @@ public class JogadorMetodos: MonoBehaviour
     }
     public static void ChuteNormal(Vector3 direcaoChute)
     {
-        LogisticaVars.m_jogadorEscolhido.GetComponent<Rigidbody>().AddForce(direcaoChute * JogadorVars.m_forca, ForceMode.Impulse);
+        LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(direcaoChute * JogadorVars.m_forca, ForceMode.Impulse);
         //JogadorVars.m_esperandoContato = true;
 
         /*if (JogadorVars.m_forca <= 200) { JogadorVars.m_fatorAtritoBola = 1.8f; JogadorVars.m_fatorAtritoJogador = 0.8f; }

@@ -12,6 +12,7 @@ public class PlayerTurnState : State
         _StateSystem.jogadas = 0;
         _StateSystem.tempoJogada = 0;
         _StateSystem.contagem = true;
+        Debug.Log("-----------------------------------------");
         Debug.Log("PLAYER: TURN");
         yield break;
     }
@@ -20,6 +21,7 @@ public class PlayerTurnState : State
     {
         float randomForca = Random.Range(50, 420);
         Debug.Log("PLAYER: Random Forca " + randomForca);
+
         _StateSystem.jogadas++;
 
         yield return new WaitForSeconds(1);
@@ -42,7 +44,7 @@ public class PlayerTurnState : State
 
     public override IEnumerator Estado_End()
     {
-        _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_DECISAO;
+        //Substituir pelo LogisticaVars
         _StateSystem.contagem = false;
         _StateSystem.SetState(new AITurnState(_StateSystem, _AiSystem));
         yield break;

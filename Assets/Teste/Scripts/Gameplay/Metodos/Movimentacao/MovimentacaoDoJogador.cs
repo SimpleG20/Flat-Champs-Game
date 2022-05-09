@@ -17,7 +17,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         ui = FindObjectOfType<UIMetodosGameplay>();
 
-        JogadorVars.m_maxForcaAtual = 360;
+        JogadorVars.m_maxForcaAtual = 420;
         JogadorVars.m_forca = 50;
 
         JogadorVars.m_sensibilidadeChute = 10;
@@ -36,7 +36,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
         #region Direcao Jogador
         if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
         {
-            if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido);
+            if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido_Atual);
         }
         else
         {
@@ -59,13 +59,13 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                     if (!JogadorVars.m_medirChute)
                     {
                         if (LogisticaVars.escolherOutroJogador)
-                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * h * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
                         else
-                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidade * Time.deltaTime);
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidade * Time.deltaTime);
                     }
                     else
                     {
-                        LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                        LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
                     }
                 }
                 else
@@ -75,13 +75,13 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                         if (!JogadorVars.m_medirChute)
                         {
                             if (LogisticaVars.escolherOutroJogador)
-                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                                LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
                             else
-                                LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidade * Time.deltaTime);
+                                LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidade * Time.deltaTime);
                         }
                         else
                         {
-                            LogisticaVars.m_jogadorEscolhido.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                            LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
                         }
                     }
                 }
@@ -154,12 +154,12 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                     if(LogisticaVars.vezJ2) 
                         GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorAi.transform.up + LogisticaVars.m_jogadorAi.transform.position;
                     else 
-                        GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorEscolhido.transform.up + LogisticaVars.m_jogadorEscolhido.transform.position;
+                        GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorEscolhido_Atual.transform.up + LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
                 }
                 else
                 {
                     GameObject.Find("RotacaoCamera").transform.position =
-                    -LogisticaVars.m_jogadorEscolhido.transform.up + LogisticaVars.m_jogadorEscolhido.transform.position;
+                    -LogisticaVars.m_jogadorEscolhido_Atual.transform.up + LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
                 }
             }
         }
@@ -169,12 +169,12 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         step += 1.5f * Time.deltaTime;
         GameObject.Find("RotacaoCamera").transform.position =
-            Vector3.MoveTowards((LogisticaVars.m_jogadorEscolhido.transform.position - LogisticaVars.m_jogadorEscolhido.transform.up), GameObject.FindGameObjectWithTag("Bola").transform.position, step);
+            Vector3.MoveTowards((LogisticaVars.m_jogadorEscolhido_Atual.transform.position - LogisticaVars.m_jogadorEscolhido_Atual.transform.up), GameObject.FindGameObjectWithTag("Bola").transform.position, step);
 
-        Vector3 direction = GameObject.Find("RotacaoCamera").transform.position - LogisticaVars.m_jogadorEscolhido.transform.position;
+        Vector3 direction = GameObject.Find("RotacaoCamera").transform.position - LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
         Quaternion rotation = Quaternion.LookRotation(direction);
-        LogisticaVars.m_jogadorEscolhido.transform.rotation = rotation;
-        LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.rotation = rotation;
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
     }
 
 

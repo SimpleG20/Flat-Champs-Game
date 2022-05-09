@@ -8,8 +8,7 @@ public class AIStrike : AIAction
     {
     }
 
-    float forcaChute;
-    Vector3 direcaoChute;
+    float forcaChute, forcaNaBola;
 
     public override void IniciarAction()
     {
@@ -24,8 +23,17 @@ public class AIStrike : AIAction
             case AISystem.Decisao.PASSAR_AMIGO:
                 ai_System.ChutePasse();
                 break;
+            case AISystem.Decisao.LATERAL:
+                ai_System.ChuteLateral();
+                break;
+            case AISystem.Decisao.ESCANTEIO:
+                ai_System.ChuteEscanteio();
+                break;
             case AISystem.Decisao.CHUTAR_GOL:
                 ai_System.ChuteGol();
+                break;
+            case AISystem.Decisao.CHUTE_GOLEIRO:
+                ai_System.ChuteTiroDeMeta();
                 break;
         }
     }
@@ -33,98 +41,228 @@ public class AIStrike : AIAction
     public override IEnumerator Chute_Avancar()
     {
         Debug.Log("AI STRIKE: Avancar");
-        direcaoChute = CalcularVetorDirecao();
-        forcaChute = CalcularForcaNaBola();
-        ai_System.bola.GetComponent<Rigidbody>().AddForce(direcaoChute * forcaChute, ForceMode.Impulse);
+        ai_System.direcaoChute = CalcularVetorDirecao();
+        forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.AVANCAR);
+        forcaChute = CalcularForcaChute();
+
+        if (forcaChute > JogadorVars.m_maxForcaNormal) forcaChute = JogadorVars.m_maxForcaNormal;
+        ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
+        JogadorVars.m_esperandoContato = true;
+
+        //Substituir pelo LogisticaVars
         ai_System.GetStateSystem().jogadas++;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
 
+        ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.GetStateSystem().OnEsperar();
     }
     public override IEnumerator Chute_Passe()
     {
         Debug.Log("AI STRIKE: Passe");
-        direcaoChute = CalcularVetorDirecao();
-        forcaChute = CalcularForcaNaBola();
-        ai_System.bola.GetComponent<Rigidbody>().AddForce(direcaoChute * forcaChute, ForceMode.Impulse);
+        ai_System.direcaoChute = CalcularVetorDirecao();
+        forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.PASSAR_AMIGO);
+        forcaChute = CalcularForcaChute();
+
+        if (forcaChute > JogadorVars.m_maxForcaNormal) forcaChute = JogadorVars.m_maxForcaNormal;
+        ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
+        JogadorVars.m_esperandoContato = true;
+
+        //Substituir pelo LogisticaVars
         ai_System.GetStateSystem().jogadas++;
+        ai_System._passouBola = true;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
 
+        ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.GetStateSystem().OnEsperar();
     }
     public override IEnumerator Chute_Chutao()
     {
         Debug.Log("AI STRIKE: Chutao");
-        direcaoChute = CalcularVetorDirecao();
-        forcaChute = CalcularForcaNaBola();
-        ai_System.bola.GetComponent<Rigidbody>().AddForce(direcaoChute * forcaChute, ForceMode.Impulse);
-        ai_System.GetStateSystem().jogadas = 3;
+        ai_System.direcaoChute = CalcularVetorDirecao(0.65f, true);
+        forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTAO);
+        forcaChute = CalcularForcaChute();
+
+        if (forcaChute > JogadorVars.m_maxForcaNormal) forcaChute = JogadorVars.m_maxForcaNormal;
+        ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
+        JogadorVars.m_esperandoContato = true;
+
+        //Substituir pelo LogisticaVars
+        ai_System.GetStateSystem().jogadas++;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
 
+        ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.GetStateSystem().OnEnd();
     }
     public override IEnumerator Chute_Gol()
     {
         Debug.Log("AI STRIKE: GOL");
-        direcaoChute = CalcularVetorDirecao();
-        forcaChute = CalcularForcaNaBola();
-        ai_System.bola.GetComponent<Rigidbody>().AddForce(direcaoChute * forcaChute, ForceMode.Impulse);
-        ai_System.GetStateSystem().jogadas = 3;
+        //Substituir pelo LogisticaVars
+        ai_System.GetStateSystem().contagem = false;
+
+        ai_System.direcaoChute = CalcularVetorDirecao();
+        forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTAR_GOL);
+        forcaChute = CalcularForcaChute();
+
+        yield return new WaitUntil(() => ai_System._goleiroPosicionado);
+        //Substituir pelo LogisticaVars
+        //ai_System.GetStateSystem().contagem = true;
+
+        if (forcaChute > JogadorVars.m_maxForcaChuteAoGol) forcaChute = JogadorVars.m_maxForcaChuteAoGol;
+        ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
+        JogadorVars.m_esperandoContato = true;
+        ai_System._goleiroPosicionado = false;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
 
+        ai_System.posParaChute = ai_System.bola.m_pos;
+        //Substituir pelo LogisticaVars
+        ai_System.GetStateSystem().jogadas = 3;
         ai_System.GetStateSystem().OnEnd();
     }
-
-    float CalcularForcaNaBola()
+    public override IEnumerator Chute_Lateral()
     {
-        float distanciaDaBola = Vector3.Distance(ai_System.bola.m_pos, ai_System.posTarget);
-        float vel_I = Mathf.Sqrt(distanciaDaBola * AtributosFisicos.coefAtritoDiBola * AtributosFisicos.gravidade * 2);
+        Vector3 aux = ai_System.posTarget;
+        //Atualiza quem esta mais perto do gol
+        ai_System.DetectarJogadores();
+        ai_System.posTarget = ai_System.jogadorAmigo_MaisPerto[0].transform.position;
 
-        float forca = ai_System.bola.GetComponent<Rigidbody>().mass * vel_I * ai_System.fatorExtraChute;
-        Debug.Log("Forca Na Bola: " + forca + "N");
-        forca = forca / Random.Range(0.80f, 0.90f);
-        return forca;
+        bool rasteira = Random.Range(0, 2) == 1 ? true : false;
+        if(rasteira) ai_System.direcaoChute = CalcularVetorDirecao();
+        else ai_System.direcaoChute = CalcularVetorDirecao(0.5f, true);
+
+        yield return new WaitForSeconds(2);
+        ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * 30, ForceMode.Impulse);
+
+        //Tirar jogador atual da lateral
+
+        ai_System.posParaChute = ai_System.bola.m_pos;
+        ai_System.posTarget = aux;
+    }
+    public override IEnumerator Chute_Escanteio()
+    {
+        Vector3 aux = ai_System.posTarget;
+        //Atualiza quem esta mais perto do gol
+        ai_System.DetectarJogadores();
+        ai_System.posTarget = ai_System.jogadorAmigo_MaisPerto[0].transform.position.z <= ai_System.golPos.z + 5 ? ai_System.jogadorAmigo_MaisPerto[0].transform.position :
+                                                                                                                   ai_System.golPos + Vector3.forward * Random.Range(4f, 14f);
+
+        ai_System.direcaoChute = CalcularVetorDirecao(0.65f, true);
+        forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.ESCANTEIO) / 1.85f;
+
+        if (forcaNaBola > JogadorVars.m_maxForcaFora) forcaNaBola = JogadorVars.m_maxForcaFora;
+
+        yield return new WaitForSeconds(2);
+        ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * forcaNaBola, ForceMode.Impulse);
+
+        //Tirar jogador atual do escanteio
+
+        ai_System.posParaChute = ai_System.bola.m_pos;
+        ai_System.posTarget = aux;
+    }
+    public override IEnumerator Chute_TiroDeMeta_PequenaArea()
+    {
+        Vector3 aux = ai_System.posTarget;
+        //Atualiza quem esta mais perto do gol
+        ai_System.DetectarJogadores();
+        ai_System.posTarget = ai_System.jogadorAmigo_MaisPerto[0].transform.position;
+
+        bool rasteira = Random.Range(0, 2) == 1 ? true : false;
+        if (rasteira)
+        {
+            ai_System.direcaoChute = CalcularVetorDirecao();
+            forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTE_GOLEIRO);
+        }
+        else
+        {
+            ai_System.direcaoChute = CalcularVetorDirecao(0.5f, true);
+            forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTE_GOLEIRO);
+            if (forcaNaBola > JogadorVars.m_maxForcaFora) forcaNaBola = JogadorVars.m_maxForcaFora;
+        }
+
+        yield return new WaitForSeconds(2);
+        ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * forcaNaBola, ForceMode.Impulse);
+
+        //Esperar para trocar a camera
+
+        ai_System.posParaChute = ai_System.bola.m_pos;
+        ai_System.posTarget = aux;
     }
 
     public override bool HaObstaculos(out bool esq, out bool dir, out bool frente)
     {
         esq = dir = frente = false;
         RaycastHit hit;
-        if (Physics.Raycast(ai_System.bola.m_pos, direcaoChute, out hit, ai_System.magnitudeChute, ai_System.layerMask))
+        if (Physics.Raycast(ai_System.bola.m_pos, ai_System.direcaoChute, out hit, ai_System.alcanceChute, ai_System.layerMask))
         {
             if (hit.collider.gameObject != ai_player && !hit.collider.gameObject.CompareTag("Bola")) frente = true;
         }
 
         return frente;
     }
+    float CalcularForcaNaBola(AISystem.Decisao decisao)
+    {
+        float distanciaDaBola;
+        float vel_I;
 
-    
-    void SituacaoBola(Vector3 aux)
+        if (decisao == AISystem.Decisao.AVANCAR)
+        {
+            distanciaDaBola = Vector3.Distance(ai_System.bola.m_pos, ai_System.posTarget);
+            if (distanciaDaBola > 10 && distanciaDaBola < 20) distanciaDaBola /= 1.5f;
+            else if (distanciaDaBola >= 20 && distanciaDaBola < 40) distanciaDaBola /= 3.5f;
+            else distanciaDaBola /= 5;
+        }
+        else if(decisao == AISystem.Decisao.CHUTE_GOLEIRO)
+        {
+            distanciaDaBola = Vector3.Distance(ai_System.bola.m_pos, ai_System.posTarget);
+            if (distanciaDaBola >= 40) distanciaDaBola /= 1.5f;
+        }
+        else if(decisao == AISystem.Decisao.PASSAR_AMIGO)
+            distanciaDaBola = Vector3.Distance(ai_System.bola.m_pos, ai_System.posTarget) / 1.5f;
+        else
+            distanciaDaBola = Vector3.Distance(ai_System.bola.m_pos, ai_System.posTarget);
+
+        vel_I = Mathf.Sqrt(distanciaDaBola * AtributosFisicos.aceleracao_atritoBola * 2);
+        //Debug.Log("STRIKE: Velocidade Esperada Bola: " + vel_I);
+        float forca = vel_I * 40 / 16;
+        //Debug.Log("STRIKE: Forca Na Bola: " + forca + "N");
+        return forca;
+    }
+    float CalcularForcaChute()
+    {
+        float velocidadeImpacto = forcaNaBola * 16 / 40;
+        float distanciaJogador_PosChute = Vector3.Distance(LogisticaVars.m_jogadorEscolhido_Atual.transform.position, ai_System.posParaChute);
+        float vel_I = Mathf.Sqrt(Mathf.Pow(velocidadeImpacto, 2) + distanciaJogador_PosChute * AtributosFisicos.aceleracao_atritoJogador * 2);
+
+        float forca = vel_I * 360 / 16.5f;
+        //Debug.Log("STRIKE: Forca No Jogador: " + forca + "N");
+        //if(ai_System.GetDecisao() == AISystem.Decisao.CHUTAO) Debug.Log("STRIKE: Forca No Jogador: " + forca + "N");
+
+        return forca;
+    }
+    Vector3 CalcularVetorDirecao(float minAltura = 0.25f, bool porCima = default)
     {
         bool esq, dir, frente;
-        if(HaObstaculos(out esq, out dir, out frente))
+        Vector3 aux = (ai_System.posTarget - ai_System.bola.m_pos).normalized;
+
+        if (HaObstaculos(out esq, out dir, out frente) || porCima)
         {
             Debug.Log("Chute Por Cima");
-            aux.y = Random.Range(2, 4.1f);
+            aux.y = Random.Range(minAltura, 1.15f);
         }
         else
         {
-            if(Random.Range(0, 8) < 2) aux.y = Random.Range(2, 4.1f);
+            if (Random.Range(0, 8) < 2) { Debug.Log("Chute Por Cima"); aux.y = Random.Range(minAltura, 1f); }
+            else aux.y = 0;
         }
-        //verificar se o chute sera rasteriro ou nao
-    }
-    Vector3 CalcularVetorDirecao()
-    {
-        Vector3 aux = (ai_System.posTarget - ai_System.bola.m_pos).normalized;
-        SituacaoBola(aux);
+
+        //Debug.Log("AI_STRIKE: " + aux);
         return aux;
     }
 }

@@ -18,46 +18,33 @@ public class SelecaoMetodos : MonoBehaviour
         ui = FindObjectOfType<UIMetodosGameplay>();
 
         events = EventsManager.current;
-        events.onAplicarMetodosUiComBotao += MetodosBotoesUI;
+
         events.onTrocarVez += FimDaVez;
         events.onEscolherJogador += EscolherJogador;
         events.onSelecaoAutomatica += SelecaoAutomatica;
         events.onAjeitarCamera += AjustarCameraParaSelecao;
     }
 
-    private void MetodosBotoesUI(string s)
-    {
-        switch (s)
-        {
-            case "selecionar outro":
-                SelecionarOutroJogador();
-                break;
-            case "desistir selecao":
-                DesistirDeSelecionarOutroJogador();
-                break;
-                
-        }
-    }
 
     #region Selecionar Outro jogador
     void AjustarCameraParaSelecao(float y)
     {
         if(y == 1)
         {
-            LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
-            LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
-            LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>();
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+            LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>();
         }
         else
         {
-            LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
-            LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
-            LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+            LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
         }
     }
-    void ColocarIconeParaSelecao(List<GameObject> jogadores)
+    public static void ColocarIconeParaSelecao(List<GameObject> jogadores)
     {
-        Vector3 jogadorRef = LogisticaVars.m_jogadorEscolhido.transform.position;
+        Vector3 jogadorRef = LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
         float distancia;
         foreach (GameObject jogador in jogadores)
         {
@@ -76,112 +63,21 @@ public class SelecaoMetodos : MonoBehaviour
             }
         }
     }
-    IEnumerator EsperarTransicaoCameras(bool jogador, string situacao)
-    {
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !FindObjectOfType<CinemachineBrain>().IsBlending);
-
-        GameObject jogadorPerto = null;
-
-        switch (situacao) 
-        {
-            case "selecionar outro":
-                if (LogisticaVars.vezJ1) {
-                    jogadorPerto = QuemEstaMaisPerto(LogisticaVars.m_jogadorEscolhido.transform.position, LogisticaVars.jogadoresT1);
-                    ColocarIconeParaSelecao(LogisticaVars.jogadoresT1);
-                }
-                else {
-                    jogadorPerto = QuemEstaMaisPerto(LogisticaVars.m_jogadorEscolhido.transform.position, LogisticaVars.jogadoresT2);
-                    ColocarIconeParaSelecao(LogisticaVars.jogadoresT2);
-                }
-                break;
-            case "ui normal":
-                if (!LogisticaVars.continuaSendoFora)
-                {
-                    JogadorMetodos.ResetarValoresChute();
-                    events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
-                    FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Time = 1f;
-                }
-                break;
-
-        }
-
-
-        if (jogador && !JogadorVars.m_rotacionar) StartCoroutine(RotacionarJogadorMaisPerto(jogadorPerto));
-    }
-
-    IEnumerator RotacionarJogadorMaisPerto(GameObject jogadorPerto)
-    {
-        float step = 0;
-
-        yield return new WaitForSeconds(0.01f);
-        step += 0.05f;
-        GameObject.Find("RotacaoCamera").transform.position =
-            Vector3.MoveTowards((LogisticaVars.m_jogadorEscolhido.transform.position - LogisticaVars.m_jogadorEscolhido.transform.up), jogadorPerto.transform.position, step);
-
-        Vector3 direction = GameObject.Find("RotacaoCamera").transform.position - LogisticaVars.m_jogadorEscolhido.transform.position;
-        Quaternion rotation = Quaternion.LookRotation(direction);
-        LogisticaVars.m_jogadorEscolhido.transform.rotation = rotation;
-        LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
-
-        if (rotacaoAnt != rotation && !JogadorVars.m_rotacionar && !LogisticaVars.escolheu) { rotacaoAnt = rotation; StartCoroutine(RotacionarJogadorMaisPerto(jogadorPerto)); }
-        else rotacaoAnt = Quaternion.identity;
-    }
-
-    void SelecionarOutroJogador()
-    {
-        LogisticaVars.escolheu = false;
-        FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseOut;
-        FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Time = 0.5f;
-
-        AjustarCameraParaSelecao(1);
-        StartCoroutine(EsperarTransicaoCameras(true, "selecionar outro"));
-        events.OnAplicarMetodosUiSemBotao("estados dos botoes", "selecao");
-        events.OnAplicarRotinas("rotina tempo selecao");
-
-        LogisticaVars.jogadorSelecionado = false;
-        LogisticaVars.escolherOutroJogador = true;
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", true);
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", false);
-    } //Tudo certo
-    void DesistirDeSelecionarOutroJogador()
-    {
-        print("Desistiu Troca, Anterior: " + numTrocaAnterior + " e Atual: " + numTrocaAtual);
-        LogisticaVars.escolheu = true;
-        foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>()) Destroy(l.gameObject);
-
-        AjustarCameraParaSelecao(-1);
-        LogisticaVars.escolherOutroJogador = false;
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", false);
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", true);
-        ui.sairSelecaoBt.gameObject.SetActive(false);
-
-        if (LogisticaVars.trocarVez) TrocarVez();
-        else
-        {
-            events.OnAplicarMetodosUiComBotao("jogador selecionado");
-            LogisticaVars.jogadorSelecionado = true;
-
-            if (!LogisticaVars.continuaSendoFora && !LogisticaVars.tiroDeMeta) StartCoroutine(EsperarTransicaoCameras(false, "ui normal"));
-        }
-
-        JogadorMetodos.ResetarValoresChute();
-    }
     #endregion
 
     #region Automatico
     private void EscolherJogador()
     {
-        if (LogisticaVars.m_jogadorEscolhido != null)
-            LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+        if (LogisticaVars.m_jogadorEscolhido_Atual != null)
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
 
-        if (LogisticaVars.vezJ1) LogisticaVars.m_jogadorEscolhido = QuemEstaMaisPerto(GameObject.FindGameObjectWithTag("Bola").transform.position, LogisticaVars.jogadoresT1);
-        else LogisticaVars.m_jogadorEscolhido = QuemEstaMaisPerto(GameObject.FindGameObjectWithTag("Bola").transform.position, LogisticaVars.jogadoresT2);
+        if (LogisticaVars.vezJ1) LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(GameObject.FindGameObjectWithTag("Bola").transform.position, LogisticaVars.jogadoresT1);
+        else LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(GameObject.FindGameObjectWithTag("Bola").transform.position, LogisticaVars.jogadoresT2);
 
-        LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
         
         
-        if(LogisticaVars.aplicouPrimeiroToque && !LogisticaVars.continuaSendoFora) StartCoroutine(EsperarTransicaoCameras(false, "ui normal"));
+        //if(LogisticaVars.aplicouPrimeiroToque && !LogisticaVars.continuaSendoFora) StartCoroutine(EsperarTransicaoCameras(false, "ui normal"));
         SituacaoBolaRasteira();
     }
     public static void EscolherGoleiro()
@@ -207,7 +103,7 @@ public class SelecaoMetodos : MonoBehaviour
         EscolherJogador();
         DadosJogador();
     }
-    GameObject QuemEstaMaisPerto(Vector3 referencia, List<GameObject> jogadores)
+    public static GameObject QuemEstaMaisPerto(Vector3 referencia, List<GameObject> jogadores)
     {
         GameObject jogador = null;
         float distancia, distanciaMenor;
@@ -230,27 +126,27 @@ public class SelecaoMetodos : MonoBehaviour
     #region Dados
     public static void DadosJogador()
     {
-        LogisticaVars.m_jogadorEscolhido.tag = "Player Selecionado";
-        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
-        LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+        LogisticaVars.m_jogadorEscolhido_Atual.tag = "Player Selecionado";
+        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
         
         //LogisticaVars.m_jogadorEscolhido.GetComponentInChildren<AudioListener>().enabled = true;
-        LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>().enabled = true;
-        JogadorVars.m_fisica = LogisticaVars.m_jogadorEscolhido.GetComponent<FisicaJogador>();
+        LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<FisicaJogador>().enabled = true;
+        JogadorVars.m_fisica = LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<FisicaJogador>();
 
         //LogisticaVars.m_colJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.transform.GetChild(2).GetComponent<MeshCollider>();
-        LogisticaVars.m_rbJogadorEscolhido = LogisticaVars.m_jogadorEscolhido.GetComponent<Rigidbody>();
+        LogisticaVars.m_rbJogadorEscolhido = LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>();
 
         //Ativar o indicador de jogador selecionado
-        LogisticaVars.m_jogadorEscolhido.transform.GetChild(3).gameObject.SetActive(true);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(3).gameObject.SetActive(true);
 
         LogisticaVars.jogadorSelecionado = true;
     } //Tudo certo
     public static void DesabilitarDadosJogador()
     {
         //Debug.Log("Desabilitando dados do Jogador");
-        LogisticaVars.m_jogadorEscolhido.tag = "Player";
-        LogisticaVars.m_jogadorEscolhido.transform.GetChild(3).gameObject.SetActive(false);
+        LogisticaVars.m_jogadorEscolhido_Atual.tag = "Player";
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(3).gameObject.SetActive(false);
 
         LogisticaVars.desabilitouDadosJogador = true;
     } //Tudo Certo
@@ -270,7 +166,7 @@ public class SelecaoMetodos : MonoBehaviour
 
     void TrocarVez()
     {
-        events.SituacaoGameplay("jogo parado");
+        EstadoJogo.TempoJogada(false);
         bool aux = LogisticaVars.vezJ1;
         LogisticaVars.vezJ1 = LogisticaVars.vezJ2;
         LogisticaVars.vezJ2 = aux;
@@ -287,12 +183,15 @@ public class SelecaoMetodos : MonoBehaviour
     void FimDaVez()
     {
         LogisticaVars.trocarVez = true;
-        if (LogisticaVars.escolherOutroJogador) DesistirDeSelecionarOutroJogador();
-        else TrocarVez();
+        TrocarVez();
+        //if (LogisticaVars.escolherOutroJogador) DesistirDeSelecionarOutroJogador();
+        //else TrocarVez();
     } //Tudo Certo
     static void SituacaoBolaRasteira()
     {
-        if (LogisticaVars.vezJ1 && LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && LogisticaVars.bolaRasteiraT2) { ui.direcaoBolaBt.isOn = true; events.OnAplicarMetodosUiComBotao("bola rasteira"); }
-        else if (LogisticaVars.vezJ1 && !LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && !LogisticaVars.bolaRasteiraT2) { ui.direcaoBolaBt.isOn = false; events.OnAplicarMetodosUiComBotao("bola rasteira"); }
+        if (LogisticaVars.vezJ1 && LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && LogisticaVars.bolaRasteiraT2) 
+        { ui.direcaoBolaBt.isOn = true; VariaveisUIsGameplay._current.UI_BolaRasteira(); }
+        else if (LogisticaVars.vezJ1 && !LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && !LogisticaVars.bolaRasteiraT2) 
+        { ui.direcaoBolaBt.isOn = false; VariaveisUIsGameplay._current.UI_BolaRasteira(); }
     }
 }

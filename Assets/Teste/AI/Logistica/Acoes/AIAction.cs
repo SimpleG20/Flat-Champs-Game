@@ -9,7 +9,7 @@ public abstract class AIAction
     public AIAction(AISystem AiSystem, GameObject ai)
     {
         ai_System = AiSystem;
-        ai_player = ai;
+        ai_player = LogisticaVars.m_jogadorEscolhido_Atual;
     }
 
     #region Movimento
@@ -17,7 +17,7 @@ public abstract class AIAction
     {
         
     }
-    public virtual void DecidirMovimento()
+    public virtual void DecidirPosicao()
     {
 
     }
@@ -40,6 +40,43 @@ public abstract class AIAction
     {
         esq = dir = frente = default;
         return false;
+    }
+    public float PreferenciaParaRotacionar()
+    {
+        Vector3 aiPos = ai_player.transform.position;
+
+        Vector3 aux = (ai_System.posParaChute - aiPos);
+        //Debug.Log(aux.x);
+
+        if (aux.x < 0) return 1;
+        else return -1;
+
+        /*if (ai_System.posParaChute.x < aiPos.x)
+        {
+            if (ai_System.posParaChute.z < aiPos.z)
+            {
+                if ((aiPos.z - ai_System.posParaChute.z) < (aiPos.x - ai_System.posParaChute.x)) { Debug.Log("ROTACAO: Direita"); return 1; }
+                else { Debug.Log("ROTACAO: Esquerda"); return -1; } //print("Esquerda");
+            }
+            else
+            {
+                if ((ai_System.posParaChute.z - aiPos.z) > (aiPos.x - ai_System.posParaChute.x)) { Debug.Log("ROTACAO: Direita"); return 1; } //print("Direita");
+                else { Debug.Log("ROTACAO: Esquerda"); return -1; } // print("Esquerda");
+            }
+        }
+        else
+        {
+            if (ai_System.posParaChute.z < aiPos.z)
+            {
+                if ((aiPos.z - ai_System.posParaChute.z) > (ai_System.posParaChute.x - aiPos.x)) { Debug.Log("ROTACAO: Direita"); return 1; } //print("Direita");
+                else { Debug.Log("ROTACAO: Esquerda"); return -1; }//print("Esquerda");
+            }
+            else
+            {
+                if ((ai_System.posParaChute.z - aiPos.z) < (ai_System.posParaChute.x - aiPos.x)) { Debug.Log("ROTACAO: Direita"); return 1; }//print("Direita");
+                else { Debug.Log("ROTACAO: Esquerda"); return -1; }//print("Esquerda");
+            }
+        }*/
     }
     #endregion
 
@@ -76,6 +113,57 @@ public abstract class AIAction
         yield break;
     }
     public virtual IEnumerator Chute_Passe()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Chute_Lateral()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Chute_Escanteio()
+    {
+        yield break;
+    }
+
+    #endregion
+
+    #region Especial
+    public virtual IEnumerator Especial_Instanciar()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Especial_Mira()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Especial_MoverTarget()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Especial_Trajetoria()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Especial_Chute()
+    {
+        yield break;
+    }
+    #endregion
+
+    #region Goleiro
+    public virtual IEnumerator Movimentar_Defender()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Chute_TiroDeMeta_PequenaArea()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Rotacionar_GoleiroChute()
+    {
+        yield break;
+    }
+    public virtual IEnumerator Rotacionar_GoleiroDefender()
     {
         yield break;
     }

@@ -7,36 +7,48 @@ using Cinemachine.PostFX;
 
 public class CamerasSettings : MonoBehaviour
 {
+    //Note: Online
+    //
+    //Note: 
+
     [SerializeField] FisicaBola bola;
     [SerializeField] CinemachineBrain camPrincipal;
     [SerializeField] GameObject lateralEsq, lateralDir, tiroDeMeta, torcida, espera, follow;
-    [SerializeField] VolumeProfile blur; 
+    [SerializeField] VolumeProfile blur;
 
-    // Start is called before the first frame update
+    public static CamerasSettings _current;
+
+    private void Awake()
+    {
+        _current = this;
+    }
+
     void Start()
     {
         bola = FindObjectOfType<FisicaBola>();
-        EventsManager.current.onSituacaoGameplay += SituacoesCameras;
-        EventsManager.current.onAplicarMetodosUiComBotao += UiMetodos;
     }
 
+    public CinemachineBrain GetPrincipal()
+    {
+        return camPrincipal;
+    }
 
-    private void SituacoesCameras(string situacao)
+    public void SituacoesCameras(string situacao)
     {
         switch (situacao)
         {
             case "gol marcado":
                 AcionarCameraTorcida();
                 break;
-            case "habilitar camera fora":
+            case "habilitar cam lateral":
                 AcionarCameraLateral();
+                break;
+            case "desabilitar cam lateral":
+                DesabilitarCamerasMenosJogador();
+                //StartCoroutine(EsperarTransicaoCameraFora());
                 break;
             case "habilitar camera tiro de meta":
                 AcionarCameraTiroDeMeta();
-                break;
-            case "desabilitar camera lateral":
-                DesabilitarCamerasMenosJogador();
-                StartCoroutine(EsperarTransicaoCameraFora());
                 break;
             case "desabilitar camera tiro de meta":
                 DesabilitarCamerasMenosJogador();
@@ -174,6 +186,7 @@ public class CamerasSettings : MonoBehaviour
         LogisticaVars.cameraJogador.m_Priority = 99;
     }
 
+
     void DesabilitarCamerasMenosJogador()
     {
         lateralEsq.transform.GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
@@ -188,7 +201,8 @@ public class CamerasSettings : MonoBehaviour
 
     public IEnumerator EsperarTransicaoParaMudarBlend(CinemachineBlendDefinition.Style c)
     {
-        yield return new WaitUntil(() => camPrincipal.IsBlending);
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !camPrincipal.IsBlending);
         LogisticaVars.cameraJogador.m_Lens.FieldOfView = 60;
         MudarBlendCamera(c);
     }
@@ -197,7 +211,7 @@ public class CamerasSettings : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !FindObjectOfType<CinemachineBrain>().IsBlending);
 
-        if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2) EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "fora");
-        else { EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "tiro de meta"); MudarBlendCamera(CinemachineBlendDefinition.Style.HardOut); }
+        //if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2) EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "fora");
+        //else { EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "tiro de meta"); MudarBlendCamera(CinemachineBlendDefinition.Style.HardOut); }
     }
 }

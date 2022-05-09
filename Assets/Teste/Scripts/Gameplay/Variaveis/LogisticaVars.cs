@@ -23,8 +23,9 @@ public static class LogisticaVars
     #region Gameplay Variaveis
 
     #region GameObjects
-    public static GameObject m_jogadorEscolhido;              //Fisicajogador, FisicaBola, GameplayOff, JogadorMetodos, MovimentacaoJogador
-                                                              //SelecaoMetodos, LinkarBotao, RotinasGameplay
+    public static GameObject m_jogadorEscolhido_Atual;              //Fisicajogador, FisicaBola, GameplayOff, JogadorMetodos, MovimentacaoJogador
+                                                                    //SelecaoMetodos, LinkarBotao, RotinasGameplay
+    public static GameObject m_jogadorPlayer;
     public static GameObject m_jogadorAi;
     public static List<GameObject> jogadoresT1, jogadoresT2;  //Abertura, SelecaoMetodos, RotinasGameplay
     #endregion
@@ -43,6 +44,8 @@ public static class LogisticaVars
     public static float tempoJogada;                //GameplayOff, SelecaoMetodos, TempoJogada
     public static float tempoEscolherJogador;       //GameplayOff, TempoEscolha
     public static float tempoPartida;               //Abertura, GameplayOff
+    public static bool contarTempoJogada;
+    public static bool contarTempoSelecao;
     #endregion
 
     #region Boolean

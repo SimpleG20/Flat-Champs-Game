@@ -15,18 +15,8 @@ public class GoleiroMetodos: MonoBehaviour
         mJ = FindObjectOfType<MovimentacaoDoJogador>();
         ui = FindObjectOfType<UIMetodosGameplay>();
         events = EventsManager.current;
-        events.onAplicarMetodosUiComBotao += BotoesGoleiro;
     }
 
-    private void BotoesGoleiro(string s)
-    {
-        switch (s)
-        {
-            case "goleiro posicionado":
-                GoleiroPosicionadoParaDefender();
-                break;
-        }
-    }
 
     public static void EncherBarraChuteGoleiro(float forca, float maxForca)
     {
@@ -77,24 +67,5 @@ public class GoleiroMetodos: MonoBehaviour
         else LogisticaVars.ultimoToque = 2;
 
         events.OnAplicarRotinas("rotina pos chute goleiro");
-    }
-    private void GoleiroPosicionadoParaDefender()
-    {
-        Debug.Log("Hora de CHUTAR!!");
-        ComponentesParaGoleiro(false);
-        events.SituacaoGameplay("jogo normal");
-        events.OnAplicarMetodosUiSemBotao("estados dos botoes", "chute ao gol");
-
-        LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
-        LogisticaVars.m_goleiroGameObject = null;
-
-        LogisticaVars.defenderGoleiro = false;
-        LogisticaVars.auxChuteAoGol = true;
-        JogadorVars.m_chuteAoGol = true;
-
-        JogadorMetodos.ResetarValoresChute();
-
-        events.SituacaoGameplay("jogo parado");
-        //LogisticaVars.jogoParado = false;
     }
 }

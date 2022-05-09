@@ -9,7 +9,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
     int vetor;
 
     Transform Point1, Point3;
-    [SerializeField] Transform Point2;
+    [SerializeField] public Transform Point2;
 
     List<Vector3> caminhoLivre;
 
@@ -32,10 +32,13 @@ public class DesenharPrevisaoChute : MonoBehaviour
     {
         if (!LogisticaVars.aplicouEspecial)
         {
-            if (FindObjectOfType<MiraEspecial>().MiraTravada())
+            if (!GameManager.Instance.m_jogadorAi)
             {
-                if (MovimentacaoDoJogador.pc) Point2.Translate(new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0) * Time.deltaTime * 2);
-                else Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
+                if (FindObjectOfType<MiraEspecial>().MiraTravada())
+                {
+                    if (MovimentacaoDoJogador.pc) Point2.Translate(new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0) * Time.deltaTime * 2);
+                    else Point2.Translate(new Vector3(input.direcaoRight.x, input.direcaoRight.y, 0) * Time.deltaTime * 2);
+                }
             }
 
             var pointList = new List<Vector3>();
@@ -89,7 +92,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
         step += 2.5f;
         bola.transform.position = Vector3.MoveTowards(bola.transform.position, caminho[vetor], step);
-        if (bola.transform.position == caminho[caminho.Count - 1]) { EventsManager.current.SituacaoGameplay("fim especial"); Destroy(gameObject); }
+        if (bola.transform.position == caminho[caminho.Count - 1]) { /*EventsManager.current.SituacaoGameplay("fim especial");*/ Destroy(gameObject); }
         else
         {
             if (bola.transform.position == caminho[vetor]) vetor++;

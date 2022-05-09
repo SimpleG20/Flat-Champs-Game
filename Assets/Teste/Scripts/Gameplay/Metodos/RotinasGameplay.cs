@@ -18,6 +18,17 @@ public class RotinasGameplay : MonoBehaviour
 
         events = EventsManager.current;
         events.onAplicarRotinas += RotinasPosSituacoes;
+        events.onChuteAoGol += RotinasChuteAoGol;
+    }
+
+    private void RotinasChuteAoGol(string s)
+    {
+        switch (s)
+        {
+            case "rotina tempo chute ao gol":
+                StartCoroutine(TempoParaChuteAoGol());
+                break;
+        }
     }
 
     private void RotinasPosSituacoes(string s)
@@ -34,9 +45,6 @@ public class RotinasGameplay : MonoBehaviour
             case "rotina animacao gol":
                 StartCoroutine(AnimacaoTorcida());
                 break;
-            case "rotina chute ao gol":
-                StartCoroutine(GoleiroDefenderChuteAoGol());
-                break;
             case "rotina sair lateral":
                 StartCoroutine(SairLateral(bola));
                 break;
@@ -51,9 +59,6 @@ public class RotinasGameplay : MonoBehaviour
 
 
             #region Tempo Para Chute Auto
-            case "rotina tempo chute ao gol":
-                StartCoroutine(TempoParaChuteAoGol());
-                break;
             case "rotina tempo lateral":
                 StartCoroutine(TempoParaLateral());
                 break;
@@ -260,27 +265,6 @@ public class RotinasGameplay : MonoBehaviour
     #endregion
 
     #region Goleiro
-    IEnumerator GoleiroDefenderChuteAoGol()
-    {
-        events.SituacaoGameplay("jogo parado");
-        Debug.Log("Posicione o goleiro");
-        events.OnAplicarMetodosUiSemBotao("estados dos botoes", "defender chute ao gol");
-
-        SelecaoMetodos.EscolherGoleiro();
-
-        GoleiroMetodos.ComponentesParaGoleiro(true);
-        ui.barraChuteJogador.SetActive(false);
-        ui.barraChuteGoleiro.SetActive(false);
-
-        LogisticaVars.defenderGoleiro = true;
-
-        yield return new WaitForSeconds(8);
-        if (LogisticaVars.goleiroT1 && LogisticaVars.defenderGoleiro || LogisticaVars.goleiroT2 && LogisticaVars.defenderGoleiro)
-        {
-            print("Goleiro Posicionado Auto");
-            events.OnAplicarMetodosUiComBotao("goleiro posicionado");
-        }
-    }
     IEnumerator RotinaAposChuteGoleiro()
     {
         LogisticaVars.bolaPermaneceNaPequenaArea = false;
@@ -310,65 +294,6 @@ public class RotinasGameplay : MonoBehaviour
     #endregion
 
     #region Fora
-    public static IEnumerator SpawnarLat(string lateral, FisicaBola bola)
-    {
-        Debug.Log("Spawnar Lateral");
-
-        yield return new WaitForSeconds(1.5f);
-
-        if (lateral == "lateral direita")
-        {
-            LogisticaVars.m_jogadorEscolhido.transform.position = new Vector3(bola.m_posLateral.x + 3f, LogisticaVars.m_jogadorEscolhido.transform.position.y, bola.m_posLateral.z);
-
-            LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
-            LogisticaVars.foraLateralD = false;
-        }
-        if (lateral == "lateral esquerda")
-        {
-            LogisticaVars.m_jogadorEscolhido.transform.position = new Vector3(bola.m_posLateral.x - 3f, LogisticaVars.m_jogadorEscolhido.transform.position.y, bola.m_posLateral.z);
-
-            LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
-            LogisticaVars.foraLateralE = false;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-        events.SituacaoGameplay("desabilitar camera lateral");
-
-        LogisticaVars.m_jogadorEscolhido.transform.GetChild(3).gameObject.SetActive(true);
-
-        bola.RedirecionarJogadorEscolhido(bola.transform);
-        LogisticaVars.podeRedirecionar = true;
-    }
-    public static IEnumerator SpawnarEscanteio(string fundo, FisicaBola bola)
-    {
-        Debug.Log("Spawnar Escanteio");
-
-        yield return new WaitForSeconds(1.5f);
-
-        Vector3 novaPos = new Vector3(bola.m_posicaoFundo.x, LogisticaVars.m_jogadorEscolhido.transform.position.y, bola.m_posicaoFundo.z);
-
-        if (fundo == "fundo 1")
-        {
-            if (bola.transform.position.x < 0) LogisticaVars.m_jogadorEscolhido.transform.position = novaPos + new Vector3(-2f, 0, -1.5f);
-            else LogisticaVars.m_jogadorEscolhido.transform.position = novaPos + new Vector3(+2f, 0, -1.5f);
-
-            LogisticaVars.fundo1 = false;
-        }
-        else if (fundo == "fundo 2")
-        {
-            if (bola.transform.position.x < 0) LogisticaVars.m_jogadorEscolhido.transform.position = novaPos + new Vector3(-2f, 0, +1.5f);
-            else LogisticaVars.m_jogadorEscolhido.transform.position = novaPos + new Vector3(+2f, 0, +1.5f);
-
-            LogisticaVars.fundo2 = false;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        events.SituacaoGameplay("desabilitar camera lateral");
-
-        bola.RedirecionarJogadorEscolhido(bola.transform);
-        LogisticaVars.podeRedirecionar = true;
-    }
     IEnumerator SairLateral(FisicaBola bola)
     {
         ui.botaoMeio.SetActive(false);
@@ -378,7 +303,7 @@ public class RotinasGameplay : MonoBehaviour
         LogisticaVars.lateral = false;
 
         yield return new WaitForSeconds(1f);
-        Transform jogador = LogisticaVars.m_jogadorEscolhido.transform;
+        Transform jogador = LogisticaVars.m_jogadorEscolhido_Atual.transform;
 
         Debug.Log("Deslocando Jogador");
         Vector3 target;
@@ -397,7 +322,7 @@ public class RotinasGameplay : MonoBehaviour
         LogisticaVars.foraFundo = false;
 
         yield return new WaitForSeconds(1);
-        Transform jogador = LogisticaVars.m_jogadorEscolhido.transform;
+        Transform jogador = LogisticaVars.m_jogadorEscolhido_Atual.transform;
 
         Vector3 target = new Vector3(bola.m_posicaoFundo.x, jogador.position.y, bola.m_posicaoFundo.z);
 
@@ -426,9 +351,9 @@ public class RotinasGameplay : MonoBehaviour
 
         yield return new WaitForSeconds(0.01f);
         fator += 0.3f;
-        LogisticaVars.m_jogadorEscolhido.transform.position = Vector3.MoveTowards(LogisticaVars.m_jogadorEscolhido.transform.position, target, fator);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.position = Vector3.MoveTowards(LogisticaVars.m_jogadorEscolhido_Atual.transform.position, target, fator);
 
-        if ((LogisticaVars.m_jogadorEscolhido.transform.position - target).magnitude > 0.1f) StartCoroutine(MovimentoSairFora(target));
+        if ((LogisticaVars.m_jogadorEscolhido_Atual.transform.position - target).magnitude > 0.1f) StartCoroutine(MovimentoSairFora(target));
         else
         {
             JogadorMetodos.ResetarValoresChute();
@@ -440,50 +365,13 @@ public class RotinasGameplay : MonoBehaviour
             events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
         }
     }
-
-    public static IEnumerator SpawnarTiroDeMeta(string fundo, FisicaBola bola)
-    {
-        //LogisticaVars.esperandoTrocas = true;
-
-        yield return new WaitForSeconds(1f);
-
-        if (fundo == "fundo 2")
-        {
-            Debug.Log("Fundo 2");
-            LogisticaVars.tiroDeMeta = true;
-            LogisticaVars.goleiroT2 = true;
-            LogisticaVars.m_goleiroGameObject = GameObject.FindGameObjectWithTag("Goleiro2");
-
-            LogisticaVars.m_goleiroGameObject.transform.position = new Vector3(bola.m_posicaoFundo.x, LogisticaVars.m_goleiroGameObject.transform.position.y, bola.m_posicaoFundo.z + 3);
-            LogisticaVars.fundo2 = false;
-        }
-        if (fundo == "fundo 1")
-        {
-            Debug.Log("Fundo 1");
-            LogisticaVars.tiroDeMeta = true;
-            LogisticaVars.goleiroT1 = true;
-            LogisticaVars.m_goleiroGameObject = GameObject.FindGameObjectWithTag("Goleiro1");
-
-            LogisticaVars.m_goleiroGameObject.transform.position = new Vector3(bola.m_posicaoFundo.x, LogisticaVars.m_goleiroGameObject.transform.position.y, bola.m_posicaoFundo.z - 3);
-
-            LogisticaVars.fundo1 = false;
-        }
-
-        yield return new WaitForSeconds(1f);
-
-        bola.m_toqueChao = false;
-        
-        events.SituacaoGameplay("desabilitar camera lateral");
-        GoleiroMetodos.ComponentesParaGoleiro(true);
-        bola.RedirecionarGoleiros();
-    }
     IEnumerator PosChuteGoleiro(FisicaBola bola)
     {
         if (!LogisticaVars.bolaRasteiraT1 && !LogisticaVars.bolaRasteiraT2) yield return new WaitUntil(() => bola.m_toqueChao);
         else yield return new WaitUntil(() => !bola.m_bolaCorrendo);
 
         Debug.Log("Bola relou no chao");
-        events.SituacaoGameplay("jogo normal");
+        EstadoJogo.TempoJogada(true);
         LogisticaVars.continuaSendoFora = false;
         LogisticaVars.tiroDeMeta = false;
         JogadorMetodos.ResetarValoresChute();
@@ -491,7 +379,7 @@ public class RotinasGameplay : MonoBehaviour
         bola.RedirecionarJogadores(true);
         events.SelecaoAutomatica();
 
-        events.SituacaoGameplay("desabilitar camera tiro de meta");
+        //events.SituacaoGameplay("desabilitar camera tiro de meta");
     }
     #endregion
 }

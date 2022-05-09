@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class StateSystem : StateMachine
 {
-    public enum Estado{ ESPERANDO_JOGADOR, ESPERANDO_DECISAO, DECISAO_TOMADA, MOVER, CHUTAR, CHUTAR_GOL, ESPECIAL }
+    public enum Estado{ NONE, ESPERANDO_JOGADOR, ESPERANDO_DECISAO, DECISAO_TOMADA, MOVER, CHUTAR, CHUTAR_GOL, ESPECIAL, GOLEIRO }
 
     public int jogadas;
     public float tempoJogada;
-    public bool contagem, comecar;
+    public bool moverPlayer, contagem, comecar;
 
     public Estado _estadoAtual;
-
-
     AISystem AiSystem;
 
     private void Awake()
@@ -28,15 +26,24 @@ public class StateSystem : StateMachine
             comecar = false;
         }
 
+        if (moverPlayer)
+        {
+            moverPlayer = false;
+            OnMover();
+        }
+
         if (contagem)
         {
             tempoJogada += Time.deltaTime;
             if (tempoJogada >= 20) OnEnd();
         }
+
+        //Debug.DrawRay(AiSystem.bola.m_pos, AiSystem.direcaoChute * AiSystem.alcanceChute, Color.red);
+        Debug.DrawLine(AiSystem.bola.m_pos, AiSystem.posTarget, Color.blue);
     }
 
     #region Estado conforme a situacao da Bola
-    
+
     #endregion
 
 
@@ -44,9 +51,9 @@ public class StateSystem : StateMachine
     public void OnDecisao()
     {
         AiSystem.TomarDecisao();
+        _estadoAtual = Estado.DECISAO_TOMADA;
     }
 
-    [ContextMenu("Mover Player")]
     public void OnMover()
     {
         StartCoroutine(_state.Estado_Mover());
@@ -74,6 +81,12 @@ public class StateSystem : StateMachine
     {
         _estadoAtual = Estado.ESPERANDO_JOGADOR;
         StartCoroutine(_state.Estado_Esperar());
+    }
+
+    public void OnGoleiro()
+    {
+        _estadoAtual = Estado.GOLEIRO;
+        StartCoroutine(_state.Estado_Goleiro());
     }
 
     public void OnEnd()

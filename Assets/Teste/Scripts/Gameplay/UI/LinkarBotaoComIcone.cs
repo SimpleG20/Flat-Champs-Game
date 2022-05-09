@@ -28,7 +28,7 @@ public class LinkarBotaoComIcone : MonoBehaviour
 
         FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
         SelecaoMetodos.DesabilitarDadosJogador();
-        LogisticaVars.m_jogadorEscolhido = jogadorReferenciado.gameObject;
+        LogisticaVars.m_jogadorEscolhido_Atual = jogadorReferenciado.gameObject;
         SelecaoMetodos.DadosJogador();
 
         EventsManager.current.AjeitarCamera(-1);

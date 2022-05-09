@@ -10,7 +10,7 @@ public class JogadorVars
 
     [Header("Chutar")]
     public static float m_maxForcaNormal = 420;
-    public static float m_maxForcaFora = 50;
+    public static float m_maxForcaFora = 45;
     public static float m_maxForcaChuteAoGol = 680;
     public static float m_maxForcaAtual;         //MovimentacaoJogador, JogadorMetodos, GoleiroMetodos
     public static float m_forca;            //JogadorMetodos, GoleiroMetodos, MovimentacaoJogador, RotinasGameplay

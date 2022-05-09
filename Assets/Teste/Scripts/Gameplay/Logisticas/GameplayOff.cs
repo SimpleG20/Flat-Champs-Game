@@ -34,8 +34,6 @@ public class GameplayOff : MonoBehaviour
         direcionalChute = GameObject.FindGameObjectWithTag("Direcional Chute");
 
         events = EventsManager.current;
-        events.onSituacaoGameplay += Situacoes;
-        events.onAplicarMetodosUiComBotao += UiMetodos;
 
         ToqueInicial_ou_PosGol();
         LogisticaVars.m_especialAtualT1 = LogisticaVars.m_especialAtualT2 = 0;
@@ -52,22 +50,6 @@ public class GameplayOff : MonoBehaviour
                 break;
             case "jogo parado":
                 JogoParado();
-                break;
-            case "fora lateral":
-                LogisticaVars.continuaSendoFora = true;
-                ForaGeral();
-                ForaLateral();
-                break;
-            case "fora escanteio":
-                LogisticaVars.continuaSendoFora = true;
-                ForaGeral();
-                ForaEscanteio();
-                break;
-            case "fora tiro de meta":
-                LogisticaVars.continuaSendoFora = true;
-                LogisticaVars.tiroDeMeta = true;
-                ForaGeral();
-                ForaTiroDeMeta();
                 break;
             case "gol marcado":
                 GolMarcado();
@@ -105,10 +87,6 @@ public class GameplayOff : MonoBehaviour
                 break;
             case "direcionar jogador":
                 DirecionamentoAuto();
-                break;
-            
-            case "selecionar outro":
-                SelecionarOutroJogador();
                 break;
             case "jogador selecionado":
                 JogadorSelecionado();
@@ -172,7 +150,7 @@ public class GameplayOff : MonoBehaviour
     {
         print("pause");
         Time.timeScale = 0;
-        events.OnAplicarMetodosUiSemBotao("pause");
+        //events.OnAplicarMetodosUiSemBotao("pause");
         LogisticaVars.jogoParado = true;
         comecarContagemJogada = false;
     }
@@ -180,7 +158,7 @@ public class GameplayOff : MonoBehaviour
     {
         print("unpause");
         Time.timeScale = 1;
-        events.OnAplicarMetodosUiSemBotao("unpause");
+        //events.OnAplicarMetodosUiSemBotao("unpause");
         LogisticaVars.jogoParado = false;
         comecarContagemJogada = true;
     }
@@ -221,17 +199,17 @@ public class GameplayOff : MonoBehaviour
     void AplicarToqueInicialAuto()
     {
         comecarContagemJogada = true;
-        Vector3 dir = LogisticaVars.m_jogadorEscolhido.transform.position - bola.transform.position;
+        Vector3 dir = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - bola.transform.position;
         bola.m_rbBola.AddForce(dir * 2, ForceMode.Impulse);
         LogisticaVars.aplicouPrimeiroToque = LogisticaVars.jogoComecou = true;
         LogisticaVars.ultimoToque = LogisticaVars.vezJ1 ? 1 : 2;
         LogisticaVars.jogadas++;
         EventsManager.current.OnAtualizarNumeros();
-        events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
+        //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
     }
     void ToqueInicial_ou_PosGol()
     {
-        events.OnAplicarRotinas("rotina chute inicial");
+        //events.OnAplicarRotinas("rotina chute inicial");
 
         events.EscolherJogador();
         SelecaoMetodos.DadosJogador();
@@ -245,8 +223,8 @@ public class GameplayOff : MonoBehaviour
         yield return new WaitUntil(() => !FindObjectOfType<CinemachineBrain>().IsBlending);
 
         ui.m_placar.SetActive(true);
-        events.OnAplicarMetodosUiSemBotao("estados dos botoes", "primeiro toque");
-        FindObjectOfType<FollowWorld>().lookAt = LogisticaVars.m_jogadorEscolhido.transform;
+        //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "primeiro toque");
+        FindObjectOfType<FollowWorld>().lookAt = LogisticaVars.m_jogadorEscolhido_Atual.transform;
         JogadorMetodos.ResetarValoresChute();
 
         FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
@@ -254,11 +232,6 @@ public class GameplayOff : MonoBehaviour
     #endregion
 
     #region Selecao
-    void SelecionarOutroJogador()
-    {
-        LogisticaVars.tempoEscolherJogador = 0;
-        comecarContagemSelecao = true;
-    }
     void JogadorSelecionado()
     {
         comecarContagemSelecao = false;
@@ -279,13 +252,13 @@ public class GameplayOff : MonoBehaviour
         if (LogisticaVars.vezJ1)
         {
             distanciaBolaGol = (bola.transform.position - posGol2).magnitude;
-            distanciaJogadorGol = (LogisticaVars.m_jogadorEscolhido.transform.position - posGol2).magnitude;
+            distanciaJogadorGol = (LogisticaVars.m_jogadorEscolhido_Atual.transform.position - posGol2).magnitude;
             if (LogisticaVars.especialT1Disponivel) especialPronto = true;
         }
         else
         {
             distanciaBolaGol = (bola.transform.position - posGol1).magnitude;
-            distanciaJogadorGol = (LogisticaVars.m_jogadorEscolhido.transform.position - posGol1).magnitude;
+            distanciaJogadorGol = (LogisticaVars.m_jogadorEscolhido_Atual.transform.position - posGol1).magnitude;
             if (LogisticaVars.especialT2Disponivel) especialPronto = true;
         }
 
@@ -303,16 +276,16 @@ public class GameplayOff : MonoBehaviour
         {
             LogisticaVars.especialT1Disponivel = false; 
             LogisticaVars.m_especialAtualT1 = 0;
-            LogisticaVars.m_jogadorEscolhido.transform.LookAt(posGol2);
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.LookAt(posGol2);
         }
         else
         {
             LogisticaVars.especialT2Disponivel = false; 
             LogisticaVars.m_especialAtualT2 = 0;
-            LogisticaVars.m_jogadorEscolhido.transform.LookAt(posGol1);
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.LookAt(posGol1);
         }
 
-        LogisticaVars.m_jogadorEscolhido.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido.transform.eulerAngles.z);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
 
         if (LogisticaVars.vezJ1) GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = posGol2;
         else GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = posGol1;
@@ -322,13 +295,13 @@ public class GameplayOff : MonoBehaviour
 
 
         LogisticaVars.cameraJogador.m_Priority = 0;
-        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(2).GetComponent<CinemachineVirtualCamera>();
+        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(2).GetComponent<CinemachineVirtualCamera>();
         LogisticaVars.cameraJogador.m_Priority = 99;
 
         ui.especialBt.gameObject.SetActive(false);
         ui.travarMiraBt.gameObject.SetActive(true);
-        events.SituacaoGameplay("acionar camera especial");
-        events.OnAplicarRotinas("rotina tempo especial");
+        //events.SituacaoGameplay("acionar camera especial");
+        //events.OnAplicarRotinas("rotina tempo especial");
     }
     void FimEspecial()
     {
@@ -336,9 +309,9 @@ public class GameplayOff : MonoBehaviour
         Physics.gravity = Vector3.down * 9.81f;
         Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
         Destroy(GameObject.FindGameObjectWithTag("Trajetoria Especial"));
-        events.OnAplicarMetodosUiSemBotao("fim especial");
+        //events.OnAplicarMetodosUiSemBotao("fim especial");
         LogisticaVars.cameraJogador.m_Priority = 0;
-        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
+        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
         LogisticaVars.cameraJogador.m_Priority = 99;
 
         LogisticaVars.especial = false;
@@ -356,7 +329,7 @@ public class GameplayOff : MonoBehaviour
         LogisticaVars.jogadas = 0;
         LogisticaVars.jogoParado = true;
 
-        events.OnAplicarRotinas("rotina animacao gol");
+        //events.OnAplicarRotinas("rotina animacao gol");
         if (LogisticaVars.golT1)
         {
             LogisticaVars.placarT1 += 1;
@@ -401,7 +374,7 @@ public class GameplayOff : MonoBehaviour
     public static void BolaNaPequenaArea(int i) //Rever
     {
         Debug.Log("Bola permanece na pequena Area");
-        EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
+        //EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
         //EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "bola na pequena area"); //.EstadoBotoesJogador(false);
         if (i == 1 && !LogisticaVars.vezJ1)
         {
@@ -442,16 +415,16 @@ public class GameplayOff : MonoBehaviour
 
         GoleiroMetodos.ComponentesParaGoleiro(true);
         SelecaoMetodos.DesabilitarDadosJogador();
-        EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "bola pequena area");
+        //EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "bola pequena area");
         //EstadosDosBotoesEmCertasSituacoes("bola pequena area");
     }
 
     #region Fora
-    void ForaLateral()
+    /*void ForaLateral()
     {
         events.OnAplicarRotinas("rotina tempo lateral");
-    }
-    void ForaEscanteio()
+    }*/
+    /*void ForaEscanteio()
     {
         if (LogisticaVars.fundo1 && LogisticaVars.ultimoToque == 1)
         {
@@ -463,8 +436,8 @@ public class GameplayOff : MonoBehaviour
         }
         LogisticaVars.foraFundo = false;
         events.OnAplicarRotinas("rotina tempo escanteio");
-    }
-    void ForaTiroDeMeta()
+    }*/
+    /*void ForaTiroDeMeta()
     {
         if(LogisticaVars.fundo1 && LogisticaVars.ultimoToque != 1)
         {
@@ -479,8 +452,8 @@ public class GameplayOff : MonoBehaviour
         }
 
         events.OnAplicarRotinas("rotina tempo tiro de meta");
-    }
-    void ForaGeral()
+    }*/
+    /*void ForaGeral()
     {
         if (!LogisticaVars.gol)
         {
@@ -509,7 +482,7 @@ public class GameplayOff : MonoBehaviour
             if (!LogisticaVars.tiroDeMeta) EventsManager.current.SelecaoAutomatica();
             events.SituacaoGameplay("habilitar camera fora");
         }
-    }
+    }*/
     #endregion
 
     #endregion
