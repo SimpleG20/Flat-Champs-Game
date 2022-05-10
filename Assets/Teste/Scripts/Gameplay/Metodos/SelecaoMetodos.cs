@@ -5,80 +5,30 @@ using Cinemachine;
 
 public class SelecaoMetodos : MonoBehaviour
 {
-    static int numTrocaAtual, numTrocaAnterior;
-
-    Quaternion rotacaoAnt;
     static FisicaBola bola;
-    static UIMetodosGameplay ui;
     static EventsManager events;
 
     private void Start()
     {
         bola = FindObjectOfType<FisicaBola>();
-        ui = FindObjectOfType<UIMetodosGameplay>();
-
         events = EventsManager.current;
 
-        events.onTrocarVez += FimDaVez;
         events.onEscolherJogador += EscolherJogador;
         events.onSelecaoAutomatica += SelecaoAutomatica;
-        events.onAjeitarCamera += AjustarCameraParaSelecao;
     }
 
-
-    #region Selecionar Outro jogador
-    void AjustarCameraParaSelecao(float y)
-    {
-        if(y == 1)
-        {
-            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
-            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
-            LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>();
-        }
-        else
-        {
-            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
-            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
-            LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
-        }
-    }
-    public static void ColocarIconeParaSelecao(List<GameObject> jogadores)
-    {
-        Vector3 jogadorRef = LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
-        float distancia;
-        foreach (GameObject jogador in jogadores)
-        {
-            if (jogador.CompareTag("Player"))
-            {
-                GameObject icone = new GameObject();
-                distancia = (jogadorRef - jogador.transform.position).magnitude;
-                if (distancia <= 15) icone = ui.iconePequeno;
-                else if (distancia > 15 && distancia <= 40) icone = ui.iconeMedio;
-                else icone = ui.iconeGrande;
-
-                icone.GetComponent<LinkarBotaoComIcone>().cam = FindObjectOfType<Camera>();
-                icone.GetComponent<LinkarBotaoComIcone>().jogadorReferenciado = jogador;
-
-                Instantiate(icone, GameObject.Find("Canvas").transform.GetChild(1));
-            }
-        }
-    }
-    #endregion
 
     #region Automatico
-    private void EscolherJogador()
+    void EscolherJogador()
     {
         if (LogisticaVars.m_jogadorEscolhido_Atual != null)
             LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
 
-        if (LogisticaVars.vezJ1) LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(GameObject.FindGameObjectWithTag("Bola").transform.position, LogisticaVars.jogadoresT1);
-        else LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(GameObject.FindGameObjectWithTag("Bola").transform.position, LogisticaVars.jogadoresT2);
+        if (LogisticaVars.vezJ1) LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(bola.m_pos, LogisticaVars.jogadoresT1);
+        else LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(bola.m_pos, LogisticaVars.jogadoresT2);
 
         LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
-        
-        
-        //if(LogisticaVars.aplicouPrimeiroToque && !LogisticaVars.continuaSendoFora) StartCoroutine(EsperarTransicaoCameras(false, "ui normal"));
-        SituacaoBolaRasteira();
+        //SituacaoBolaRasteira();
     }
     public static void EscolherGoleiro()
     {
@@ -92,12 +42,12 @@ public class SelecaoMetodos : MonoBehaviour
             LogisticaVars.goleiroT1 = true;
             LogisticaVars.m_goleiroGameObject = GameObject.FindGameObjectWithTag("Goleiro1");
         }
-        SituacaoBolaRasteira();
+        //SituacaoBolaRasteira();
     }
     void SelecaoAutomatica()
     {
         LogisticaVars.escolherOutroJogador = false;
-        ui.sairSelecaoBt.gameObject.SetActive(false);
+        //ui.sairSelecaoBt.gameObject.SetActive(false);
         Debug.Log("Escolha Automática");
         DesabilitarDadosJogador();
         EscolherJogador();
@@ -126,6 +76,12 @@ public class SelecaoMetodos : MonoBehaviour
     #region Dados
     public static void DadosJogador()
     {
+        if (GameManager.Instance.m_jogadorAi)
+        {
+            if (LogisticaVars.vezJ2) LogisticaVars.m_jogadorAi = LogisticaVars.m_jogadorEscolhido_Atual;
+        }
+        else LogisticaVars.m_jogadorPlayer = LogisticaVars.m_jogadorEscolhido_Atual;
+
         LogisticaVars.m_jogadorEscolhido_Atual.tag = "Player Selecionado";
         LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
         LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
@@ -162,36 +118,4 @@ public class SelecaoMetodos : MonoBehaviour
         }
     } //Tudo certo
     #endregion
-
-
-    void TrocarVez()
-    {
-        EstadoJogo.TempoJogada(false);
-        bool aux = LogisticaVars.vezJ1;
-        LogisticaVars.vezJ1 = LogisticaVars.vezJ2;
-        LogisticaVars.vezJ2 = aux;
-
-        LogisticaVars.tempoJogada = 0;
-        LogisticaVars.jogadas = 0;
-
-        LogisticaVars.escolherOutroJogador = false;
-        LogisticaVars.desabilitouDadosJogador = false;
-
-        SituacaoBolaRasteira();
-        StartCoroutine(RotinasGameplay.DesabilitarApos3Jogadas(bola));
-    } //Tudo Certo
-    void FimDaVez()
-    {
-        LogisticaVars.trocarVez = true;
-        TrocarVez();
-        //if (LogisticaVars.escolherOutroJogador) DesistirDeSelecionarOutroJogador();
-        //else TrocarVez();
-    } //Tudo Certo
-    static void SituacaoBolaRasteira()
-    {
-        if (LogisticaVars.vezJ1 && LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && LogisticaVars.bolaRasteiraT2) 
-        { ui.direcaoBolaBt.isOn = true; VariaveisUIsGameplay._current.UI_BolaRasteira(); }
-        else if (LogisticaVars.vezJ1 && !LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && !LogisticaVars.bolaRasteiraT2) 
-        { ui.direcaoBolaBt.isOn = false; VariaveisUIsGameplay._current.UI_BolaRasteira(); }
-    }
 }

@@ -383,26 +383,27 @@ public class FisicaBola : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("PequenaArea1")) // && !LogisticaVars.posGol)
+        if (other.CompareTag("PequenaArea1") || other.CompareTag("PequenaArea2")) // && !LogisticaVars.posGol)
         {
             if (tempoNaPequenaArea > 2.5f && !LogisticaVars.bolaPermaneceNaPequenaArea && LogisticaVars.bolaEntrouPequenaArea)
             {
-                GameplayOff.BolaNaPequenaArea(1);
+                //GameplayOff.BolaNaPequenaArea(1);
                 //EventsManager.current.OnAplicarRotinas("rotina tempo pequena area");
+                Gameplay._current.SetSituacao(new GoleiroPequenaArea(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
                 LogisticaVars.bolaPermaneceNaPequenaArea = true;
                 LogisticaVars.bolaEntrouPequenaArea = false;
             }
         }
-        if (other.CompareTag("PequenaArea2")) // && !LogisticaVars.posGol)
+        /*if (other.CompareTag("PequenaArea2")) // && !LogisticaVars.posGol)
         {
             if (tempoNaPequenaArea > 2.5f && !LogisticaVars.bolaPermaneceNaPequenaArea && LogisticaVars.bolaEntrouPequenaArea)
             {
-                GameplayOff.BolaNaPequenaArea(2);
+                //GameplayOff.BolaNaPequenaArea(2);
                 //EventsManager.current.OnAplicarRotinas("rotina tempo pequena area");
                 LogisticaVars.bolaPermaneceNaPequenaArea = true;
                 LogisticaVars.bolaEntrouPequenaArea = false;
             }
-        }
+        }*/
     }
     private void OnTriggerExit(Collider other)
     {

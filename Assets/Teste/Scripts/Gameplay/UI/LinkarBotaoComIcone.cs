@@ -19,28 +19,11 @@ public class LinkarBotaoComIcone : MonoBehaviour
 
     public void SelecionarJogador()
     {
-        LogisticaVars.escolheu = true;
-
-        foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>()) Destroy(l.gameObject);
-
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", false);
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", true);
-
-        FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+        CamerasSettings._current.GetPrincipal().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
         SelecaoMetodos.DesabilitarDadosJogador();
         LogisticaVars.m_jogadorEscolhido_Atual = jogadorReferenciado.gameObject;
         SelecaoMetodos.DadosJogador();
 
-        EventsManager.current.AjeitarCamera(-1);
-
-        EventsManager.current.OnAplicarMetodosUiComBotao("jogador selecionado");
-        EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
-
-        FindObjectOfType<FisicaBola>().RedirecionarJogadores(true);
-
-        LogisticaVars.escolherOutroJogador = false;
-        LogisticaVars.jogadorSelecionado = true;
-
-        JogadorMetodos.ResetarValoresChute();
+        Gameplay._current.OnJogadorSelecionado();
     }
 }

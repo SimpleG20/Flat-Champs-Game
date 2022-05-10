@@ -28,7 +28,6 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
 
         velocidadeBarraChute = GameManager.Instance.m_config.m_velocidadeBarraChute;
         if (velocidadeBarraChute == 0) velocidadeBarraChute = 1;
-        EventsManager.current.onAplicarMetodosUiComBotao += BotoesJogador;
     }
 
     void Update()
@@ -113,10 +112,11 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                 {
                     LogisticaVars.jogoComecou = true;
                     JogadorVars.m_aplicarChute = false;
-                    EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador", "", true);
+                    //EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador", "", true);
                     LogisticaVars.jogoParado = false;
                     LogisticaVars.aplicouPrimeiroToque = true;
-                    EventsManager.current.SituacaoGameplay("jogo normal");
+                    EstadoJogo.JogoNormal();
+                    EstadoJogo.TempoJogada(true);
                 }
                 if (JogadorVars.m_forca > JogadorVars.m_forcaMin)
                 {
@@ -213,20 +213,20 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     {
         JogadorMetodos.AplicarChuteEscanteio();
         LogisticaVars.jogoParado = false;
-        EventsManager.current.OnAplicarRotinas("rotina sair escanteio");
+        EventsManager.current.OnFora("rotina sair escanteio");
     }
     void AcionarChuteLateral()
     {
         JogadorMetodos.AplicarChuteLateral();
         LogisticaVars.jogoParado = false;
-        EventsManager.current.OnAplicarRotinas("rotina sair lateral");
+        EventsManager.current.OnFora("rotina sair lateral");
     }
     void AplicarChuteEspecial()
     {
         print("Aplicar Especial");
         bola.GetComponent<Rigidbody>().useGravity = false;
         Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
-        EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
+        //EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
 
         LogisticaVars.aplicouEspecial = true;
 

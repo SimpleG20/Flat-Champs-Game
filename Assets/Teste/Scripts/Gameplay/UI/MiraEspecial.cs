@@ -28,8 +28,6 @@ public class MiraEspecial : MonoBehaviour
         joystick = FindObjectOfType<InputManager>();
         ui = FindObjectOfType<UIMetodosGameplay>();
 
-        events.onAplicarMetodosUiComBotao += UiMetodos;
-
         direcaoEspecial = GameObject.FindGameObjectWithTag("Direcao Especial");
 
         startPos = transform.position;
@@ -95,22 +93,13 @@ public class MiraEspecial : MonoBehaviour
         transform.position = FindObjectOfType<Camera>().WorldToScreenPoint(direcaoEspecial.transform.position, Camera.MonoOrStereoscopicEye.Mono);
         #endregion
     }
-
-    void UiMetodos(string metodo)
-    {
-        switch (metodo)
-        {
-            case "travar mira especial":
-                travouMira = true;
-                ui.travarMiraBt.gameObject.SetActive(false);
-                ui.chuteEspecialBt.gameObject.SetActive(true);
-                break;
-        }
-    }
-
     public bool MiraTravada()
     {
         return travouMira;
+    }
+    public void TravarMira()
+    {
+        travouMira = true;
     }
 
     IEnumerator Voltar()

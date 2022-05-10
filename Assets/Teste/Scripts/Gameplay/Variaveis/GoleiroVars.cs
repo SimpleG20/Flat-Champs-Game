@@ -15,4 +15,5 @@ public static class GoleiroVars
     [Header("Movimentacao")]
     public static bool m_movimentar;    //MovimentacaoGoleiro, InputManager
     public static float m_speed;        //MovimentacaoGoleiro
+    internal static bool chutou;
 }

@@ -89,16 +89,16 @@ public class JogadorMetodos: MonoBehaviour
         if (LogisticaVars.auxChuteAoGol)
         {
             Debug.Log("MovimentacaoDoJogador: AposChuteAoGol()");
-            EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
             LogisticaVars.jogadas = 3;
             JogadorVars.m_chuteAoGol = LogisticaVars.auxChuteAoGol = false;
-            ResetarValoresChute();
+            //ResetarValoresChute();
         }
         else LogisticaVars.jogadas++;
         JogadorVars.m_aplicarChute = false;
 
         ResetarValoresChute();
-        if (LogisticaVars.jogadas == 3) EventsManager.current.OnAplicarRotinas("rotina 3 jogadas");
+        if (LogisticaVars.jogadas == 3) Gameplay._current.SetSituacao(new TrocarVez(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
+        //EventsManager.current.OnAplicarRotinas("rotina 3 jogadas");
     }
 
     public static void AumentarEspecial(float qnt, bool trocou)
@@ -147,7 +147,7 @@ public class JogadorMetodos: MonoBehaviour
         JogadorVars.m_maxForca = 360;
         EncherBarraChuteJogador(JogadorVars.m_forca, JogadorVars.m_maxForca);*/
 
-        EventsManager.current.OnAplicarRotinas("rotina sair escanteio");
+        EventsManager.current.OnFora("rotina sair escanteio");
     }
     public static void AplicarChuteLateral()
     {
@@ -156,7 +156,7 @@ public class JogadorMetodos: MonoBehaviour
 
         bola.AddForce(mJ.GetUltimaDirecao() * 27.5f, ForceMode.Impulse);
 
-        EventsManager.current.OnAplicarRotinas("rotina sair lateral");
+        EventsManager.current.OnFora("rotina sair lateral");
     }
 
 

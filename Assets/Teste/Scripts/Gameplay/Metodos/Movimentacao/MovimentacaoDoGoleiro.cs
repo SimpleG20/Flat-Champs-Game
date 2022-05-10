@@ -17,7 +17,6 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
         GoleiroVars.m_sensibilidade = GameManager.Instance.m_config.m_camSensibilidade;
 
         events = EventsManager.current;
-        events.onAplicarMetodosUiComBotao += BotoesGoleiro;
     }
 
     void Update()

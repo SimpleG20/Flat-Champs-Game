@@ -55,7 +55,7 @@ public class Lateral : Fora
         UI_Meio();
 
         yield return new WaitUntil(() => /*esperar o jogador chutar e ser posicionado*/false);
-        UI_Fim();
+        UI_Normal();
         Fim();
     }
 

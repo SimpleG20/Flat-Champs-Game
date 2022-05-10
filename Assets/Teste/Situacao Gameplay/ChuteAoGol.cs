@@ -44,12 +44,12 @@ public class ChuteAoGol : Situacao
 
         UI_Jogador();
 
-        yield return new WaitUntil(() => /*esperar jogador chutar*/true);
+        yield return new WaitUntil(() => !JogadorVars.m_chuteAoGol);
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
 
-        if (!LogisticaVars.continuaSendoFora && !LogisticaVars.bolaPermaneceNaPequenaArea) { LogisticaVars.jogadas = 3; Fim(); }
-        else yield break;
+        /*if (!LogisticaVars.continuaSendoFora && !LogisticaVars.bolaPermaneceNaPequenaArea) { LogisticaVars.jogadas = 3; Fim(); }
+        else yield break;*/
     }
 
     public override void UI_Situacao(string s)

@@ -110,6 +110,9 @@ public static class LogisticaVars
     public static int ultimoToque;              //FisicaBola, GameplayOff, RotinasGameplay, MovimentacaoJogador, GoleiroMetodos
 
     public static Animator m_tempoSelecaoAnimator;    //Abertura, LinkarBotao, SelecaoMetodos
+    internal static bool aplicarChuteAuto;
+    internal static bool saiuFora;
+    internal static bool fimAnimacaoGol;
     #endregion
 
     #endregion

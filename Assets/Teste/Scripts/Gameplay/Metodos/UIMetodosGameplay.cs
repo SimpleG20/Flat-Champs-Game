@@ -63,30 +63,6 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
     {
         switch (situacao)
         {
-            #region Primeiro Toque
-            case "primeiro toque":
-                //print("Ui: primeiro Toque");
-                m_placar.SetActive(true);
-                pausarBt.gameObject.SetActive(true);
-                tempoEscolhaGO.SetActive(true);
-                numeroJogadasGO.SetActive(true);
-                tempoJogadaGO.SetActive(true);
-
-                centralBotoes.SetActive(true);
-                barraEspecial.SetActive(true);
-                especialBt.gameObject.SetActive(true);
-                botaoBaixo.SetActive(false);
-                botaoCima.SetActive(false);
-                botaoDiagonal.SetActive(false);
-                botaoLivre2.SetActive(false);
-                botaoLivre1.SetActive(false);
-                botaoMeio.SetActive(true);
-
-                moverJogadorBt.SetActive(true);
-                joystick.SetActive(true);
-                barraChuteJogador.SetActive(true);
-                break;
-            #endregion
             #region Situacoes
             case "bola pequena area":
                 //print("Ui: Bola na Pequena Area");
@@ -131,46 +107,6 @@ public class UIMetodosGameplay : VariaveisUIsGameplay
         EstadoBotoesJogador(false);
         EstadoBotoesGoleiro(true);
         selecionarJogadorBt.gameObject.SetActive(false);
-    }
-
-    void Especial()
-    {
-        EstadoBotoesJogador(false);
-        EstadoBotoesGoleiro(false);
-        EstadoBotoesCentral(false);
-        centralBotoes.SetActive(true);
-        barraChuteJogador.SetActive(false);
-        travarMiraBt.gameObject.SetActive(true);
-        joystick.SetActive(true);
-    }
-    void FimEspecial()
-    {
-        //MetodosUISemBotao("estado jogador e goleiro", "", false, 0, 0);
-        chuteEspecialBt.gameObject.SetActive(false);
-    }
-    void BotoesNoPause()
-    {
-        if(FindObjectsOfType<LinkarBotaoComIcone>() != null)
-        {
-            foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>())
-            {
-                l.gameObject.GetComponent<Button>().interactable = false;
-            }
-        }
-
-        GameObject.Find("Canvas").transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 0;
-    }
-    void BotoesNoUnPause()
-    { 
-        if (FindObjectsOfType<LinkarBotaoComIcone>() != null)
-        {
-            foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>())
-            {
-                l.gameObject.GetComponent<Button>().interactable = true;
-            }
-        }
-
-        GameObject.Find("Canvas").transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 1;
     }
     
 }

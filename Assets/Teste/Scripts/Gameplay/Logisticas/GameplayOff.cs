@@ -35,61 +35,18 @@ public class GameplayOff : MonoBehaviour
 
         events = EventsManager.current;
 
-        ToqueInicial_ou_PosGol();
         LogisticaVars.m_especialAtualT1 = LogisticaVars.m_especialAtualT2 = 0;
-        BarraEspecial(0, LogisticaVars.m_maxEspecial);
+        //BarraEspecial(0, LogisticaVars.m_maxEspecial);
         LogisticaVars.jogoParado = false;
     }
 
-    void Situacoes(string situacao)
-    {
-        switch (situacao)
-        {
-            case "jogo normal":
-                Segue_O_Jogo();
-                break;
-            case "jogo parado":
-                JogoParado();
-                break;
-            case "gol marcado":
-                GolMarcado();
-                break;
-            case "reiniciar pos gol":
-                ReiniciarPosGol();
-                break;
-            case "aplicar toque inicial":
-                AplicarToqueInicialAuto();
-                break;
-            case "toque pos gol":
-                ToqueInicial_ou_PosGol();
-                break;
-            case "verificar acionamento especial":
-                VerificarSeAcionaEspecial();
-                break;
-            case "fim especial":
-                FimEspecial();
-                break;
-        }
-    }
 
     void UiMetodos(string metodo)
     {
         switch (metodo)
         {
-            case "pausar jogo":
-                PararJogo();
-                break;
-            case "despausar jogo":
-                DespausarJogo();
-                break;
-            case "quit jogo":
-                QuitarJogo();
-                break;
             case "direcionar jogador":
                 DirecionamentoAuto();
-                break;
-            case "jogador selecionado":
-                JogadorSelecionado();
                 break;
         }
     }
@@ -121,7 +78,7 @@ public class GameplayOff : MonoBehaviour
 
                 if (LogisticaVars.m_especialAtualT1 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT1Disponivel) 
                 { LogisticaVars.m_especialAtualT1 = LogisticaVars.m_maxEspecial;  LogisticaVars.especialT1Disponivel = true; }
-                BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
+                //BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
             }
             else
             {
@@ -129,11 +86,11 @@ public class GameplayOff : MonoBehaviour
                 
                 if(LogisticaVars.m_especialAtualT2 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT2Disponivel)
                 { LogisticaVars.m_especialAtualT2 = LogisticaVars.m_maxEspecial; LogisticaVars.especialT2Disponivel = true; }
-                BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
+                //BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
             }
         }
 
-        if (LogisticaVars.tempoJogada >= LogisticaVars.tempoMaxJogada) events.OnTrocarVez();
+        //if (LogisticaVars.tempoJogada >= LogisticaVars.tempoMaxJogada) events.OnTrocarVez();
 
         
     }
@@ -146,26 +103,7 @@ public class GameplayOff : MonoBehaviour
             LogisticaVars.minutosCorridos++;
         }
     }
-    void PararJogo()
-    {
-        print("pause");
-        Time.timeScale = 0;
-        //events.OnAplicarMetodosUiSemBotao("pause");
-        LogisticaVars.jogoParado = true;
-        comecarContagemJogada = false;
-    }
-    void DespausarJogo()
-    {
-        print("unpause");
-        Time.timeScale = 1;
-        //events.OnAplicarMetodosUiSemBotao("unpause");
-        LogisticaVars.jogoParado = false;
-        comecarContagemJogada = true;
-    }
-    void QuitarJogo()
-    {
-        print("Quitar");
-    }
+    
 
     void DirecionamentoAuto()
     {
@@ -181,195 +119,6 @@ public class GameplayOff : MonoBehaviour
             LogisticaVars.redirecionamentoAutomatico = false;
         }
     }
-    
-
-    #region Situacoes Gameplay
-
-    void Segue_O_Jogo()
-    {
-        LogisticaVars.jogoParado = false;
-        comecarContagemJogada = true;
-    }
-    void JogoParado()
-    {
-        comecarContagemJogada = false;
-    }
-
-    #region Inicio
-    void AplicarToqueInicialAuto()
-    {
-        comecarContagemJogada = true;
-        Vector3 dir = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - bola.transform.position;
-        bola.m_rbBola.AddForce(dir * 2, ForceMode.Impulse);
-        LogisticaVars.aplicouPrimeiroToque = LogisticaVars.jogoComecou = true;
-        LogisticaVars.ultimoToque = LogisticaVars.vezJ1 ? 1 : 2;
-        LogisticaVars.jogadas++;
-        EventsManager.current.OnAtualizarNumeros();
-        //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
-    }
-    void ToqueInicial_ou_PosGol()
-    {
-        //events.OnAplicarRotinas("rotina chute inicial");
-
-        events.EscolherJogador();
-        SelecaoMetodos.DadosJogador();
-        SelecaoMetodos.DesabilitarComponentesDosNaoSelecionados();
-
-        StartCoroutine(EsperarTransicaoCameraInicio());
-    }
-    IEnumerator EsperarTransicaoCameraInicio()
-    {
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !FindObjectOfType<CinemachineBrain>().IsBlending);
-
-        ui.m_placar.SetActive(true);
-        //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "primeiro toque");
-        FindObjectOfType<FollowWorld>().lookAt = LogisticaVars.m_jogadorEscolhido_Atual.transform;
-        JogadorMetodos.ResetarValoresChute();
-
-        FindObjectOfType<CinemachineBrain>().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
-    }
-    #endregion
-
-    #region Selecao
-    void JogadorSelecionado()
-    {
-        comecarContagemSelecao = false;
-        LogisticaVars.tempoEscolherJogador = 0;
-    }
-    #endregion
-
-    #region Especial
-    void BarraEspecial(float atual, float max)
-    {
-        ui.barraEspecial.GetComponent<Image>().fillAmount = atual / max;
-    }
-    void VerificarSeAcionaEspecial()
-    {
-        float distanciaJogadorGol, distanciaBolaGol;
-        bool especialPronto = false;
-
-        if (LogisticaVars.vezJ1)
-        {
-            distanciaBolaGol = (bola.transform.position - posGol2).magnitude;
-            distanciaJogadorGol = (LogisticaVars.m_jogadorEscolhido_Atual.transform.position - posGol2).magnitude;
-            if (LogisticaVars.especialT1Disponivel) especialPronto = true;
-        }
-        else
-        {
-            distanciaBolaGol = (bola.transform.position - posGol1).magnitude;
-            distanciaJogadorGol = (LogisticaVars.m_jogadorEscolhido_Atual.transform.position - posGol1).magnitude;
-            if (LogisticaVars.especialT2Disponivel) especialPronto = true;
-        }
-
-        if (distanciaBolaGol < distanciaJogadorGol && bola.m_vetorDistanciaDoJogador.magnitude < 3.2f && 
-            !LogisticaVars.continuaSendoFora && !LogisticaVars.auxChuteAoGol && especialPronto) AcionaEspecial();
-        else print("Posicione melhor para Acionar o Especial");
-    }
-    void AcionaEspecial()
-    {
-        LogisticaVars.aplicouEspecial = false;
-        JogoParado();
-        LogisticaVars.especial = true;
-
-        if (LogisticaVars.vezJ1)
-        {
-            LogisticaVars.especialT1Disponivel = false; 
-            LogisticaVars.m_especialAtualT1 = 0;
-            LogisticaVars.m_jogadorEscolhido_Atual.transform.LookAt(posGol2);
-        }
-        else
-        {
-            LogisticaVars.especialT2Disponivel = false; 
-            LogisticaVars.m_especialAtualT2 = 0;
-            LogisticaVars.m_jogadorEscolhido_Atual.transform.LookAt(posGol1);
-        }
-
-        LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
-
-        if (LogisticaVars.vezJ1) GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = posGol2;
-        else GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = posGol1;
-
-        Instantiate(ui.miraEspecial, FindObjectOfType<Camera>().WorldToScreenPoint(GameObject.FindGameObjectWithTag("Direcao Especial").transform.position,
-            Camera.MonoOrStereoscopicEye.Mono), Quaternion.identity, canvas.transform.GetChild(2));
-
-
-        LogisticaVars.cameraJogador.m_Priority = 0;
-        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(2).GetComponent<CinemachineVirtualCamera>();
-        LogisticaVars.cameraJogador.m_Priority = 99;
-
-        ui.especialBt.gameObject.SetActive(false);
-        ui.travarMiraBt.gameObject.SetActive(true);
-        //events.SituacaoGameplay("acionar camera especial");
-        //events.OnAplicarRotinas("rotina tempo especial");
-    }
-    void FimEspecial()
-    {
-        bola.GetComponent<Rigidbody>().useGravity = true;
-        Physics.gravity = Vector3.down * 9.81f;
-        Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
-        Destroy(GameObject.FindGameObjectWithTag("Trajetoria Especial"));
-        //events.OnAplicarMetodosUiSemBotao("fim especial");
-        LogisticaVars.cameraJogador.m_Priority = 0;
-        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
-        LogisticaVars.cameraJogador.m_Priority = 99;
-
-        LogisticaVars.especial = false;
-        //LogisticaVars.aplicouEspecial = true;
-    }
-    #endregion
-
-    #region Gol
-    void GolMarcado()
-    {
-        canvas.transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 0;
-        JogoParado();
-        comecarContagemJogada = false;
-        LogisticaVars.tempoJogada = LogisticaVars.tempoEscolherJogador = 0;
-        LogisticaVars.jogadas = 0;
-        LogisticaVars.jogoParado = true;
-
-        //events.OnAplicarRotinas("rotina animacao gol");
-        if (LogisticaVars.golT1)
-        {
-            LogisticaVars.placarT1 += 1;
-            LogisticaVars.vezJ1 = false;
-            LogisticaVars.vezJ2 = true;
-        }
-        if (LogisticaVars.golT2)
-        {
-            LogisticaVars.placarT2 += 1;
-            LogisticaVars.vezJ1 = true;
-            LogisticaVars.vezJ2 = false;
-        }
-    } //Ativar Rotina da animacao do gol, computa os gols e posiciona os jogadores
-    void ReiniciarPosGol()
-    {
-        bola.PosicionarAposGol();
-        bola.RedirecionarJogadores(true);
-        bola.RedirecionarGoleiros();
-
-        LogisticaVars.bolaPermaneceNaPequenaArea = LogisticaVars.auxChuteAoGol = false;
-        LogisticaVars.lateral = LogisticaVars.foraFundo = false;
-        LogisticaVars.continuaSendoFora = false;
-
-        LogisticaVars.primeiraJogada = true;
-        LogisticaVars.aplicouPrimeiroToque = false;
-        LogisticaVars.jogoComecou = false;
-
-        LogisticaVars.bolaEntrouPequenaArea = false;
-        LogisticaVars.gol = false;
-        LogisticaVars.golT2 = false;
-        LogisticaVars.golT1 = false;
-        LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
-        LogisticaVars.primeiraJogada = true;
-        LogisticaVars.aplicouPrimeiroToque = false;
-
-        Physics.gravity = Vector3.down * 9.81f;
-        if (LogisticaVars.vezJ1) BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
-        else BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
-    }
-    #endregion
 
     public static void BolaNaPequenaArea(int i) //Rever
     {
@@ -419,73 +168,6 @@ public class GameplayOff : MonoBehaviour
         //EstadosDosBotoesEmCertasSituacoes("bola pequena area");
     }
 
-    #region Fora
-    /*void ForaLateral()
-    {
-        events.OnAplicarRotinas("rotina tempo lateral");
-    }*/
-    /*void ForaEscanteio()
-    {
-        if (LogisticaVars.fundo1 && LogisticaVars.ultimoToque == 1)
-        {
-            Debug.Log("Escanteio");
-        }
-        if (LogisticaVars.fundo2 && LogisticaVars.ultimoToque == 2) //Fundo2
-        {
-            Debug.Log("Escanteio");
-        }
-        LogisticaVars.foraFundo = false;
-        events.OnAplicarRotinas("rotina tempo escanteio");
-    }*/
-    /*void ForaTiroDeMeta()
-    {
-        if(LogisticaVars.fundo1 && LogisticaVars.ultimoToque != 1)
-        {
-            LogisticaVars.vezJ1 = true;
-            LogisticaVars.vezJ2 = false;
-        }
-
-        if (LogisticaVars.fundo2 && LogisticaVars.ultimoToque != 2)
-        {
-            LogisticaVars.vezJ2 = true;
-            LogisticaVars.vezJ1 = false;
-        }
-
-        events.OnAplicarRotinas("rotina tempo tiro de meta");
-    }*/
-    /*void ForaGeral()
-    {
-        if (!LogisticaVars.gol)
-        {
-            JogadorMetodos.ResetarValoresChute();
-            JogadorVars.m_aplicarChute = false;
-
-            events.OnAplicarMetodosUiComBotao("desistir selecao");
-
-            print("Fora");
-            JogoParado();
-            LogisticaVars.jogoParado = true;
-            comecarContagemJogada = false;
-
-            if (LogisticaVars.ultimoToque == 1 && LogisticaVars.vezJ1 || LogisticaVars.ultimoToque == 2 && LogisticaVars.vezJ2) { LogisticaVars.tempoJogada = 0; LogisticaVars.jogadas = 0; }
-
-            if (LogisticaVars.tempoJogada > 15) LogisticaVars.tempoJogada = 14;
-            if (LogisticaVars.jogadas != 0 && LogisticaVars.jogadas != 1) LogisticaVars.jogadas--;
-
-            LogisticaVars.vezJ1 = LogisticaVars.vezJ2 = false;
-            if (LogisticaVars.ultimoToque == 1) LogisticaVars.vezJ2 = true;
-            else LogisticaVars.vezJ1 = true;
-
-            events.OnAplicarMetodosUiSemBotao("estados dos botoes", "camera tiro de meta");
-
-            SelecaoMetodos.DesabilitarDadosJogador();
-            if (!LogisticaVars.tiroDeMeta) EventsManager.current.SelecaoAutomatica();
-            events.SituacaoGameplay("habilitar camera fora");
-        }
-    }*/
-    #endregion
-
-    #endregion
 
 
     public static float Modulo(float numero)

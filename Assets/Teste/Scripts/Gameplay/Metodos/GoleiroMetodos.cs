@@ -38,7 +38,7 @@ public class GoleiroMetodos: MonoBehaviour
         //LogisticaVars.m_goleiroGameObject.GetComponentInChildren<AudioListener>().enabled = situacao;
         if (situacao == false) ui.barraChuteGoleiro.SetActive(situacao);
 
-        events.OnAplicarMetodosUiComBotao("bola rasteira");
+        Gameplay._current.Situacao_BolaRasteira();
     }
     public static void ChuteAutomatico()
     {
@@ -50,8 +50,8 @@ public class GoleiroMetodos: MonoBehaviour
 
         ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;
-
-        events.OnAplicarRotinas("rotina pos chute goleiro");
+        GoleiroVars.chutou = true;
+        //events.OnAplicarRotinas("rotina pos chute goleiro");
     }
     public static void ChuteNormal()
     {
@@ -66,6 +66,7 @@ public class GoleiroMetodos: MonoBehaviour
         if (LogisticaVars.goleiroT1) LogisticaVars.ultimoToque = 1;
         else LogisticaVars.ultimoToque = 2;
 
-        events.OnAplicarRotinas("rotina pos chute goleiro");
+        GoleiroVars.chutou = true;
+        //events.OnAplicarRotinas("rotina pos chute goleiro");
     }
 }

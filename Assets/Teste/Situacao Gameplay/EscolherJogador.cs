@@ -11,36 +11,36 @@ public class EscolherJogador : Situacao
 
     public override IEnumerator Inicio()
     {
-        LogisticaVars.contarTempoSelecao = true;
-
+        UI_Inicio();
         LogisticaVars.escolheu = false;
+
         _camera.GetPrincipal().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseOut;
         _camera.GetPrincipal().m_DefaultBlend.m_Time = 0.5f;
-
-        EventsManager.current.AjeitarCamera(1f);
+        Camera_Situacao("entrar");
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", true);
+        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", false);
+        LogisticaVars.contarTempoSelecao = true;
+        LogisticaVars.jogadorSelecionado = false;
+        LogisticaVars.escolherOutroJogador = true;
         EventsManager.current.OnEscolherOutro("rotina tempo selecao");
         UI_Meio();
+
         GameObject jogadorPerto = null;
 
         if (LogisticaVars.vezJ1)
         {
             jogadorPerto = SelecaoMetodos.QuemEstaMaisPerto(LogisticaVars.m_jogadorEscolhido_Atual.transform.position, LogisticaVars.jogadoresT1);
-            SelecaoMetodos.ColocarIconeParaSelecao(LogisticaVars.jogadoresT1);
+            _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT1);
         }
         else
         {
             jogadorPerto = SelecaoMetodos.QuemEstaMaisPerto(LogisticaVars.m_jogadorEscolhido_Atual.transform.position, LogisticaVars.jogadoresT2);
-            SelecaoMetodos.ColocarIconeParaSelecao(LogisticaVars.jogadoresT2);
+            _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT2);
         }
-
         _gameplay.RotacionarJogadorPerto(jogadorPerto);
-        LogisticaVars.jogadorSelecionado = false;
-        LogisticaVars.escolherOutroJogador = true;
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", true);
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", false);
 
         yield return new WaitForSeconds(LogisticaVars.tempoMaxEscolhaJogador);
         Fim();
@@ -68,12 +68,26 @@ public class EscolherJogador : Situacao
 
     public override void Camera_Situacao(string s)
     {
-        base.Camera_Situacao(s);
+        switch (s)
+        {
+            case "entrar":
+                LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+                LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+                LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>();
+                break;
+            case "sair":
+                LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+                LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+                LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
+                break;
+        }
     }
 
     void UI_Inicio()
     {
-
+        _ui.EstadoTodosOsBotoes(false);
+        _ui.m_placar.SetActive(true);
+        _ui.pausarBt.gameObject.SetActive(true);
     }
     void UI_Meio()
     {
@@ -89,37 +103,33 @@ public class EscolherJogador : Situacao
         _ui.sairSelecaoBt.gameObject.SetActive(true);
         _ui.joystick.SetActive(true);
     }
-    void UI_Fim()
-    {
 
-    }
-
-    public override void Fim()
+    public override IEnumerator Fim()
     {
         LogisticaVars.tempoEscolherJogador = 0;
         LogisticaVars.contarTempoSelecao = false;
-
         LogisticaVars.escolheu = true;
-        //_gameplay.DestruirIcones();
-        //foreach (LinkarBotaoComIcone l in FindObjectsOfType<LinkarBotaoComIcone>()) Destroy(l.gameObject);
 
-        EventsManager.current.AjeitarCamera(-1);
-        LogisticaVars.escolherOutroJogador = false;
+        _gameplay.DestruirIconesSelecao();
         LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", false);
         LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", true);
         _ui.sairSelecaoBt.gameObject.SetActive(false);
 
-        /*if (LogisticaVars.trocarVez) SelecaoMetodos.TrocarVez();
+        Camera_Situacao("sair");
+        //EventsManager.current.AjeitarCamera(-1);
+
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+        _gameplay._bola.RedirecionarJogadores(true);
+        LogisticaVars.escolherOutroJogador = false;
+
+        if (LogisticaVars.trocarVez) _gameplay.SetSituacao(new TrocarVez(_gameplay, _ui, _camera));
         else
         {
-            events.OnEscolherOutro("jogador selecionado");
+            JogadorMetodos.ResetarValoresChute();
             LogisticaVars.jogadorSelecionado = true;
-            UI_Fim();
-            //if (!LogisticaVars.continuaSendoFora && !LogisticaVars.tiroDeMeta) StartCoroutine(EsperarTransicaoCameras(false, "ui normal"));
-        }*/
-
-        JogadorMetodos.ResetarValoresChute();
-
-        base.Fim();
+            UI_Normal();
+            base.Fim();
+        }
     }
 }

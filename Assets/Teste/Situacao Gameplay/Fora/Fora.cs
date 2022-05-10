@@ -30,7 +30,6 @@ public class Fora : Situacao
         SelecaoMetodos.DesabilitarDadosJogador();
 
         UI_Inicio();
-        //events.SituacaoGameplay("habilitar camera fora");
         Debug.Log("Fora");
         yield break;
     }
@@ -58,24 +57,5 @@ public class Fora : Situacao
         _ui.botaoBaixo.SetActive(true);
         _ui.botaoMeio.SetActive(true);
         _ui.joystick.SetActive(true);
-    }
-    public virtual void UI_Fim()
-    {
-        _ui.EstadoBotoesGoleiro(false);
-        _ui.EstadoBotoesJogador(true);
-        _ui.especialBt.gameObject.SetActive(true);
-        _ui.barraChuteJogador.SetActive(true);
-        _ui.barraEspecial.SetActive(true);
-        _ui.centralBotoes.SetActive(true);
-
-        _ui.numeroJogadasGO.SetActive(true);
-        _ui.tempoEscolhaGO.SetActive(true);
-        _ui.tempoJogadaGO.SetActive(true);
-        _ui.pausarBt.gameObject.SetActive(true);
-        _ui.sairSelecaoBt.gameObject.SetActive(false);
-        _ui.especialBt.interactable = true;
-
-        _ui.escanteioBt.gameObject.SetActive(false);
-        _ui.lateralBt.gameObject.SetActive(false);
     }
 }

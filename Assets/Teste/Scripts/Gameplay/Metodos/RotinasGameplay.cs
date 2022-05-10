@@ -17,10 +17,23 @@ public class RotinasGameplay : MonoBehaviour
         bola = FindObjectOfType<FisicaBola>();
 
         events = EventsManager.current;
-        events.onAplicarRotinas += RotinasPosSituacoes;
         events.onChuteAoGol += RotinasChuteAoGol;
+        events.onGol += RotinasGol;
+        events.onFora += RotinasFora;
+        //events.onEspecial += RotinasEspecial;
+        events.onGoleiro += RotinasGoleiro;
+        //events.onTrocarVez += RotinasTrocarVez;
     }
 
+    private void RotinasTrocarVez(string s)
+    {
+        switch (s)
+        {
+            case "rotina 3 jogadas":
+                StartCoroutine(TrocarVezPos3Jogadas());
+                break;
+        }
+    }
     private void RotinasChuteAoGol(string s)
     {
         switch (s)
@@ -30,35 +43,16 @@ public class RotinasGameplay : MonoBehaviour
                 break;
         }
     }
-
-    private void RotinasPosSituacoes(string s)
+    private void RotinasFora(string s)
     {
         switch (s)
         {
-            case "rotina 3 jogadas":
-                StartCoroutine(TrocarVezPos3Jogadas());
-                break;
-
-            case "rotina chute inicial":
-                StartCoroutine(ChuteInicial());
-                break;
-            case "rotina animacao gol":
-                StartCoroutine(AnimacaoTorcida());
-                break;
             case "rotina sair lateral":
                 StartCoroutine(SairLateral(bola));
                 break;
             case "rotina sair escanteio":
                 StartCoroutine(SairEscanteio(bola));
                 break;
-
-
-            case "rotina pos chute goleiro":
-                StartCoroutine(RotinaAposChuteGoleiro());
-                break;
-
-
-            #region Tempo Para Chute Auto
             case "rotina tempo lateral":
                 StartCoroutine(TempoParaLateral());
                 break;
@@ -68,16 +62,26 @@ public class RotinasGameplay : MonoBehaviour
             case "rotina tempo tiro de meta":
                 StartCoroutine(TempoParaTiroDeMeta());
                 break;
+        }
+    }
+    private void RotinasGoleiro(string s)
+    {
+        switch (s)
+        {
             case "rotina tempo pequena area":
                 StartCoroutine(TempoParaTirarBolaDaPequenaArea());
                 break;
-            case "rotina tempo especial":
-                StartCoroutine(TempoParaEspecial());
+            case "rotina pos chute goleiro":
+                StartCoroutine(RotinaAposChuteGoleiro());
                 break;
-            #endregion
-
-            case "rotina tempo selecao":
-                StartCoroutine(TempoParaSelecao());
+        }
+    }
+    private void RotinasGol(string s)
+    {
+        switch (s)
+        {
+            case "rotina animacao torcida":
+                StartCoroutine(AnimacaoTorcida());
                 break;
         }
     }
@@ -88,25 +92,10 @@ public class RotinasGameplay : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
         if (!bola.m_bolaCorrendo)
         {
-            if (!LogisticaVars.continuaSendoFora && !LogisticaVars.tiroDeMeta) events.OnTrocarVez();
+            //if (!LogisticaVars.continuaSendoFora && !LogisticaVars.tiroDeMeta) events.OnTrocarVez();
         }
         else StartCoroutine(TrocarVezPos3Jogadas());
     }
-
-
-    #region Inicio
-    IEnumerator ChuteInicial()
-    {
-        JogadorMetodos.ResetarValoresChute();
-        Debug.Log("7 segundos para dar o chute Inicial");
-        yield return new WaitForSeconds(7f);
-        if (!LogisticaVars.aplicouPrimeiroToque)
-        {
-            events.SituacaoGameplay("aplicar toque inicial");
-            events.SituacaoGameplay("jogo normal");
-        }
-    }
-    #endregion
 
     #region Chutes Automaticos
     IEnumerator TempoParaTirarBolaDaPequenaArea()
@@ -155,37 +144,24 @@ public class RotinasGameplay : MonoBehaviour
         }
         LogisticaVars.auxChuteAoGol = false;
     }
-    IEnumerator TempoParaEspecial()
-    {
-        EventsManager.current.OnAplicarMetodosUiSemBotao("especial");
-        //UIMetodosGameplay.Especial();
-
-        yield return new WaitForSeconds(LogisticaVars.m_maxEspecial); //15
-        if (!LogisticaVars.aplicouEspecial)
-        {
-            Debug.Log("Tempo para o Especial acabou :(");
-            Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
-            Destroy(GameObject.FindGameObjectWithTag("Trajetoria Especial"));
-            events.OnAplicarMetodosUiSemBotao("fim especial");
-            LogisticaVars.aplicouEspecial = true;
-        }
-    }
     #endregion
 
     #region Gol
     IEnumerator AnimacaoTorcida()
     {
         yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !FindObjectOfType<CinemachineBrain>().IsBlending);
+        yield return new WaitUntil(() => !CamerasSettings._current.GetPrincipal().IsBlending);
         Debug.Log("Começando a animacao da torcida");
+
+        //Fazer Torcida se Movimentar
 
         Player jogador1 = GameManager.Instance.m_usuario;
 
-        if(LogisticaVars.golT1)
+        if (LogisticaVars.golT1)
         {
             ui.golMarcadoGO.GetComponent<GolComponentes>().SpriteTimeMarcou(jogador1.m_baseLogo,
                 jogador1.m_fundoLogo, jogador1.m_simboloLogo, jogador1.m_corPrimaria, jogador1.m_corSecundaria, jogador1.m_corTerciaria);
-        } 
+        }
         else
         {
             if (GameManager.Instance.m_offline)
@@ -199,70 +175,13 @@ public class RotinasGameplay : MonoBehaviour
         ui.golMarcadoGO.GetComponent<Animator>().SetBool("Gol", true);
 
         yield return new WaitForSeconds(0.5f);
-
         ui.golMarcadoGO.GetComponent<Animator>().SetBool("Gol", false);
-        for (int i = 0; i < FindObjectOfType<Abertura>().QuantiaJogadores(); i++)
-        {
-            LogisticaVars.jogadoresT1[i].transform.position = new Vector3(LogisticaVars.esquemaT1[i, 0], LogisticaVars.jogadoresT1[i].transform.position.y, LogisticaVars.esquemaT1[i, 1]);
-            LogisticaVars.jogadoresT2[i].transform.position = new Vector3(-LogisticaVars.esquemaT2[i, 0], LogisticaVars.jogadoresT2[i].transform.position.y, -LogisticaVars.esquemaT2[i, 1]);
-        }
-        GameObject.FindGameObjectWithTag("Goleiro1").transform.position = FindObjectOfType<Abertura>().PosicaoGoleiro(1);
-        GameObject.FindGameObjectWithTag("Goleiro2").transform.position = FindObjectOfType<Abertura>().PosicaoGoleiro(2);
 
         yield return new WaitForSeconds(4f);
-
-        events.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
-
-        events.SituacaoGameplay("reiniciar pos gol");
-        ui.golMarcadoGO.SetActive(false);
-
-        events.SituacaoGameplay("toque pos gol");
-        GameObject.Find("Canvas").transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 1;
+        LogisticaVars.fimAnimacaoGol = true;
     }
     #endregion
 
-    #region Selecao
-    public static IEnumerator DesabilitarApos3Jogadas(FisicaBola bola)
-    {
-        events.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
-        
-        //Debug.Log("Trocando a vez");
-
-        yield return new WaitForSeconds(1f);
-        if (!LogisticaVars.desabilitouDadosJogador)
-        {
-            //JogadorMetodos.ResetarValoresChute();
-
-            bola.RedirecionarJogadores(true);
-
-            SelecaoMetodos.DesabilitarDadosJogador();
-            events.EscolherJogador();
-            SelecaoMetodos.DadosJogador();
-            
-
-            SelecaoMetodos.DesabilitarComponentesDosNaoSelecionados();
-            //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
-            events.OnAplicarMetodosUiComBotao("bola rasteira");
-        }
-        
-
-        yield return new WaitForSeconds(1);
-
-        events.SituacaoGameplay("jogo normal");
-        LogisticaVars.trocarVez = false;
-    }
-    IEnumerator TempoParaSelecao()
-    {
-        yield return new WaitForSeconds(0.95f);
-        tempo -= 1;
-        if (!LogisticaVars.escolheu)
-        {
-            if (tempo == 0) { events.OnAplicarMetodosUiComBotao("desistir selecao"); tempo = LogisticaVars.tempoMaxEscolhaJogador; }
-            else StartCoroutine(TempoParaSelecao());
-        }
-        else tempo = LogisticaVars.tempoMaxEscolhaJogador;
-    }
-    #endregion
 
     #region Goleiro
     IEnumerator RotinaAposChuteGoleiro()
@@ -277,8 +196,8 @@ public class RotinasGameplay : MonoBehaviour
         Debug.Log("Camera tiro de meta");
         GoleiroMetodos.ComponentesParaGoleiro(false);
 
-        events.SituacaoGameplay("habilitar camera tiro de meta");
-        events.OnAplicarMetodosUiSemBotao("estados dos botoes", "camera tiro de meta");
+        //events.SituacaoGameplay("habilitar camera tiro de meta");
+        //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "camera tiro de meta");
 
         yield return new WaitForSeconds(1);
 
@@ -298,7 +217,7 @@ public class RotinasGameplay : MonoBehaviour
     {
         ui.botaoMeio.SetActive(false);
         ui.lateralBt.gameObject.SetActive(false);
-        events.SituacaoGameplay("jogo normal");
+        //events.SituacaoGameplay("jogo normal");
 
         LogisticaVars.lateral = false;
 
@@ -311,13 +230,13 @@ public class RotinasGameplay : MonoBehaviour
         else target = new Vector3(bola.m_posLateral.x - 2f, jogador.position.y, bola.m_posLateral.z);
         StartCoroutine(MovimentoSairFora(target));
 
-        LogisticaVars.continuaSendoFora = false;
+        //LogisticaVars.continuaSendoFora = false;
     }
     IEnumerator SairEscanteio(FisicaBola bola)
     {
         ui.botaoMeio.SetActive(false);
         ui.escanteioBt.gameObject.SetActive(false);
-        events.SituacaoGameplay("jogo normal");
+        //events.SituacaoGameplay("jogo normal");
 
         LogisticaVars.foraFundo = false;
 
@@ -342,7 +261,7 @@ public class RotinasGameplay : MonoBehaviour
         if (LogisticaVars.vezJ1) LogisticaVars.ultimoToque = 1;
         else LogisticaVars.ultimoToque = 2;
 
-        LogisticaVars.continuaSendoFora = false;
+        //LogisticaVars.continuaSendoFora = false;
     }
     IEnumerator MovimentoSairFora(Vector3 target)
     {
@@ -362,7 +281,8 @@ public class RotinasGameplay : MonoBehaviour
             GameObject.Find("Bandeira Dir 2").transform.GetChild(0).gameObject.SetActive(true);
             GameObject.Find("Bandeira Esq 2").transform.GetChild(0).gameObject.SetActive(true);
             LogisticaVars.m_rbJogadorEscolhido.isKinematic = false;
-            events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
+            LogisticaVars.saiuFora = true;
+            //events.OnAplicarMetodosUiSemBotao("estados dos botoes", "normal");
         }
     }
     IEnumerator PosChuteGoleiro(FisicaBola bola)

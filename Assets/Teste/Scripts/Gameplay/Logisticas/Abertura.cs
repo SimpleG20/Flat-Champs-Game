@@ -91,7 +91,7 @@ public class Abertura : MonoBehaviour
         print("Animacao Abertura");
         QualTimeComeca();
         SetarVariaveisGameplay();
-        EventsManager.current.OnAplicarMetodosUiSemBotao("estados todos botoes", "" ,false);
+        //EventsManager.current.OnAplicarMetodosUiSemBotao("estados todos botoes", "" ,false);
         GameObject.FindGameObjectWithTag("Abertura").GetComponent<Animator>().SetBool("Abertura", true);
 
         //SetarLocalBotoes(connected);
