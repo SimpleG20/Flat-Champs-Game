@@ -11,15 +11,21 @@ public class Gol : Situacao
 
     public override IEnumerator Inicio()
     {
-        Debug.Log("SITUACAO: GOL");
-        Camera_Situacao("inicio");
+        UI_Situacao("inicio");
+        Camera_Situacao("gol marcado");
         EstadoJogo.JogoParado();
         EstadoJogo.TempoJogada(false);
         LogisticaVars.tempoJogada = LogisticaVars.tempoEscolherJogador = 0;
         LogisticaVars.jogadas = 0;
+        SelecaoMetodos.DesabilitarDadosJogador();
 
-        
-        EventsManager.current.OnGol("rotina animacao gol");
+        ComputarGols();
+        EventsManager.current.OnGol("rotina animacao torcida");
+
+        yield return new WaitForSeconds(2);
+        _gameplay._bola.PosicionarAposGol();
+        PosicionarJogadores();
+
         yield return new WaitUntil(() => LogisticaVars.fimAnimacaoGol);
         _gameplay.Fim();
     }
@@ -48,12 +54,11 @@ public class Gol : Situacao
             LogisticaVars.jogadoresT2[i].transform.position = 
                 new Vector3(-LogisticaVars.esquemaT2[i, 0], LogisticaVars.jogadoresT2[i].transform.position.y, -LogisticaVars.esquemaT2[i, 1]);
         }
-        GameObject.FindGameObjectWithTag("Goleiro1").transform.position = Gameplay._current.posGol1;
-        GameObject.FindGameObjectWithTag("Goleiro2").transform.position = Gameplay._current.posGol2;
+        GameObject.FindGameObjectWithTag("Goleiro1").transform.position = Gameplay._current.posGol1 + Vector3.forward * 3;
+        GameObject.FindGameObjectWithTag("Goleiro2").transform.position = Gameplay._current.posGol2 + Vector3.back * 3;
     }
     void ReiniciarPosGol()
     {
-        _gameplay._bola.PosicionarAposGol();
         _gameplay._bola.RedirecionarJogadores(true);
         _gameplay._bola.RedirecionarGoleiros();
 
@@ -73,11 +78,13 @@ public class Gol : Situacao
         LogisticaVars.primeiraJogada = true;
         LogisticaVars.aplicouPrimeiroToque = false;
 
+        LogisticaVars.tempoJogada = LogisticaVars.tempoEscolherJogador = 0;
+        LogisticaVars.contarTempoJogada = LogisticaVars.contarTempoSelecao = false;
+
         Physics.gravity = Vector3.down * 9.81f;
         if (LogisticaVars.vezJ1) _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
         else _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
     }
-    
 
     public override void UI_Situacao(string s)
     {
@@ -90,8 +97,13 @@ public class Gol : Situacao
                 _ui.EstadoBotoesCentral(false);
                 _ui.barraChuteJogador.SetActive(false);
                 _ui.especialBt.gameObject.SetActive(false);
+                //_ui.golMarcadoGO.SetActive(true);
                 break;
         }
+    }
+    public override void Camera_Situacao(string s)
+    {
+        _camera.SituacoesCameras(s);
     }
     public override IEnumerator Fim()
     {
@@ -99,14 +111,9 @@ public class Gol : Situacao
         _ui.golMarcadoGO.SetActive(false);
         ReiniciarPosGol();
 
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
-        //JogadorMetodos.ResetarValoresChute();
         _camera.GetPrincipal().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
-
-        //ToquePosGol();
-        //UI_Situacao("fim");
         _gameplay.canvas.transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 1;
-        _gameplay.SetSituacao(new Comecar(_gameplay, _ui, _camera));
+        _gameplay.SetSituacao("comecar");
+        yield break;
     }
 }

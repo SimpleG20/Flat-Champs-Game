@@ -3,28 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EstadoJogo : Situacao
+public class EstadoJogo 
 {
-    public EstadoJogo(Gameplay gameplay, VariaveisUIsGameplay ui, CamerasSettings camera) : base(gameplay, ui, camera)
-    { }
-
-    public override void UI_Situacao(string s)
+    public static void UI_Situacao(string s)
     {
         switch (s)
         {
             case "pause":
-                if (_gameplay.VerificarIconesSelecao())
+                if (Gameplay._current.VerificarIconesSelecao())
                 {
-                    foreach (GameObject l in _gameplay.ListaIconesSelecao()) l.GetComponent<Button>().interactable = false;
+                    foreach (GameObject l in Gameplay._current.ListaIconesSelecao()) l.GetComponent<Button>().interactable = false;
                 }
-                _gameplay.canvas.transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 0;
+                Gameplay._current.canvas.transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 0;
                 break;
             case "unpause":
-                if (_gameplay.VerificarIconesSelecao())
+                if (Gameplay._current.VerificarIconesSelecao())
                 {
-                    foreach (GameObject l in _gameplay.ListaIconesSelecao()) l.GetComponent<Button>().interactable = true;
+                    foreach (GameObject l in Gameplay._current.ListaIconesSelecao()) l.GetComponent<Button>().interactable = true;
                 }
-                _gameplay.canvas.transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 1;
+                Gameplay._current.canvas.transform.GetChild(2).GetComponent<CanvasGroup>().alpha = 1;
                 break;
         }
     }
@@ -33,34 +30,50 @@ public class EstadoJogo : Situacao
     {
         LogisticaVars.jogoParado = true;
     }
-
     public static void JogoNormal()
     {
         LogisticaVars.jogoParado = false;
     }
-    public void PararJogo()
+    public static void PausarJogo()
     {
         Debug.Log("ESTADO: PAUSE");
         Time.timeScale = 0;
         UI_Situacao("pause");
+        CamerasSettings._current.AplicarBlur(LogisticaVars.cameraJogador);
         TempoJogada(false);
         JogoParado();
     }
-    public void DespausarJogo()
+    public static void DespausarJogo()
     {
         Debug.Log("ESTADO: UNPAUSE");
         Time.timeScale = 1;
         UI_Situacao("unpause");
+        CamerasSettings._current.RetirarBlur(LogisticaVars.cameraJogador);
         JogoNormal();
         TempoJogada(true);
     }
-    void QuitarJogo()
+    public static void QuitarJogo()
     {
         Debug.Log("Quitar");
+        /*if(LogisticaVars.tempoCorrido != LogisticaVars.tempoPartida)
+        {
+            Gameplay._current.quitou = true;
+        }*/
+        Gameplay._current.SetSituacao("fim");
     }
 
     public static void TempoJogada(bool b)
     {
-        LogisticaVars.contarTempoJogada = b;
+        if (b == false) LogisticaVars.contarTempoJogada = b;
+        else
+        {
+            if (LogisticaVars.jogoComecou)
+            {
+                if (!LogisticaVars.continuaSendoFora && !LogisticaVars.especial && 
+                    !LogisticaVars.gol && !LogisticaVars.trocarVez && !LogisticaVars.defenderGoleiro)
+                    LogisticaVars.contarTempoJogada = b;
+            }
+        }
+        
     }
 }

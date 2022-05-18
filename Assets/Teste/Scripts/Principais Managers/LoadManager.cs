@@ -59,7 +59,7 @@ public class LoadManager : MonoBehaviour
         scenesLoading.Add(SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive));
         m_cenaAtual = 1;
         StartCoroutine(GetSceneLoadProgress());
-        //GameManager.Instance.m_menu = true;
+        GameManager.Instance.m_menu = true;
     }
 
     float totalSceneProgress;
@@ -90,5 +90,13 @@ public class LoadManager : MonoBehaviour
         SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(m_cenaAtual));
         m_loadingScreen.gameObject.SetActive(false);
         scenesLoading.RemoveRange(0,scenesLoading.Count);
+
+        if (GameManager.Instance.getAumentarXP())
+        {
+            print("ANIMACAO BARRA XP");
+            float xpAnterior = GameManager.Instance.m_usuario.m_xp;
+            GameManager.Instance.AumentarBarraXP(xpAnterior, GameManager.Instance.getXP_ParaAumentar());
+            GameManager.Instance.m_sceneManager.BotoesMenuInterativos(false);
+        }
     }
 }

@@ -10,29 +10,57 @@ public class TrocarVez : Situacao
 
     public override IEnumerator Inicio()
     {
+        Debug.Log("TROCAR VEZ INICIO");
+        yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
-        if (LogisticaVars.continuaSendoFora || LogisticaVars.tiroDeMeta) { Debug.Log("INTERRUPCAO TROCAR VEZ");  yield break; }
+        if (LogisticaVars.continuaSendoFora || LogisticaVars.tiroDeMeta || LogisticaVars.gol) { Debug.Log("INTERRUPCAO TROCAR VEZ");  yield break; }
 
-        Debug.Log("TROCAR VEZ");
+        Debug.Log("COMECAR TROCA TROCA");
         LogisticaVars.trocarVez = true;
+        LogisticaVars.numControle++;
         EstadoJogo.TempoJogada(false);
-        bool aux = LogisticaVars.vezJ1;
-        LogisticaVars.vezJ1 = LogisticaVars.vezJ2;
-        LogisticaVars.vezJ2 = aux;
 
         LogisticaVars.tempoJogada = 0;
         LogisticaVars.jogadas = 0;
-
-        //LogisticaVars.escolherOutroJogador = false;
-        //LogisticaVars.desabilitouDadosJogador = false;
+        Camera_Situacao();
+        UI_Situacao("trocar");
 
         yield return new WaitForSeconds(1);
-
         Trocar();
         SituacaoBolaRasteira();
 
         yield return new WaitForSeconds(1);
+        EstadoJogo.TempoJogada(true);
+        UI_Normal();
         _gameplay.Fim();
+    }
+    void Trocar()
+    {
+        bool aux = LogisticaVars.vezJ1;
+        LogisticaVars.vezJ1 = LogisticaVars.vezJ2;
+        LogisticaVars.vezJ2 = aux;
+        //if (LogisticaVars.vezJ1) Debug.Log("Time 1");
+        //if (LogisticaVars.vezJ2) Debug.Log("Time 2");
+
+        if (LogisticaVars.vezJ2 && _gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) UI_Situacao("");
+        else SelecaoMetodos.DesabilitarDadosJogador();
+        _gameplay._bola.RedirecionarJogadores(true);
+        EventsManager.current.EscolherJogador();
+        SelecaoMetodos.DadosJogador();
+        SelecaoMetodos.DesabilitarComponentesDosNaoSelecionados();
+    }
+    void SituacaoBolaRasteira()
+    {
+        if (LogisticaVars.vezJ1 && LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && LogisticaVars.bolaRasteiraT2)
+        {
+            _ui.direcaoBolaBt.isOn = true;
+            VariaveisUIsGameplay._current.UI_BolaRasteira();
+        }
+        else if (LogisticaVars.vezJ1 && !LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && !LogisticaVars.bolaRasteiraT2)
+        {
+            _ui.direcaoBolaBt.isOn = false;
+            VariaveisUIsGameplay._current.UI_BolaRasteira();
+        }
     }
 
     public override void UI_Situacao(string s)
@@ -51,30 +79,10 @@ public class TrocarVez : Situacao
                 break;
         }
     }
-
-    void Trocar()
-    { 
-        SelecaoMetodos.DesabilitarDadosJogador();
-        _gameplay._bola.RedirecionarJogadores(true);
-        EventsManager.current.EscolherJogador();
-        SelecaoMetodos.DadosJogador();
-        SelecaoMetodos.DesabilitarComponentesDosNaoSelecionados();
-    }
-
-    void SituacaoBolaRasteira()
+    public override void Camera_Situacao(string s = default)
     {
-        if (LogisticaVars.vezJ1 && LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && LogisticaVars.bolaRasteiraT2)
-        { 
-            _ui.direcaoBolaBt.isOn = true; 
-            VariaveisUIsGameplay._current.UI_BolaRasteira(); 
-        }
-        else if (LogisticaVars.vezJ1 && !LogisticaVars.bolaRasteiraT1 || LogisticaVars.vezJ2 && !LogisticaVars.bolaRasteiraT2)
-        { 
-            _ui.direcaoBolaBt.isOn = false;
-            VariaveisUIsGameplay._current.UI_BolaRasteira(); 
-        }
+        _camera.MudarBlendCamera(Cinemachine.CinemachineBlendDefinition.Style.Cut);
     }
-
     public override IEnumerator Fim()
     {
         LogisticaVars.trocarVez = false;

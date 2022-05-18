@@ -7,11 +7,7 @@ using Cinemachine.PostFX;
 
 public class CamerasSettings : MonoBehaviour
 {
-    //Note: Online
-    //
-    //Note: 
-
-    [SerializeField] FisicaBola bola;
+    bool camEspera;
     [SerializeField] CinemachineBrain camPrincipal;
     [SerializeField] GameObject lateralEsq, lateralDir, tiroDeMeta, torcida, espera, follow;
     [SerializeField] VolumeProfile blur;
@@ -23,10 +19,6 @@ public class CamerasSettings : MonoBehaviour
         _current = this;
     }
 
-    void Start()
-    {
-        bola = FindObjectOfType<FisicaBola>();
-    }
 
     public CinemachineBrain GetPrincipal()
     {
@@ -45,7 +37,6 @@ public class CamerasSettings : MonoBehaviour
                 break;
             case "desabilitar cam lateral":
                 DesabilitarCamerasMenosJogador();
-                //StartCoroutine(EsperarTransicaoCameraFora());
                 break;
             case "habilitar camera tiro de meta":
                 AcionarCameraTiroDeMeta();
@@ -61,19 +52,6 @@ public class CamerasSettings : MonoBehaviour
                 break;
             case "toque pos gol":
                 DesabilitarCamerasMenosJogador();
-                break;
-        }
-    }
-
-    void UiMetodos(string situacao)
-    {
-        switch (situacao)
-        {
-            case "pausar jogo":
-                AplicarBlur(LogisticaVars.cameraJogador);
-                break;
-            case "despausar jogo":
-                RetirarBlur(LogisticaVars.cameraJogador);
                 break;
         }
     }
@@ -106,11 +84,13 @@ public class CamerasSettings : MonoBehaviour
     }
     #endregion
 
+    #region Acionar Cameras
     void AcionarCameraDeEspera()
     {
+        camEspera = true;
         MudarBlendCamera(CinemachineBlendDefinition.Style.HardOut);
 
-        espera.GetComponent<CinemachineVirtualCamera>().m_LookAt = bola.transform;
+        espera.GetComponent<CinemachineVirtualCamera>().m_LookAt = Gameplay._current._bola.transform;
         espera.GetComponent<CinemachineVirtualCamera>().AddCinemachineComponent<CinemachineHardLookAt>();
         espera.GetComponent<CinemachineVirtualCamera>().m_Priority = 101;
     }
@@ -124,31 +104,31 @@ public class CamerasSettings : MonoBehaviour
     {
         float xCampo = FindObjectOfType<DimensaoCampo>().TamanhoCampo().x / 2;
         float zCampo = FindObjectOfType<DimensaoCampo>().TamanhoCampo().y;
-        Vector3 target = new Vector3(bola.transform.position.x * 3 / 4, bola.transform.position.y, bola.transform.position.z);
+        Vector3 target = new Vector3(Gameplay._current._bola.transform.position.x * 3 / 4, Gameplay._current._bola.transform.position.y, Gameplay._current._bola.transform.position.z);
         follow.transform.position = target;
 
         MudarBlendCamera(CinemachineBlendDefinition.Style.HardOut);
 
-        if (bola.transform.position.z > zCampo / 4 || bola.transform.position.z < -zCampo / 4)
+        if (Gameplay._current._bola.transform.position.z > zCampo / 4 || Gameplay._current._bola.transform.position.z < -zCampo / 4)
         {
-            if (bola.transform.position.x > 0)
+            if (Gameplay._current._bola.transform.position.x > 0)
             {
                 lateralDir.transform.GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 101;
 
-                if (bola.transform.position.z > 0) lateralDir.transform.GetChild(1).transform.position = new Vector3(xCampo + 8, 13, 37.5f);
+                if (Gameplay._current._bola.transform.position.z > 0) lateralDir.transform.GetChild(1).transform.position = new Vector3(xCampo + 8, 13, 37.5f);
                 else lateralDir.transform.GetChild(1).transform.position = new Vector3(xCampo + 8, 13, -37.5f);
             }
             else
             {
                 lateralEsq.transform.GetChild(1).GetComponent<CinemachineVirtualCamera>().m_Priority = 101;
 
-                if (bola.transform.position.z > 0) lateralEsq.transform.GetChild(1).transform.position = new Vector3(-xCampo - 8, 13, 37.5f);
+                if (Gameplay._current._bola.transform.position.z > 0) lateralEsq.transform.GetChild(1).transform.position = new Vector3(-xCampo - 8, 13, 37.5f);
                 else lateralEsq.transform.GetChild(1).transform.position = new Vector3(-xCampo - 8, 13, -37.5f);
             }
         }
         else
         {
-            if (bola.transform.position.x > 0)
+            if (Gameplay._current._bola.transform.position.x > 0)
             {
                 lateralDir.transform.GetChild(0).transform.position = new Vector3(xCampo + 8, 10, target.z);
                 lateralDir.transform.GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 101;
@@ -163,15 +143,15 @@ public class CamerasSettings : MonoBehaviour
     void AcionarCameraTiroDeMeta()
     {
         tiroDeMeta.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineTrackedDolly>().m_PathPosition = 0;
-        tiroDeMeta.GetComponent<CinemachineVirtualCamera>().m_Follow = bola.transform;
-        tiroDeMeta.GetComponent<CinemachineVirtualCamera>().m_LookAt = bola.transform;
+        tiroDeMeta.GetComponent<CinemachineVirtualCamera>().m_Follow = Gameplay._current._bola.transform;
+        tiroDeMeta.GetComponent<CinemachineVirtualCamera>().m_LookAt = Gameplay._current._bola.transform;
         tiroDeMeta.GetComponent<CinemachineVirtualCamera>().m_Priority = 103;
 
-        if (bola.transform.position.z > 0 && bola.transform.position.x > 0) tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
+        if (Gameplay._current._bola.transform.position.z > 0 && Gameplay._current._bola.transform.position.x > 0) tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
                 GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = GameObject.Find("Caminho Camera TM Esq G2").GetComponent<CinemachinePath>();
-        else if(bola.transform.position.z > 0 && bola.transform.position.x < 0) tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
+        else if(Gameplay._current._bola.transform.position.z > 0 && Gameplay._current._bola.transform.position.x < 0) tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
                 GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = GameObject.Find("Caminho Camera TM Dir G2").GetComponent<CinemachinePath>();
-        else if (bola.transform.position.z < 0 && bola.transform.position.x < 0) tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
+        else if (Gameplay._current._bola.transform.position.z < 0 && Gameplay._current._bola.transform.position.x < 0) tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
                  GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = GameObject.Find("Caminho Camera TM Esq G1").GetComponent<CinemachinePath>();
         else tiroDeMeta.GetComponent<CinemachineVirtualCamera>().
                  GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = GameObject.Find("Caminho Camera TM Dir G1").GetComponent<CinemachinePath>();
@@ -185,7 +165,7 @@ public class CamerasSettings : MonoBehaviour
 
         LogisticaVars.cameraJogador.m_Priority = 99;
     }
-
+    #endregion
 
     void DesabilitarCamerasMenosJogador()
     {
@@ -198,20 +178,15 @@ public class CamerasSettings : MonoBehaviour
         espera.GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
         StartCoroutine(EsperarTransicaoParaMudarBlend(CinemachineBlendDefinition.Style.Cut));
     }
-
+    public bool getCameraEspera()
+    {
+        return camEspera;
+    }
     public IEnumerator EsperarTransicaoParaMudarBlend(CinemachineBlendDefinition.Style c)
     {
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !camPrincipal.IsBlending);
         LogisticaVars.cameraJogador.m_Lens.FieldOfView = 60;
         MudarBlendCamera(c);
-    }
-    IEnumerator EsperarTransicaoCameraFora()
-    {
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !FindObjectOfType<CinemachineBrain>().IsBlending);
-
-        //if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2) EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "fora");
-        //else { EventsManager.current.OnAplicarMetodosUiSemBotao("estados dos botoes", "tiro de meta"); MudarBlendCamera(CinemachineBlendDefinition.Style.HardOut); }
     }
 }

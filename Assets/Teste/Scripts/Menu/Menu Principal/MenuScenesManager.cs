@@ -144,15 +144,11 @@ public class MenuScenesManager : MonoBehaviour
     }
     void SairModoDeJogo()
     {
-        GameManager.Instance.m_online = GameManager.Instance.m_offline = false;
-        GameManager.Instance.m_jogo1v1 = GameManager.Instance.m_jogo6v6 = GameManager.Instance.m_jogoClassico = false;
-        GameManager.Instance.m_jogadorJogador = GameManager.Instance.m_jogadorAi = false;
         MenuCena();
     }
     void SingleplayerCena()
     {
         BotoesMenuInterativos(false);
-        GameManager.Instance.m_offline = true;
         cenaModoJogo.SetActive(true);
         cenaOffline.SetActive(true);
     }
@@ -160,7 +156,6 @@ public class MenuScenesManager : MonoBehaviour
     {
         if (GameManager.Instance.InternetConnectivity())
         {
-            GameManager.Instance.m_online = true;
             BotoesMenuInterativos(false);
             cenaModoJogo.SetActive(true);
             cenaOnline.SetActive(true);
@@ -182,32 +177,49 @@ public class MenuScenesManager : MonoBehaviour
     #endregion
 
     #region Modos de Jogo ON e OFF
-    public void JogadorAI()
+
+    public void Offline_Classico(bool b)
     {
-        GameManager.Instance.m_jogadorAi = true;
-        GameManager.Instance.m_jogadorJogador = false;
-    }
-    public void JogadorJogador()
-    {
-        GameManager.Instance.m_jogadorAi = false;
-        GameManager.Instance.m_jogadorJogador = true;
-    }
-    public void ModoClassicoOff()
-    {
-        GameManager.Instance.ModosJogoOff(1);
+        if (b) GameManager.Instance.JogoOff_JogadorJogador(1);
+        else GameManager.Instance.JogoOff_JogadorAi(1);
         LoadManager.Instance.CenaEstadio();
     }
-    public void Modo6v6Off()
+    public void Offline_Quick(bool b)
     {
-        GameManager.Instance.ModosJogoOff(2);
+        if (b) GameManager.Instance.JogoOff_JogadorJogador(2);
+        else GameManager.Instance.JogoOff_JogadorAi(2);
         LoadManager.Instance.CenaEstadio();
     }
-    public void Modo1v1Off()
+    public void Offline_Versus3(bool b)
     {
-        GameManager.Instance.ModosJogoOff(3);
+        if (b) GameManager.Instance.JogoOff_JogadorJogador(3);
+        else GameManager.Instance.JogoOff_JogadorAi(3);
+        LoadManager.Instance.CenaEstadio();
+    }
+    public void Offline_Versus1()
+    {
+        GameManager.Instance.JogoOff_JogadorJogador(4);
         LoadManager.Instance.CenaEstadio();
     }
 
+    public void Online_Partida(string tipo)
+    {
+        switch (tipo)
+        {
+            case "CLASSICO":
+                break;
+            case "QUICK":
+                break;
+            case "VERSUS3 TEAM":
+                break;
+            case "VERSUS3 RANDOM":
+                break;
+            case "VERSUS2":
+                break;
+            case "VERSUS1":
+                break;
+        }
+    }
     #endregion
 
     public void SalvarDataTemporaria()

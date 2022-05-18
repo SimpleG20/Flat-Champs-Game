@@ -5,40 +5,199 @@ using UnityEngine.UI;
 
 public class Gameplay : MonoBehaviour
 {
-    public enum Situacoes { JOGO_NORMAL, FORA, PAUSADO}
+    public enum Situacoes { NONE, COMECAR, JOGO_NORMAL, FORA, PAUSADO, ESCOLHER, TROCAR_VEZ, CHUTE_AO_GOL, PEQUENA_AREA, GOL, ESPECIAL}
+
+    public bool quitou;
 
     public Vector3 posGol1, posGol2;
     public Quaternion rotacaoAnt;
+    public Transform rotacaoCamera;
     public GameObject canvas, mira;
 
     public Situacoes _atual;
+    Situacoes aux;
     Situacao _situacaoAtual;
 
     public Abertura abertura;
     public FisicaBola _bola;
     VariaveisUIsGameplay ui;
+    EventsManager events;
+
+    public Partida.Tipo tipoPartida;
+    public Partida.Modo modoPartida;
+    public Partida.Conexao conexaoPartida;
 
     public static Gameplay _current;
     private void Awake()
     {
         _current = this;
     }
-    // Start is called before the first frame update
+
     void Start()
     {
+        abertura = GetComponent<Abertura>();
+        events = EventsManager.current;
         ui = VariaveisUIsGameplay._current;
+        tipoPartida = GameManager.Instance.m_partida.getTipo();
+        modoPartida = GameManager.Instance.m_partida.getModo();
+        conexaoPartida = GameManager.Instance.m_partida.getConexao();
+        _bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<FisicaBola>();
+
+        canvas = GameObject.Find("Canvas");
+        rotacaoCamera = GameObject.Find("RotacaoCamera").transform;
+        posGol1 = GameObject.FindGameObjectWithTag("Gol1").transform.position;
+        posGol2 = GameObject.FindGameObjectWithTag("Gol2").transform.position;
+
+        LogisticaVars.m_especialAtualT1 = LogisticaVars.m_especialAtualT2 = 0;
+        BarraEspecial(0, LogisticaVars.m_maxEspecial);
+        EstadoJogo.JogoParado();
+        SetSituacao("comecar");
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        events.OnAtualizarNumeros();
+        if (LogisticaVars.jogoComecou && !LogisticaVars.jogoParado) LogisticaVars.tempoCorrido += Time.deltaTime;
+        TempoJogo();
+
+        if (LogisticaVars.especialT1Disponivel && LogisticaVars.vezJ1 || LogisticaVars.especialT2Disponivel && LogisticaVars.vezJ2) ui.especialBt.interactable = true;
+        else ui.especialBt.interactable = false;
+
+        if (LogisticaVars.contarTempoSelecao)
+        {
+            LogisticaVars.tempoEscolherJogador += Time.deltaTime;
+        }
+
+        if (LogisticaVars.contarTempoJogada)
+        {
+            if(LogisticaVars.jogadas != 3) LogisticaVars.tempoJogada += Time.deltaTime;
+
+            if (LogisticaVars.vezJ1)
+            {
+                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT1 += Time.deltaTime * 20;
+
+                if (LogisticaVars.m_especialAtualT1 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT1Disponivel)
+                { LogisticaVars.m_especialAtualT1 = LogisticaVars.m_maxEspecial; LogisticaVars.especialT1Disponivel = true; }
+                BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
+            }
+            else
+            {
+                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT2 += Time.deltaTime * 0f; //mudar para 0.5f
+
+                if (LogisticaVars.m_especialAtualT2 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT2Disponivel)
+                { LogisticaVars.m_especialAtualT2 = LogisticaVars.m_maxEspecial; LogisticaVars.especialT2Disponivel = true; }
+                BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
+            }
+        }
+
+        if (LogisticaVars.tempoJogada > 20 && !LogisticaVars.trocarVez) { LogisticaVars.tempoJogada = 20; LogisticaVars.trocarVez = true; SetSituacao("trocar vez"); }
     }
 
-    public void SetSituacao(Situacao situacao)
+    void TempoJogo()
     {
-        _situacaoAtual = situacao;
-        _situacaoAtual.Inicio();
+        LogisticaVars.segundosCorridos = Mathf.RoundToInt(LogisticaVars.tempoCorrido - (60 * LogisticaVars.minutosCorridos));
+
+        if (LogisticaVars.tempoCorrido - (60 * LogisticaVars.minutosCorridos) >= 60) LogisticaVars.minutosCorridos++;
+    }
+    public void RotacaoAuto()
+    {
+        if (ui.rotacaoAutoBt.isOn)
+        {
+            ui.rotacaoAutoBt.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+            LogisticaVars.redirecionamentoAutomatico = true;
+        }
+        else
+        {
+            ui.rotacaoAutoBt.gameObject.transform.GetChild(1).gameObject.SetActive(true);
+            LogisticaVars.redirecionamentoAutomatico = false;
+        }
+    }
+
+    #region Situacoes
+    public void SetSituacao(string situacao)
+    {
+        print("");
+        print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        print("* * * * * ANTERIOR: " + _situacaoAtual);
+        print("Numero de controle: " + LogisticaVars.numControle);
+        if (LogisticaVars.escolherOutroJogador) { StartCoroutine(EsperarParaMudarSituacao(situacao)); return; }
+
+        switch (situacao)
+        {
+            case "pausar jogo":
+                aux = _atual;
+                _atual = Situacoes.PAUSADO;
+                EstadoJogo.PausarJogo();
+                return;
+            case "despausar jogo":
+                _atual = aux;
+                EstadoJogo.DespausarJogo();
+                return;
+            case "quit jogo":
+                _atual = Situacoes.NONE;
+                EstadoJogo.QuitarJogo();
+                return;
+            case "comecar":
+                _atual = Situacoes.COMECAR;
+                _situacaoAtual = new Comecar(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "escolher outro":
+                _atual = Situacoes.ESCOLHER;
+                _situacaoAtual = new EscolherJogador(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "trocar vez":
+                if (_atual == Situacoes.GOL) return;
+                _atual = Situacoes.TROCAR_VEZ;
+                _situacaoAtual = new TrocarVez(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "lateral":
+                if (_atual == Situacoes.GOL) return;
+                _atual = Situacoes.FORA;
+                _situacaoAtual = new Lateral(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "escanteio":
+                if (_atual == Situacoes.GOL) return;
+                _atual = Situacoes.FORA;
+                _situacaoAtual = new Escanteio(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "tiro de meta":
+                if (_atual == Situacoes.GOL) return;
+                _atual = Situacoes.FORA;
+                _situacaoAtual = new Tiro_de_Meta(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "chute ao gol":
+                _atual = Situacoes.CHUTE_AO_GOL;
+                _situacaoAtual = new ChuteAoGol(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "pequena area":
+                _atual = Situacoes.PEQUENA_AREA;
+                _situacaoAtual = new GoleiroPequenaArea(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "gol":
+                _atual = Situacoes.GOL;
+                _situacaoAtual = new Gol(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "especial":
+                _atual = Situacoes.ESPECIAL;
+                _situacaoAtual = new Especial(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+            case "fim":
+                _atual = Situacoes.NONE;
+                _situacaoAtual = new Fim(_current, VariaveisUIsGameplay._current, CamerasSettings._current);
+                break;
+        }
+        LogisticaVars.numControle++;
+        print("* * * * * " + _atual);
+        LogisticaVars.fimSituacao = false;
+        StartCoroutine(_situacaoAtual.Inicio());
+    }
+    IEnumerator EsperarParaMudarSituacao(string s)
+    {
+        Fim();
+        yield return new WaitUntil(() => LogisticaVars.fimSituacao);
+        print("Terminou espera");
+        SetSituacao(s);
     }
     public Situacao GetSituacao()
     {
@@ -46,21 +205,20 @@ public class Gameplay : MonoBehaviour
     }
     public void Fim()
     {
+        print("* * * * * FIM: " + _situacaoAtual);
         StartCoroutine(_situacaoAtual.Fim());
     }
 
     #region Comecar
     public void AjeitarBarraChute()
     {
-        FindObjectOfType<FollowWorld>().lookAt = LogisticaVars.m_jogadorEscolhido_Atual.transform;
+        FollowWorld barra = FindObjectOfType<FollowWorld>();
+        barra.lookAt = LogisticaVars.m_jogadorEscolhido_Atual.transform;
+        barra.PosicionarBarra();
     }
     #endregion
 
     #region Chute ao Gol
-    public void OnChuteAoGol() //Botao Chute ao Gol
-    {
-        SetSituacao(new ChuteAoGol(_current, VariaveisUIsGameplay._current, CamerasSettings._current));
-    }
     public void GoleiroPosicionado()
     {
         StartCoroutine(_situacaoAtual.Meio());
@@ -105,13 +263,9 @@ public class Gameplay : MonoBehaviour
     {
         foreach (GameObject i in GameObject.FindGameObjectsWithTag("Icone Selecao")) Destroy(i.gameObject);
     }
-    public void OnSelecionarOutro()//Botao
-    {
-        SetSituacao(new EscolherJogador(_current, VariaveisUIsGameplay._current, CamerasSettings._current));
-    }
     public void OnJogadorSelecionado()
     {
-        _situacaoAtual.Fim();
+        StartCoroutine(_situacaoAtual.Fim());
     }
     public void RotacionarJogadorPerto(GameObject jogadorPerto)
     {
@@ -148,12 +302,14 @@ public class Gameplay : MonoBehaviour
     }
     public void InstanciarMira()
     {
-        Instantiate(ui.miraEspecial, FindObjectOfType<Camera>().WorldToScreenPoint(GameObject.FindGameObjectWithTag("Direcao Especial").transform.position,
+        var _mira = ui.miraEspecial;
+        Instantiate(_mira, FindObjectOfType<Camera>().WorldToScreenPoint(GameObject.FindGameObjectWithTag("Direcao Especial").transform.position,
             Camera.MonoOrStereoscopicEye.Mono), Quaternion.identity, canvas.transform.GetChild(2));
+        mira = _mira;
     }
     public void TravarMira()
     {
-        mira.GetComponent<MiraEspecial>().TravarMira();
+        FindObjectOfType<MiraEspecial>().TravarMira();
         ui.travarMiraBt.gameObject.SetActive(false);
         ui.chuteEspecialBt.gameObject.SetActive(true);
     }
@@ -164,6 +320,7 @@ public class Gameplay : MonoBehaviour
     }
     #endregion
 
+    #region Fora
     public void Spawnar(string situacao)
     {
         switch (situacao)
@@ -173,13 +330,16 @@ public class Gameplay : MonoBehaviour
                 else StartCoroutine(_situacaoAtual.Spawnar("lateral direita"));
                 break;
             case "escanteio":
-                if (_bola.m_pos.z < 0) StartCoroutine(_situacaoAtual.Spawnar("fundo 2"));
+                if (_bola.m_pos.z > 0) StartCoroutine(_situacaoAtual.Spawnar("fundo 2"));
                 else StartCoroutine(_situacaoAtual.Spawnar("fundo 1"));
                 break;
             case "tiro de meta":
-                if (_bola.m_pos.z < 0) StartCoroutine(_situacaoAtual.Spawnar("fundo 2"));
+                if (_bola.m_pos.z > 0) StartCoroutine(_situacaoAtual.Spawnar("fundo 2"));
                 else StartCoroutine(_situacaoAtual.Spawnar("fundo 1"));
                 break;
         }
     }
+    #endregion
+
+    #endregion
 }

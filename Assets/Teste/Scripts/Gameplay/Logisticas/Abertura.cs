@@ -13,16 +13,19 @@ public class Abertura : MonoBehaviour
     [SerializeField] List<GameObject> estadios_11, estadios_6, estadios_3;
     [SerializeField] GameObject aberturaOff, aberturaOn;
 
-    [SerializeField] UIMetodosGameplay ui;
-
     float[,] esquemaT1, esquemaT2;
-    int modoJogo, qntJogadoresPorTime;
+    int qntJogadoresPorTime;
 
     Vector3 posGoleiro1, posGoleiro2;
 
+    Partida.Tipo tipoJogo;
+    Partida.Conexao conexaoJogo;
+
     void Awake()
     {
-        InstanciarEstadio_e_Abertura(GameManager.Instance.modoDeJogo, GameManager.Instance.m_online);
+        print("*--------------------* INICIO JOGO *--------------------*");
+        LogisticaVars.abertura = true;
+        InstanciarEstadio_e_Abertura();
         
         //InstanciarEstadio_e_Abertura(jogo, connected);
         //Setar Dia/Noite, iluminacao
@@ -34,19 +37,21 @@ public class Abertura : MonoBehaviour
     }
 
     //Instancia Estadio e Abertura GO e seta os componentes da Abertura;
-    void InstanciarEstadio_e_Abertura(int modo, bool conexao)
+    void InstanciarEstadio_e_Abertura()
     {
-        print("Instanciar Estadio e Abertura");
-        bool online = false;
+        tipoJogo = GameManager.Instance.m_partida.getTipo();
+        conexaoJogo = GameManager.Instance.m_partida.getConexao();
+
+        //print("Instanciar Estadio e Abertura");
         int randomEstadio;
 
-        switch (modo)
+        switch (tipoJogo)
         {
-            case 11:
+            case Partida.Tipo.CLASSICO:
                 randomEstadio = Random.Range(0, estadios_11.Count);
                 Instantiate(estadios_11[randomEstadio]);
                 break;
-            case 6:
+            case Partida.Tipo.QUICK:
                 randomEstadio = Random.Range(0, estadios_6.Count);
                 Instantiate(estadios_6[randomEstadio]);
                 break;
@@ -56,19 +61,20 @@ public class Abertura : MonoBehaviour
                 break;
         }
 
-        modoJogo = modo;
 
-        if (conexao)
+        if (conexaoJogo == Partida.Conexao.ONLINE)
         {
-            if (GameManager.Instance.modoDeJogo != 11 || GameManager.Instance.modoDeJogo != 6 || GameManager.Instance.modoDeJogo != 30)
+            if (tipoJogo != Partida.Tipo.CLASSICO || tipoJogo != Partida.Tipo.QUICK || tipoJogo != Partida.Tipo.VERSUS3_TIME)
             {
                 Instantiate(aberturaOn, GameObject.Find("Canvas").transform);
                 FindObjectOfType<AberturaComponentes>().SetarComponentesOn();
-                online = true;
+            }
+            else
+            {
+
             }
         }
-        
-        if(!online)
+        else
         {
             Instantiate(aberturaOff, GameObject.Find("Canvas").transform);
             FindObjectOfType<AberturaComponentes>().SetarComponentesOff();
@@ -82,64 +88,63 @@ public class Abertura : MonoBehaviour
 
     IEnumerator IniciarAnimacaoAbertura()
     {
-        print("esperando comecar Abertura");
+        //print("esperando comecar Abertura");
         yield return new WaitUntil(() => LoadManager.Instance.m_loadingScreen.activeSelf == false);
 
         SceneManager.MoveGameObjectToScene(GameObject.FindGameObjectWithTag("Bola"), SceneManager.GetActiveScene());
         SceneManager.MoveGameObjectToScene(GameObject.FindGameObjectWithTag("Estadio"), SceneManager.GetActiveScene());
 
-        print("Animacao Abertura");
+        //print("Animacao Abertura");
         QualTimeComeca();
         SetarVariaveisGameplay();
-        //EventsManager.current.OnAplicarMetodosUiSemBotao("estados todos botoes", "" ,false);
+        VariaveisUIsGameplay._current.EstadoTodosOsBotoes(false);
         GameObject.FindGameObjectWithTag("Abertura").GetComponent<Animator>().SetBool("Abertura", true);
 
         //SetarLocalBotoes(connected);
-        SetarLocalBotoes(GameManager.Instance.m_online);
+        SetarLocalBotoes(conexaoJogo);
 
         yield return new WaitForSeconds(4.5f);
         GameObject.FindGameObjectWithTag("Abertura").GetComponent<Animator>().SetBool("Abertura", false);
         GameObject.FindGameObjectWithTag("Abertura").SetActive(false);
         FindObjectOfType<RandomPlacares>().InstanciarPlacar();
-        ui.m_placar = GameObject.FindGameObjectWithTag("Placar");
+        VariaveisUIsGameplay._current.m_placar = GameObject.FindGameObjectWithTag("Placar");
 
-        if (!GameManager.Instance.m_online) ui.m_placar.GetComponent<PlacarManager>().SetarPlacarConfigOff();
-        else ui.m_placar.GetComponent<PlacarManager>().SetarPlacarOn(false);
+        if (conexaoJogo == Partida.Conexao.OFFLINE) VariaveisUIsGameplay._current.m_placar.GetComponent<PlacarManager>().SetarPlacarConfigOff();
+        else VariaveisUIsGameplay._current.m_placar.GetComponent<PlacarManager>().SetarPlacarOn(false);
 
-        ui.m_placar.SetActive(false);
+        VariaveisUIsGameplay._current.m_placar.SetActive(false);
         //if (!connected) ui.m_placar.GetComponent<PlacarManager>().SetarPlacarConfigOff();
 
         yield return new WaitForSeconds(0.5f);
-        if(GameManager.Instance.m_online) gameObject.AddComponent<GameplayOn>();
-        else gameObject.AddComponent<GameplayOff>();
+        GetComponent<Gameplay>().enabled = true;
     }
 
-    void SetarLocalBotoes(bool conexao)
+    void SetarLocalBotoes(Partida.Conexao conexao)
     {
-        print("Setar Local Botoes");
+        //print("Setar Local Botoes");
         float tamanhoCampoX, tamanhoCampoZ;
         tamanhoCampoX = FindObjectOfType<DimensaoCampo>().TamanhoCampo().x / 2;
         tamanhoCampoZ = FindObjectOfType<DimensaoCampo>().TamanhoCampo().y / 2;
 
 
-        if (conexao == false)
+        if (conexao == Partida.Conexao.OFFLINE)
         {
             GameObject t1, t2;
 
-            if(modoJogo == 1)
+            if(tipoJogo == Partida.Tipo.VERSUS1)
             {
                 qntJogadoresPorTime = 1;
             }
-            else if(modoJogo == 30)
+            else if(tipoJogo == Partida.Tipo.VERSUS3_TIME)
             {
                 qntJogadoresPorTime = 3;
-                t2 = Resources.Load<GameObject>("Esquemas Taticos/" + modoJogo.ToString() + "/" + GameManager.Instance.GetTimeOff().esquema);
+                t2 = Resources.Load<GameObject>("Esquemas Taticos/" + tipoJogo.ToString() + "/" + GameManager.Instance.GetTimeOff().esquema);
                 t2.GetComponent<ListaDeEsquemas>().SetarInfoBotoes(out esquemaT2, tamanhoCampoX, tamanhoCampoZ);
 
                 if (GameManager.Instance.m_usuario.m_esquema3v3 != 4)
                 {
                     if (GameManager.Instance.m_usuario.m_esquemaRapido == 0) GameManager.Instance.m_usuario.m_esquema3v3 = 1;
-                    t1 = Resources.Load<GameObject>("Esquemas Taticos/" + modoJogo.ToString() + "/" + GameManager.Instance.m_usuario.m_esquema3v3);
+                    t1 = Resources.Load<GameObject>("Esquemas Taticos/" + tipoJogo.ToString() + "/" + GameManager.Instance.m_usuario.m_esquema3v3);
                     t1.GetComponent<ListaDeEsquemas>().SetarInfoBotoes(out esquemaT1, tamanhoCampoX, tamanhoCampoZ);
                 }
                 else
@@ -147,16 +152,16 @@ public class Abertura : MonoBehaviour
                     esquemaT1 = GameManager.Instance.m_usuario.posicoesCustom3v3;
                 }
             } // Esquema T1 e T2 off no 3v3 time contra time
-            else if(modoJogo == 6)
+            else if(tipoJogo == Partida.Tipo.QUICK)
             {
                 qntJogadoresPorTime = 6;
-                t2 = Resources.Load<GameObject>("Esquemas Taticos/" + modoJogo.ToString() + "/" + GameManager.Instance.GetTimeOff().esquema);
+                t2 = Resources.Load<GameObject>("Esquemas Taticos/" + tipoJogo.ToString() + "/" + GameManager.Instance.GetTimeOff().esquema);
                 t2.GetComponent<ListaDeEsquemas>().SetarInfoBotoes(out esquemaT2, tamanhoCampoX, tamanhoCampoZ);
 
                 if (GameManager.Instance.m_usuario.m_esquemaRapido != 4)
                 {
                     if (GameManager.Instance.m_usuario.m_esquemaRapido == 0) GameManager.Instance.m_usuario.m_esquemaRapido = 1;
-                    t1 = Resources.Load<GameObject>("Esquemas Taticos/" + modoJogo.ToString() + "/" + GameManager.Instance.m_usuario.m_esquemaRapido);
+                    t1 = Resources.Load<GameObject>("Esquemas Taticos/" + tipoJogo.ToString() + "/" + GameManager.Instance.m_usuario.m_esquemaRapido);
                     t1.GetComponent<ListaDeEsquemas>().SetarInfoBotoes(out esquemaT1, tamanhoCampoX, tamanhoCampoZ);
                 }
                 else
@@ -167,13 +172,13 @@ public class Abertura : MonoBehaviour
             else
             {
                 qntJogadoresPorTime = 10;
-                t2 = Resources.Load<GameObject>("Esquemas Taticos/" + modoJogo.ToString() + "/" + GameManager.Instance.GetTimeOff().esquema);
+                t2 = Resources.Load<GameObject>("Esquemas Taticos/" + tipoJogo.ToString() + "/" + GameManager.Instance.GetTimeOff().esquema);
                 t2.GetComponent<ListaDeEsquemas>().SetarInfoBotoes(out esquemaT2, tamanhoCampoX, tamanhoCampoZ);
 
                 if (GameManager.Instance.m_usuario.m_esquemaClassico != 4)
                 {
                     if (GameManager.Instance.m_usuario.m_esquemaRapido == 0) GameManager.Instance.m_usuario.m_esquemaClassico = 1;
-                    t1 = Resources.Load<GameObject>("Esquemas Taticos/" + modoJogo.ToString() + "/" + GameManager.Instance.m_usuario.m_esquemaClassico);
+                    t1 = Resources.Load<GameObject>("Esquemas Taticos/" + tipoJogo.ToString() + "/" + GameManager.Instance.m_usuario.m_esquemaClassico);
                     t1.GetComponent<ListaDeEsquemas>().SetarInfoBotoes(out esquemaT1, tamanhoCampoX, tamanhoCampoZ);
                 }
                 else
@@ -202,7 +207,7 @@ public class Abertura : MonoBehaviour
         LogisticaVars.jogadoresT1 = new List<GameObject>();
         LogisticaVars.jogadoresT2 = new List<GameObject>();
 
-        print("Instanciar Botoes");
+        //print("Instanciar Botoes");
         for (int i = 0; i < qntJogadoresPorTime; i++)
         {
             var b1 = GameManager.Instance.m_usuario.m_playerBotao;
@@ -229,13 +234,13 @@ public class Abertura : MonoBehaviour
             new Vector3(posGoleiro2.x, GameManager.Instance.GetTimeOff().m_playerGoleiro.transform.position.y, posGoleiro2.z), Quaternion.identity);
 
         //SetarBotoes(connected);
-        SetarBotoes(GameManager.Instance.m_online);
+        SetarBotoes(conexaoJogo);
     }
 
-    void SetarBotoes(bool conexao)
+    void SetarBotoes(Partida.Conexao conexao)
     {
-        print("Setar Botoes");
-        if (conexao == false)
+        //print("Setar Botoes");
+        if (conexao == Partida.Conexao.OFFLINE)
         {
             for (int i = 0; i < LogisticaVars.jogadoresT1.Count; i++)
             {
@@ -250,6 +255,7 @@ public class Abertura : MonoBehaviour
                 GameManager.Instance.SetarBotaoPlayerParaJogo(LogisticaVars.jogadoresT1[i], tipoBotao);
                 RedirecionarBotaoParaBola(LogisticaVars.jogadoresT1[i], tipoBotao);
                 LogisticaVars.jogadoresT1[i].GetComponent<Rigidbody>().isKinematic = false;
+                LogisticaVars.jogadoresT1[i].name = "P1 " + i;
             }
 
             for (int i = 0; i < LogisticaVars.jogadoresT2.Count; i++)
@@ -257,9 +263,10 @@ public class Abertura : MonoBehaviour
                 GameManager.Instance.SetarBotaoAdversarioOff(LogisticaVars.jogadoresT2[i], GameManager.Instance.GetTimeOff());
                 RedirecionarBotaoParaBola(LogisticaVars.jogadoresT2[i], GameManager.Instance.GetTimeOff().m_tipoJogador);
                 LogisticaVars.jogadoresT2[i].GetComponent<Rigidbody>().isKinematic = false;
+                LogisticaVars.jogadoresT2[i].name = "P2 " + i;
             }
 
-            if (modoJogo == 11 || modoJogo == 6 || modoJogo == 30)
+            if (tipoJogo == Partida.Tipo.CLASSICO || tipoJogo ==  Partida.Tipo.QUICK || tipoJogo == Partida.Tipo.VERSUS3_TIME)
             {
                 GameManager.Instance.SetarGoleiroPlayerParaJogo(GameObject.FindGameObjectWithTag("Goleiro1"));
                 GameManager.Instance.SetarGoleiroAdversarioOff(GameObject.FindGameObjectWithTag("Goleiro2"), GameManager.Instance.GetTimeOff());
@@ -274,7 +281,7 @@ public class Abertura : MonoBehaviour
 
         }
 
-
+        LogisticaVars.abertura = false;
     }
 
     void RedirecionarBotaoParaBola(GameObject g, int tipo)
@@ -325,7 +332,7 @@ public class Abertura : MonoBehaviour
 
     void QualTimeComeca()
     {
-        print("Determinar qual time comeca");
+        //print("Determinar qual time comeca");
         int moeda = Random.Range(0, 2);
         if (moeda == 0)
         {
@@ -343,40 +350,46 @@ public class Abertura : MonoBehaviour
 
     void SetarVariaveisGameplay()
     {
-        LogisticaVars.tempoMaxJogada = 20;
-        print("Setar Variaveis da Gameplay");
-        switch (modoJogo)
+        LogisticaVars.numControle = 1;
+        
+        //print("Setar Variaveis da Gameplay");
+        switch (tipoJogo)
         {
-            case 11:
+            case Partida.Tipo.CLASSICO:
                 LogisticaVars.tempoPartida = 600;
+                LogisticaVars.tempoMaxJogada = 24;
                 break;
-            case 6:
+            case Partida.Tipo.QUICK:
                 LogisticaVars.tempoPartida = 480;
+                LogisticaVars.tempoMaxJogada = 20;
                 break;
-            case 30:
+            case Partida.Tipo.VERSUS3_TIME:
                 LogisticaVars.tempoPartida = 420;
+                LogisticaVars.tempoMaxJogada = 20;
                 break;
-            case 1:
-                LogisticaVars.tempoPartida = 300;
+            case Partida.Tipo.VERSUS1:
+                LogisticaVars.tempoPartida = 330;
+                LogisticaVars.tempoMaxJogada = 15;
                 break;
             default: //online 3v3 e 2v2
                 LogisticaVars.tempoPartida = 450;
+                LogisticaVars.tempoMaxJogada = 20;
                 break;
         }
 
         LogisticaVars.jogadorSelecionado = false;
         LogisticaVars.aplicouPrimeiroToque = false;
 
-        LogisticaVars.m_tempoSelecaoAnimator = ui.tempoEscolhaGO.GetComponent<Animator>();
+        LogisticaVars.m_tempoSelecaoAnimator = VariaveisUIsGameplay._current.tempoEscolhaGO.GetComponent<Animator>();
         LogisticaVars.bolaRasteiraT1 = LogisticaVars.bolaRasteiraT2 = false;
 
         MovimentacaoDoJogador mJ = FindObjectOfType<MovimentacaoDoJogador>();
         mJ.SetBola(FindObjectOfType<FisicaBola>());
-        mJ.SetInput(FindObjectOfType<InputManager>());
+        mJ.SetInput(InputManager.current);
         mJ.SetDirecional(GameObject.FindGameObjectWithTag("Direcional Chute"), false);
         MovimentacaoDoGoleiro mG = FindObjectOfType<MovimentacaoDoGoleiro>();
         mG.SetBola(FindObjectOfType<FisicaBola>());
-        mG.SetInput(FindObjectOfType<InputManager>());
+        mG.SetInput(InputManager.current);
         mG.SetDirecional(GameObject.FindGameObjectWithTag("Direcional Chute"), true);
     }
 

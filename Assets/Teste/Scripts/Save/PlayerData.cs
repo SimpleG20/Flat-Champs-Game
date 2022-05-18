@@ -12,9 +12,13 @@ public class PlayerData
 
     //Numeros level, vitoria etc...
     public int m_level;
-    public int m_xp;
-    public int m_xpReferencia;
-    public int m_xpReferenciaAnterior;
+
+    public float m_xp;
+    public float m_xpReferencia;
+    public float m_xpReferenciaAnterior;
+    public float m_xpPendente_qnt;
+    public bool m_onPendendente_XP;
+
     public int m_vitorias;
     public int m_empates;
     public int m_derrotas;
@@ -75,6 +79,9 @@ public class PlayerData
         m_xp = player.m_xp;
         m_xpReferencia = player.m_xpReferencia;
         m_xpReferenciaAnterior = player.m_xpReferenciaAnterior;
+        m_xpPendente_qnt = player.m_xpPendente_qnt;
+        m_onPendendente_XP = player.m_onPendendente_XP;
+
         m_vitorias = player.m_vitorias;
         m_derrotas = player.m_derrotas;
         m_empates = player.m_empates;

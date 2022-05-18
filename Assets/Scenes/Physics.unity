@@ -273,28 +273,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2da0f5a302910794ab0655869849d256, type: 3}
---- !u!114 &754467122 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4660675754998915144, guid: 2da0f5a302910794ab0655869849d256, type: 3}
-  m_PrefabInstance: {fileID: 645422557}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26941316bfaec9b4797ed8dee5115cb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &969267989 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5317251930000704414, guid: b5955002729d57843aacc968e9f986fe, type: 3}
-  m_PrefabInstance: {fileID: 1628567241}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fab8b5803a82e5f499c224b147388920, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1628567241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -469,7 +447,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1811511073}
-  - component: {fileID: 1811511072}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -477,25 +454,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1811511072
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1811511071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e8e7e07b0d00c04d81b2f15774fdb22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  i: 0
-  forcaBola: 40
-  forcaJogador: 360
-  chute: 0
-  reiniciar: 0
-  jogador: {fileID: 969267989}
-  bola: {fileID: 754467122}
 --- !u!4 &1811511073
 Transform:
   m_ObjectHideFlags: 0

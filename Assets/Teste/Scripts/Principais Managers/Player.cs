@@ -13,12 +13,16 @@ public class Player : MonoBehaviour
 
     #region Stats
     public int m_level;
-    public int m_xp;
-    public int m_xpReferenciaAnterior;
-    public int m_xpReferencia;
+    
     public int m_vitorias;
     public int m_empates;
     public int m_derrotas;
+
+    public float m_xp;
+    public float m_xpReferenciaAnterior;
+    public float m_xpReferencia;
+    public float m_xpPendente_qnt;
+    public bool m_onPendendente_XP;
 
     public List<int> m_recompensasLevel;
     #endregion
@@ -96,6 +100,9 @@ public class Player : MonoBehaviour
         m_xp = data.m_xp;
         m_xpReferencia = data.m_xpReferencia;
         m_xpReferenciaAnterior = data.m_xpReferenciaAnterior;
+        m_xpPendente_qnt = data.m_xpPendente_qnt;
+        m_onPendendente_XP = data.m_onPendendente_XP;
+
         m_vitorias = data.m_vitorias;
         m_derrotas = data.m_derrotas;
         m_empates = data.m_empates;

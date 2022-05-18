@@ -9,7 +9,7 @@ public class Escanteio : Fora
 
     public override IEnumerator Inicio()
     {
-        base.Inicio();
+        SetarFora();
         Camera_Situacao("habilitar cam lateral");
 
         yield return new WaitForSeconds(1);
@@ -47,13 +47,12 @@ public class Escanteio : Fora
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
         EstadoJogo.JogoNormal();
-        EstadoJogo.TempoJogada(true);
         EventsManager.current.OnFora("rotina tempo escanteio");
         UI_Meio();
 
-        yield return new WaitUntil(() => /*esperar o jogador chutar e ser posicionado*/false);
-        UI_Normal();
-        Fim();
+        yield return new WaitUntil(() => LogisticaVars.saiuFora);
+        Finalizar();
+        _gameplay.Fim();
     }
 
     public override void UI_Meio()
@@ -69,5 +68,16 @@ public class Escanteio : Fora
         _ui.botaoMeio.SetActive(true);
         _ui.joystick.SetActive(true);
         _ui.escanteioBt.gameObject.SetActive(true);
+        _ui.barraChuteJogador.SetActive(true);
+    }
+
+    void Finalizar()
+    {
+        EstadoJogo.TempoJogada(true);
+        LogisticaVars.foraFundo = false;
+        LogisticaVars.continuaSendoFora = false;
+        JogadorVars.m_aplicarChute = true;
+        UI_Normal();
+        JogadorMetodos.ResetarValoresChute();
     }
 }

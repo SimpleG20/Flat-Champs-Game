@@ -6,7 +6,7 @@ public class MovimentacaoJogadores : MonoBehaviour
 {
     public GameObject j;
 
-    const float maxAlturaChute = 4;
+    const float maxAlturaChute = 3f;
     float senoJogador, cosJogador, distanciaDaBola, maxAnguloParaChute, alturaChute;
     float anguloBola, anguloJogador, anguloBolaJogador, anguloDirJogadorBola;
     protected float erro;
@@ -21,8 +21,8 @@ public class MovimentacaoJogadores : MonoBehaviour
     protected void SetDirecaoChute(GameObject jogador)
     {
         j = jogador;
-        if(bola == null) bola = FindObjectOfType<FisicaBola>();
-        if (joystickManager == null) joystickManager = FindObjectOfType<InputManager>();
+        if (bola == null) bola = Gameplay._current._bola;
+        if (joystickManager == null) joystickManager = InputManager.current;
 
         #region Dados
         senoJogador = -jogador.transform.up.z;
@@ -54,6 +54,7 @@ public class MovimentacaoJogadores : MonoBehaviour
 
         #region Ajustes
         if (maxAnguloParaChute > 90) maxAnguloParaChute = 90;
+        if (maxAnguloParaChute <= 1) maxAnguloParaChute = 1;
 
         #region Visualizacao
         if (distanciaDaBola > 10)
@@ -87,6 +88,7 @@ public class MovimentacaoJogadores : MonoBehaviour
         if (direcaoJogadorBola.z < 0) anguloBolaJogador = 360 - anguloBolaJogador;
         if (anguloBolaJogador == 360) anguloBolaJogador = 0;
 
+
         if (anguloJogador < anguloBolaJogador)
         {
             if (anguloJogador < 0 || anguloJogador > 0) anguloDirJogadorBola = -anguloDirJogadorBola;
@@ -100,8 +102,18 @@ public class MovimentacaoJogadores : MonoBehaviour
         }
         #endregion
 
-        anguloBola = -(anguloDirJogadorBola / maxAnguloParaChute) * 90 + anguloBolaJogador;
-        direcaoBola = new Vector3(Mathf.Cos(anguloBola * Mathf.Deg2Rad), Mathf.Tan(alturaChute / maxAlturaChute * 40 * Mathf.Deg2Rad), Mathf.Sin(anguloBola * Mathf.Deg2Rad));
+        
+        if (LogisticaVars.continuaSendoFora || LogisticaVars.bolaPermaneceNaPequenaArea)
+        {
+            anguloBola = anguloJogador;
+        }
+        else
+        {
+            anguloBola = -(anguloDirJogadorBola / maxAnguloParaChute) * 90 + anguloBolaJogador;
+        }
+        if (float.IsNaN(anguloBola)) anguloBola = 0;
+
+        direcaoBola = new Vector3(Mathf.Cos(anguloBola * Mathf.Deg2Rad), Mathf.Tan(alturaChute / maxAlturaChute * 30 * Mathf.Deg2Rad), Mathf.Sin(anguloBola * Mathf.Deg2Rad));
 
         /*Debug.DrawRay(jogador.transform.position, direcaoChute, Color.green);
         Debug.DrawRay(jogador.transform.position, direcaoJogadorBola, Color.blue);
@@ -124,6 +136,7 @@ public class MovimentacaoJogadores : MonoBehaviour
 
     public float GetAnguloBola()
     {
+        if (float.IsNaN(anguloBola)) return 0;
         return anguloBola;
     }
     public Vector3 GetUltimaDirecao()

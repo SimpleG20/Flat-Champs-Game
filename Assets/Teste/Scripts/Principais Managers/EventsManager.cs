@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EventsManager : MonoBehaviour
@@ -28,6 +26,7 @@ public class EventsManager : MonoBehaviour
 
     #region Gameplay
 
+    #region Situacoes
     public event Action<string> onChuteAoGol, onEscolherOutro, onEspecial, onGol,
         onFora, onGoleiro, onComecar;
     public void OnChuteAoGol(string s)
@@ -58,12 +57,18 @@ public class EventsManager : MonoBehaviour
     {
         if (onComecar != null) onComecar(s);
     }
+    #endregion
 
     #region UI
     public event Action onAtualizarNumeros;
     public void OnAtualizarNumeros()
     {
         if (onAtualizarNumeros != null) onAtualizarNumeros();
+    }
+    public event Action<string> onClickUi;
+    public void OnClickUi(string s)
+    {
+        if (onClickUi != null) onClickUi(s);
     }
     #endregion
 
@@ -85,6 +90,4 @@ public class EventsManager : MonoBehaviour
         if (onAtualizarPlacar != null) onAtualizarPlacar();
     }
     #endregion
-
-
 }

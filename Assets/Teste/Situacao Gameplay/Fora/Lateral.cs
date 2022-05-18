@@ -10,7 +10,7 @@ public class Lateral : Fora
 
     public override IEnumerator Inicio()
     {
-        base.Inicio();
+        SetarFora();
         Camera_Situacao("habilitar cam lateral");
 
         yield return new WaitForSeconds(1);
@@ -39,24 +39,32 @@ public class Lateral : Fora
         }
         LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
 
-        yield return new WaitForSeconds(1.25f);
+        yield return new WaitForSeconds(1f);
         Camera_Situacao("desabilitar cam lateral");
 
         LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(3).gameObject.SetActive(true);
-
         _gameplay._bola.RedirecionarJogadorEscolhido(_gameplay._bola.transform);
         LogisticaVars.podeRedirecionar = true;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
         EstadoJogo.JogoNormal();
-        EstadoJogo.TempoJogada(true);
-        EventsManager.current.OnFora("rotina tempo lateral");
         UI_Meio();
+        EventsManager.current.OnFora("rotina tempo lateral");
 
-        yield return new WaitUntil(() => /*esperar o jogador chutar e ser posicionado*/false);
+        yield return new WaitUntil(() => LogisticaVars.saiuFora);
+        Finalizar();
+        _gameplay.Fim();
+    }
+
+    void Finalizar()
+    {
+        EstadoJogo.TempoJogada(true);
+        LogisticaVars.lateral = false;
+        LogisticaVars.continuaSendoFora = false;
+        JogadorVars.m_aplicarChute = true;
         UI_Normal();
-        Fim();
+        JogadorMetodos.ResetarValoresChute();
     }
 
     public override void UI_Meio()
@@ -68,8 +76,10 @@ public class Lateral : Fora
         _ui.centralBotoes.SetActive(true);
         _ui.barraEspecial.SetActive(true);
         _ui.direcaoBolaBt.gameObject.SetActive(true);
+        _ui.mostrarDirecionalBolaBt.gameObject.SetActive(true);
         _ui.botaoBaixo.SetActive(true);
         _ui.botaoMeio.SetActive(true);
+        _ui.botaoLivre2.SetActive(true);
         _ui.joystick.SetActive(true);
         _ui.lateralBt.gameObject.SetActive(true);
     }

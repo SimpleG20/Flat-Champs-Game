@@ -10,8 +10,13 @@ public class Comecar : Situacao
 
     public override IEnumerator Inicio()
     {
-        Debug.Log("SITUACAO: COMECO");
+        Debug.Log("COMECAR INICIO");
         ToqueInicial();
+        _camera.SituacoesCameras("toque pos gol");
+
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+
         UI_Situacao("inicio");
         JogadorMetodos.ResetarValoresChute();
 
@@ -19,7 +24,6 @@ public class Comecar : Situacao
         if (!LogisticaVars.aplicouPrimeiroToque)
         {
             AplicarToqueInicialAuto();
-            UI_Normal();
             _gameplay.Fim();
         }
     }
@@ -61,14 +65,21 @@ public class Comecar : Situacao
     }
     void AplicarToqueInicialAuto()
     {
+        LogisticaVars.aplicouPrimeiroToque = LogisticaVars.jogoComecou = true;
         EstadoJogo.JogoNormal();
         EstadoJogo.TempoJogada(true);
 
         Vector3 dir = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - _gameplay._bola.transform.position;
         _gameplay._bola.m_rbBola.AddForce(dir * 2, ForceMode.Impulse);
-        LogisticaVars.aplicouPrimeiroToque = LogisticaVars.jogoComecou = true;
+
         LogisticaVars.ultimoToque = LogisticaVars.vezJ1 ? 1 : 2;
         LogisticaVars.jogadas++;
         EventsManager.current.OnAtualizarNumeros();
+    }
+
+    public override IEnumerator Fim()
+    {
+        UI_Normal();
+        return base.Fim();
     }
 }

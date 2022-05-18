@@ -13,16 +13,20 @@ public class StatsManager : MonoBehaviour
     [Header("Player Data")]
     [SerializeField] Player m_usuario;
 
-    public int m_xpReferencia, m_xpReferenciaAnterior;
-    public int m_vitoriaAtual, m_derrotasAtual, m_empatesAtual, m_levelAtual, m_xpAtual;
+    public int m_vitoriaAtual, m_derrotasAtual, m_empatesAtual, m_levelAtual;
+    public float m_xpReferencia, m_xpReferenciaAnterior, m_xpAtual;
 
     private void Awake()
     {
         m_usuario = GameManager.Instance.GetComponent<Player>();
     }
-    void Start()
+
+    private void Update()
     {
-        InicialzarComponentes();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(AumentarBarraXP(0, 1000));
+        }
     }
 
     public void InicialzarComponentes()
@@ -38,30 +42,14 @@ public class StatsManager : MonoBehaviour
         m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level.ToString();
         //m_levelAtual = m_usuario.m_level;
 
-        m_xpBar.GetComponent<Slider>().minValue = m_usuario.m_xpReferenciaAnterior;
-        m_xpBar.GetComponent<Slider>().maxValue = m_usuario.m_xpReferencia;
+        m_xpReferenciaAnterior = TabelaLevel.getMinXPLevel(m_usuario.m_level);
+        m_xpReferencia = TabelaLevel.getMaxXPLevel(m_usuario.m_level);
+
+        m_xpBar.GetComponent<Slider>().minValue = m_xpReferenciaAnterior;
+        m_xpBar.GetComponent<Slider>().maxValue = m_xpReferencia;
         m_xpBar.GetComponent<Slider>().value = m_usuario.m_xp;
-        m_xpReferenciaAnterior = m_usuario.m_xpReferenciaAnterior;
-        m_xpReferencia = m_usuario.m_xpReferencia;
-    }
-
-    void Update()
-    {
-        /*if (Input.GetKeyDown(KeyCode.Space))
-        {
-            print("Jogadas");
-            m_usuario.m_vitorias += 20;
-            m_usuario.m_derrotas += 10;
-            m_usuario.m_empates += 5;
-            AtualizarStats(m_usuario.m_vitorias, m_usuario.m_derrotas, m_usuario.m_empates);
-        }
-        if (Input.GetKeyDown(KeyCode.L)) 
-        {
-            print("Ganhando XP");
-            m_xpAtual = m_usuario.m_xp + 250; 
-            AtualizarLevel(m_xpAtual); 
-        }*/
-
+        
+        m_xpAtual = m_usuario.m_xp;
     }
 
     public void AtualizarStats(int v, int d, int e) //os parametros recebem os dados do usuario atualizado
@@ -74,38 +62,44 @@ public class StatsManager : MonoBehaviour
         m_empates.GetComponent<TextMeshProUGUI>().text = m_empatesAtual.ToString();
     }
 
-    public void AtualizarLevel(int xp)
+    public void AtualizarLevel(float xp)
     {
-        m_xpReferenciaAnterior = m_usuario.m_xpReferenciaAnterior;
-        m_xpReferencia = m_usuario.m_xpReferencia;
-
-        m_xpBar.GetComponent<Slider>().minValue = m_xpReferenciaAnterior;
-        m_xpBar.GetComponent<Slider>().maxValue = m_xpReferencia;
-
-        m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level.ToString();
-
-        m_usuario.m_xp = xp;
+        m_xpAtual = m_usuario.m_xp = xp;
         m_xpBar.GetComponent<Slider>().value = m_usuario.m_xp;
 
-        m_usuario.m_xpReferenciaAnterior = m_xpReferenciaAnterior;
-        m_usuario.m_xpReferencia = m_xpReferencia;
-
-        if (m_usuario.m_xp >= m_xpBar.GetComponent<Slider>().maxValue)
-        {
-            m_usuario.m_level++;
-            m_levelAtual = m_usuario.m_level;
-            SubirLevel();
-        }
+        if (m_usuario.m_xp >= m_xpReferencia) SubirLevel();
     }
     void SubirLevel()
     {
-        m_xpReferenciaAnterior = m_xpReferencia;
-        m_xpReferencia += Mathf.FloorToInt(m_xpReferencia * 1.15f);
+        m_usuario.m_level++;
+        m_usuario.m_xpReferenciaAnterior = m_xpReferenciaAnterior = TabelaLevel.getMinXPLevel(m_usuario.m_level);
+        m_usuario.m_xpReferencia = m_xpReferencia = TabelaLevel.getMaxXPLevel(m_usuario.m_level);
+
         m_xpBar.GetComponent<Slider>().minValue = m_xpReferenciaAnterior;
         m_xpBar.GetComponent<Slider>().maxValue = m_xpReferencia;
         m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level.ToString();
+        m_levelAtual = m_usuario.m_level;
         print("PARABÉNS VOCÊ SUBIU DE NIVEL!!!!");
-        m_usuario.m_xpReferenciaAnterior = m_xpReferenciaAnterior;
-        m_usuario.m_xpReferencia = m_xpReferencia;
+
+        //Aparecer uma imagem
+    }
+
+    public IEnumerator AumentarBarraXP(float xpAnterior, float xp)
+    {
+        yield return new WaitForSeconds(0.01f);
+        if(m_xpAtual <= xpAnterior + xp)
+        {
+            print("Aumentando XP BAR");
+            m_xpBar.GetComponent<Slider>().value += 10;
+            AtualizarLevel(m_xpBar.GetComponent<Slider>().value);
+            StartCoroutine(AumentarBarraXP(xpAnterior, xp));
+        }
+        else
+        {
+            if (m_xpBar.GetComponent<Slider>().value > xpAnterior + xp) m_xpBar.GetComponent<Slider>().value = xpAnterior + xp;
+            GameManager.Instance.m_usuario.m_xpPendente_qnt = 0;
+            GameManager.Instance.m_usuario.m_onPendendente_XP = false;
+            GameManager.Instance.m_sceneManager.BotoesMenuInterativos(true);
+        }
     }
 }

@@ -19,11 +19,10 @@ public class InputManager : MonoBehaviour
     bool printR, printL, movimentoHandle;
     private int leftTouchId = 99, rightTouchId = 99;
 
-    UIMetodosGameplay ui;
-
-    private void Start()
+    public static InputManager current;
+    private void Awake()
     {
-        ui = FindObjectOfType<UIMetodosGameplay>();
+        current = this;
     }
 
     void Update()
@@ -43,7 +42,7 @@ public class InputManager : MonoBehaviour
                 }
                 if(Input.touches[i].phase == TouchPhase.Moved && rightTouchId == Input.touches[i].fingerId)
                 {
-                    if (!ui.clicouUi) direcaoRight = Vector2.ClampMagnitude(touchPosB - posInicialTouchB, 2);
+                    if (!VariaveisUIsGameplay._current.clicouUi) direcaoRight = Vector2.ClampMagnitude(touchPosB - posInicialTouchB, 2);
                     else direcaoRight = Vector2.zero;
                     if (LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 || LogisticaVars.auxChuteAoGol || LogisticaVars.especial)
                     {
@@ -95,6 +94,7 @@ public class InputManager : MonoBehaviour
                         valorX_Esq = Mathf.Clamp(direcaoLeft.x / 200, -1, 1);
                         valorY_Esq = Mathf.Clamp(direcaoLeft.y / 200, -1, 1);
 
+                        if (LogisticaVars.escolherOutroJogador && !LogisticaVars.virouSelecao) LogisticaVars.virouSelecao = true;
                         /*if (valorX_Esq > 1) valorX_Esq = 1;
                         else if (valorX_Esq < -1) valorX_Esq = -1;
 

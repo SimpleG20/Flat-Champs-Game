@@ -56,6 +56,7 @@ public abstract class Situacao
     }
     public virtual IEnumerator Fim()
     {
+        LogisticaVars.fimSituacao = true;
         _gameplay._atual = Gameplay.Situacoes.JOGO_NORMAL;
         yield break;
     }

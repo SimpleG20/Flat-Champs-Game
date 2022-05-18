@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
+    #region Scrpits
     [Header("Scripts")]
     [SerializeField] public MenuScenesManager m_sceneManager;
     [SerializeField] public LogoManager m_logoManager;
@@ -16,7 +17,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] public TeamEditionManager m_teamEditionManager;
     [SerializeField] public ConfigurationManager m_configurationManager;
     [SerializeField] public LevelManager m_levelManager;
+    #endregion
 
+    #region Player, Config, Partida, TimeOff
     [Header("Player Data")]
     [SerializeField] public Player m_usuario;
 
@@ -24,26 +27,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] public Configuration m_config;
 
     [Header("Modo de Jogos")]
-    public int modoDeJogo;
-    public bool m_menu, m_jogoClassico;
-    public bool m_jogo6v6, m_jogo1v1, m_online, m_offline;
-    public bool m_jogadorAi, m_jogadorJogador;
-
-    [Header("Tempo da Partida")]
-    [SerializeField] public int m_tempoPartida;
-
-    bool m_colocouPos, m_adicionouPos, m_criouDadosDosJogadores;
-
-    [Header("Player GameObjects Menu")]
-    [SerializeField] GameObject m_playerButtonMenu;
-    [SerializeField] GameObject m_playerGoleiroMenu;
+    public Partida m_partida;
 
     [Header("Times Off")]
     [SerializeField] Teams m_timeOffEscolhido;
     [SerializeField] List<Teams> m_timesOff;
+    #endregion
 
+    [SerializeField] bool aumentar_XP;
+    [SerializeField] float qnt_XP;
+
+    public bool m_menu;
     public bool m_transicaoCena;
+    
+    //bool m_colocouPos, m_adicionouPos, m_criouDadosDosJogadores;
 
+    /*[Header("Player GameObjects Menu")]
+    [SerializeField] GameObject m_playerButtonMenu;
+    [SerializeField] GameObject m_playerGoleiroMenu;*/
+
+    #region Singleton
     private static GameManager m_Instance;
     public static GameManager Instance
     {
@@ -64,37 +67,16 @@ public class GameManager : MonoBehaviour
             return m_Instance;
         }
     }
-
+    #endregion
 
     void Start()
     {
         DontDestroyOnLoad(this);
     }
 
-    void Update()
-    {
-        #region Jogo 6 contra 6
-        /*if (m_jogo6v6 && SceneManager.GetActiveScene().isLoaded)
-        {
-            if (m_transicaoCena)
-            {
-                m_transicaoCena = false;
-            }
-             
-            
-        }*/
-        #endregion
-
-        #region Jogo Classico
-        if (m_jogoClassico && SceneManager.GetActiveScene().isLoaded)
-        {
-            if (m_transicaoCena) { print("Jogo Clássico 11 x 11 \n Aproveite!!!"); m_transicaoCena = false; }
-        }
-        #endregion
-
-    }
-
     #region Metodos Get e Set
+
+    #region Gameplay Inicio
     public Teams GetTimeOff()
     {
         if (m_timeOffEscolhido != null) return m_timeOffEscolhido;
@@ -248,15 +230,130 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    #region Gameplay Fim
+    public bool getAumentarXP()
+    {
+        return aumentar_XP;
+    }
+    public float getXP_ParaAumentar()
+    {
+        return qnt_XP;
+    }
+    public void setAumentarXP(bool b)
+    {
+        aumentar_XP = b;
+        m_usuario.m_onPendendente_XP = b;
+    }
+    public void setQntXP(float qnt)
+    {
+        //Verificar se o jogador tem bonus para o XP como 2x, 3x
+        qnt_XP = qnt;
+        m_usuario.m_xpPendente_qnt = qnt_XP;
+    }
+    #endregion
+
+    #endregion
+
+    #region Modos de Jogo
+    public void JogoOff_JogadorAi(int i)
+    {
+        m_partida = ScriptableObject.CreateInstance<Partida>();
+        m_partida.setConexao(Partida.Conexao.OFFLINE);
+        m_partida.setModo(Partida.Modo.JOGADOR_VERSUS_AI);
+        switch (i)
+        {
+            case 1:
+                m_partida.setTipo(Partida.Tipo.CLASSICO);
+                break;
+            case 2:
+                m_partida.setTipo(Partida.Tipo.QUICK);
+                break;
+            case 3:
+                m_partida.setTipo(Partida.Tipo.VERSUS3_TIME);
+                break;
+            case 4:
+                m_partida.setTipo(Partida.Tipo.VERSUS1);
+                break;
+        }
+        m_partida.setXPEsperado();
+
+        //print(m_partida.getConexao() + " - " + m_partida.getModo()+ " - " + m_partida.getTipo());
+
+        m_timeOffEscolhido = m_timesOff[Random.Range(0, m_timesOff.Count)];
+        m_menu = false;
+        m_transicaoCena = true;
+    }
+    public void JogoOff_JogadorJogador(int i)
+    {
+        m_partida = ScriptableObject.CreateInstance<Partida>();
+        m_partida.setConexao(Partida.Conexao.OFFLINE);
+        m_partida.setModo(Partida.Modo.JOGADO_VERSUS_JOGADOR);
+        switch (i)
+        {
+            case 1:
+                m_partida.setTipo(Partida.Tipo.CLASSICO);
+                break;
+            case 2:
+                m_partida.setTipo(Partida.Tipo.QUICK);
+                break;
+            case 3:
+                m_partida.setTipo(Partida.Tipo.VERSUS3_TIME);
+                break;
+            case 4:
+                m_partida.setTipo(Partida.Tipo.VERSUS1);
+                break;
+        }
+        m_partida.setXPEsperado();
+
+        //print(m_partida.getConexao() + " - " + m_partida.getModo() + " - " + m_partida.getTipo());
+
+        m_timeOffEscolhido = m_timesOff[Random.Range(0, m_timesOff.Count)];
+        m_menu = false;
+        m_transicaoCena = true;
+    }
+    public void JogoOn_JogadorJogador(int i)
+    {
+        if (InternetConnectivity())
+        {
+            m_partida = ScriptableObject.CreateInstance<Partida>();
+            m_partida.setConexao(Partida.Conexao.ONLINE);
+            m_partida.setModo(Partida.Modo.JOGADO_VERSUS_JOGADOR);
+            switch (i)
+            {
+                case 1:
+                    m_partida.setTipo(Partida.Tipo.CLASSICO);
+                    break;
+                case 2:
+                    m_partida.setTipo(Partida.Tipo.QUICK);
+                    break;
+                case 3:
+                    m_partida.setTipo(Partida.Tipo.VERSUS3_TIME);
+                    break;
+                case 4:
+                    m_partida.setTipo(Partida.Tipo.VERSUS3_INDIVIDUAL);
+                    break;
+                case 5:
+                    m_partida.setTipo(Partida.Tipo.VERSUS1);
+                    break;
+            }
+            m_partida.setXPEsperado();
+        }
+    }
+    #endregion
+
+    public void AumentarBarraXP(float ant, float prox)
+    {
+        StartCoroutine(m_statsManager.AumentarBarraXP(ant, prox));
+    }
+
     public void Menu()
     {
         SaveSystem.CarregarData();
-        m_playerButtonMenu = GameObject.Find("Player Botao");
-        m_playerGoleiroMenu = GameObject.Find("Player Goleiro");
+        //m_playerButtonMenu = GameObject.Find("Player Botao");
+        //m_playerGoleiroMenu = GameObject.Find("Player Goleiro");
         //CarregarData();
         //CarregarConfiguration();
     }
-
     public bool InternetConnectivity()
     {
         if(Application.internetReachability == NetworkReachability.NotReachable)
@@ -272,52 +369,4 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("FIRSTTIMEOPENING", 1);
     }
-
-    #region Modos de Jogo
-    public void ModosJogoOff(int i)
-    {
-        switch (i)
-        {
-            case 1:
-                modoDeJogo = 11;
-                break;
-            case 2:
-                modoDeJogo = 6;
-                break;
-            case 3:
-                modoDeJogo = 30;
-                break;
-            case 4:
-                modoDeJogo = 1;
-                m_jogo1v1 = true;
-                m_tempoPartida = 300;
-                break;
-        }
-        m_online = false;
-        m_timeOffEscolhido = m_timesOff[Random.Range(0, m_timesOff.Count)];
-        m_menu = false;
-        m_transicaoCena = true;
-    }
-    public void ModosJogoOn(int i)
-    {
-        if (InternetConnectivity())
-        {
-            m_online = true;
-            switch (i)
-            {
-                case 1:
-                    m_jogoClassico = true;
-                    break;
-                case 2:
-                    m_jogo6v6 = true;
-                    break;
-                case 3:
-                    m_jogo1v1 = true;
-                    break;
-            }
-        }
-        
-    }
-    #endregion
-
 }

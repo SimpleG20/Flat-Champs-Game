@@ -47,8 +47,7 @@ public class SelecaoMetodos : MonoBehaviour
     void SelecaoAutomatica()
     {
         LogisticaVars.escolherOutroJogador = false;
-        //ui.sairSelecaoBt.gameObject.SetActive(false);
-        Debug.Log("Escolha Automática");
+        Debug.Log("SELECAO: Escolha Automática");
         DesabilitarDadosJogador();
         EscolherJogador();
         DadosJogador();
@@ -62,7 +61,7 @@ public class SelecaoMetodos : MonoBehaviour
         foreach (GameObject Jg in jogadores)
         {
             distancia = (referencia - Jg.transform.position).magnitude;
-            if (distancia <= distanciaMenor && distancia != 0)
+            if (distancia <= distanciaMenor && distancia != 0 && Jg != LogisticaVars.m_jogadorEscolhido_Atual)
             {
                 distanciaMenor = distancia;
                 jogador = Jg;
@@ -76,16 +75,26 @@ public class SelecaoMetodos : MonoBehaviour
     #region Dados
     public static void DadosJogador()
     {
-        if (GameManager.Instance.m_jogadorAi)
-        {
-            if (LogisticaVars.vezJ2) LogisticaVars.m_jogadorAi = LogisticaVars.m_jogadorEscolhido_Atual;
-        }
-        else LogisticaVars.m_jogadorPlayer = LogisticaVars.m_jogadorEscolhido_Atual;
-
         LogisticaVars.m_jogadorEscolhido_Atual.tag = "Player Selecionado";
-        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
-        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
-        
+        if (Gameplay._current.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI)
+        {
+            if (LogisticaVars.vezJ2)
+            {
+                LogisticaVars.m_jogadorAi = LogisticaVars.m_jogadorEscolhido_Atual;
+                VariaveisUIsGameplay._current.UI_Espera();
+            }
+            else
+            {
+                LogisticaVars.m_jogadorPlayer = LogisticaVars.m_jogadorEscolhido_Atual;
+                CameraJogadorSelecionado();
+            }
+        }
+        else
+        {
+            LogisticaVars.m_jogadorPlayer = LogisticaVars.m_jogadorEscolhido_Atual;
+            CameraJogadorSelecionado();
+        }
+
         //LogisticaVars.m_jogadorEscolhido.GetComponentInChildren<AudioListener>().enabled = true;
         LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<FisicaJogador>().enabled = true;
         JogadorVars.m_fisica = LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<FisicaJogador>();
@@ -98,6 +107,12 @@ public class SelecaoMetodos : MonoBehaviour
 
         LogisticaVars.jogadorSelecionado = true;
     } //Tudo certo
+    private static void CameraJogadorSelecionado()
+    {
+        LogisticaVars.cameraJogador = LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>();
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+    }
+
     public static void DesabilitarDadosJogador()
     {
         //Debug.Log("Desabilitando dados do Jogador");

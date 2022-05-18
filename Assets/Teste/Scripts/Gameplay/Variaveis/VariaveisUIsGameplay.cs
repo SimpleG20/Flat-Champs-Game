@@ -12,7 +12,7 @@ public class VariaveisUIsGameplay : MonoBehaviour
     public GameObject numeroJogadasGO, tempoJogadaGO, tempoEscolhaGO;
     public GameObject centralBotoes, botaoBaixo, botaoMeio, botaoCima, botaoDiagonal, botaoLivre1, botaoLivre2;
     public GameObject joystick, miraEspecial, iconePequeno, iconeMedio, iconeGrande, inibidorMoverJogadorGO;
-    public Button pausarBt;
+    public Button pausarBt, cameraEsperaBt;
     public Gradient gradienteChute, gradEscpecial;
     public bool clicouUi;
 
@@ -27,13 +27,30 @@ public class VariaveisUIsGameplay : MonoBehaviour
     public GameObject barraChuteGoleiro;
     public GameObject chuteGoleiroBt;
     public Button goleiroPosicionadoBt;
-    //public Gradient m_gradienteGoleiro;
 
     public static VariaveisUIsGameplay _current;
 
     private void Awake()
     {
         _current = this;
+    }
+
+    private void Start()
+    {
+        EventsManager.current.onClickUi += ClickUi;
+    }
+
+    private void ClickUi(string obj)
+    {
+        switch (obj)
+        {
+            case "click":
+                clicouUi = true;
+                break;
+            case "unclick":
+                clicouUi = false;
+                break;
+        }
     }
 
     public void EstadoTodosOsBotoes(bool b)
@@ -49,7 +66,7 @@ public class VariaveisUIsGameplay : MonoBehaviour
         tempoEscolhaGO.SetActive(b);
         tempoJogadaGO.SetActive(b);
         numeroJogadasGO.SetActive(b);
-        m_placar.SetActive(b);
+        if (m_placar != null) m_placar.SetActive(b);
     }
     public void EstadoBotoesCentral(bool b)
     {
@@ -91,6 +108,19 @@ public class VariaveisUIsGameplay : MonoBehaviour
         }
     }
 
+    public void UI_Espera()
+    {
+        EstadoBotoesCentral(false);
+        m_placar.SetActive(true);
+        pausarBt.gameObject.SetActive(true);
+        if (!CamerasSettings._current.getCameraEspera())
+        {
+            cameraEsperaBt.gameObject.SetActive(true);
+            joystick.SetActive(true);
+        }
+        botaoCima.SetActive(true);
+        selecionarJogadorBt.gameObject.SetActive(true);
+    }
     public void UI_BolaRasteira()
     {
         if (direcaoBolaBt.isOn)

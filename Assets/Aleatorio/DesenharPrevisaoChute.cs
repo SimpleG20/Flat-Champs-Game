@@ -19,7 +19,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
     private void Start()
     {
         bola = FindObjectOfType<FisicaBola>();
-        input = FindObjectOfType<InputManager>();
+        input = InputManager.current;
 
         Point1 = bola.transform;
         if (LogisticaVars.especial) Point3 = GameObject.FindGameObjectWithTag("Direcao Especial").transform;
@@ -32,7 +32,7 @@ public class DesenharPrevisaoChute : MonoBehaviour
     {
         if (!LogisticaVars.aplicouEspecial)
         {
-            if (!GameManager.Instance.m_jogadorAi)
+            if (GameManager.Instance.m_partida.getConexao() == Partida.Conexao.OFFLINE)
             {
                 if (FindObjectOfType<MiraEspecial>().MiraTravada())
                 {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MovimentacaoDoGoleiro : MovimentacaoJogadores
 {
-    EventsManager events;
+    GameObject goleiro1, goleiro2;
 
     void Start()
     {
@@ -15,8 +15,7 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
 
         GoleiroVars.m_sensibilidadeChute = 10;
         GoleiroVars.m_sensibilidade = GameManager.Instance.m_config.m_camSensibilidade;
-
-        events = EventsManager.current;
+        StartCoroutine(EsperarParaSetGoleiros());
     }
 
     void Update()
@@ -65,10 +64,21 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
             }
             #endregion
         }
+        else
+        {
+            if (LogisticaVars.jogoComecou && !LogisticaVars.auxChuteAoGol && !LogisticaVars.especial)
+            {
+                if (goleiro1 != null) goleiro1.transform.position = bola.transform.position.x > 7 || bola.transform.position.x < -7 ? goleiro1.transform.position : 
+                                        new Vector3(bola.transform.position.x, goleiro1.transform.position.y, goleiro1.transform.position.z);
+
+                if(goleiro2 != null) goleiro2.transform.position = bola.transform.position.x > 7 || bola.transform.position.x < -7 ? goleiro2.transform.position : 
+                                        new Vector3(bola.transform.position.x, goleiro2.transform.position.y, goleiro2.transform.position.z);
+            }
+        }
     }
 
     #region Metodos para os Botoes do Goleiro
-    private void BotoesGoleiro(string s)
+    public void BotoesGoleiro(string s)
     {
         switch (s)
         {
@@ -86,4 +96,11 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
         GoleiroVars.m_aplicarChute = true;
     }
     #endregion
+
+    IEnumerator EsperarParaSetGoleiros()
+    {
+        yield return new WaitUntil(() => LogisticaVars.jogoComecou);
+        goleiro1 = GameObject.FindGameObjectWithTag("Goleiro1");
+        goleiro2 = GameObject.FindGameObjectWithTag("Goleiro2");
+    }
 }

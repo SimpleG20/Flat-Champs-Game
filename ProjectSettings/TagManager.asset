@@ -47,8 +47,8 @@ TagManager:
   - Camera TM E
   - Direcao Especial
   - Trajetoria Especial
-  - Ball
   - Direcional Chute
+  - Icone Selecao
   layers:
   - Default
   - TransparentFX

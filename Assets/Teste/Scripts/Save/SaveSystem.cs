@@ -95,6 +95,7 @@ public static class SaveSystem
             GameManager.Instance.m_teamEditionManager.SetarVariaveis(); //team custom
             GameManager.Instance.m_configurationManager.SetarVariaveis(); //config 
             GameManager.Instance.m_levelManager.SetarVariaveis(); //level
+            GameManager.Instance.m_statsManager.InicialzarComponentes(); //stats
 
             GameManager.Instance.m_playerEditionManager.InicializarBotoesSpritesDoMenu(goleiro);
             //Debug.Log("Data: goleiro");

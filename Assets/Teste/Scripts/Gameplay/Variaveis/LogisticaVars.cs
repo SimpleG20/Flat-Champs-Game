@@ -113,6 +113,11 @@ public static class LogisticaVars
     internal static bool aplicarChuteAuto;
     internal static bool saiuFora;
     internal static bool fimAnimacaoGol;
+    internal static bool abertura;
+    internal static bool virouSelecao;
+    internal static int numControle;
+    internal static bool fimSituacao;
+    internal static bool chutouTiroDeMeta;
     #endregion
 
     #endregion

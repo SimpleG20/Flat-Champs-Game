@@ -9,14 +9,10 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
 
     public static bool pc;
     [SerializeField] Toggle dispositivo;
-
-    UIMetodosGameplay ui;
     //FisicaJogador fisica;
 
     void Start()
     {
-        ui = FindObjectOfType<UIMetodosGameplay>();
-
         JogadorVars.m_maxForcaAtual = 420;
         JogadorVars.m_forca = 50;
 
@@ -46,14 +42,17 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
         #region Movimentacao
         if (LogisticaVars.jogadorSelecionado && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2 && !LogisticaVars.especial || LogisticaVars.escolherOutroJogador)
         {
-
             if (JogadorVars.m_fisica.m_podeVirar)
             {
                 if (pc)
                 {
                     float h = Input.GetAxis("Horizontal");
-                    if(h == 0) JogadorVars.m_rotacionar = false;
-                    else JogadorVars.m_rotacionar = true;
+                    if (h == 0) JogadorVars.m_rotacionar = false;
+                    else
+                    {
+                        JogadorVars.m_rotacionar = true;
+                        if (LogisticaVars.escolherOutroJogador && !LogisticaVars.virouSelecao) LogisticaVars.virouSelecao = true;
+                    }
 
                     if (!JogadorVars.m_medirChute)
                     {
@@ -112,11 +111,11 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                 {
                     LogisticaVars.jogoComecou = true;
                     JogadorVars.m_aplicarChute = false;
-                    //EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador", "", true);
                     LogisticaVars.jogoParado = false;
                     LogisticaVars.aplicouPrimeiroToque = true;
                     EstadoJogo.JogoNormal();
                     EstadoJogo.TempoJogada(true);
+                    Gameplay._current.Fim(); //Fim situacao COMECAR
                 }
                 if (JogadorVars.m_forca > JogadorVars.m_forcaMin)
                 {
@@ -132,7 +131,6 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
             }
         }
         #endregion
-
     }
 
     void FixedUpdate()
@@ -149,7 +147,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
             else
             {
                 step = 0;
-                if (GameManager.Instance.m_jogadorAi)
+                if (Gameplay._current.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI)
                 {
                     if(LogisticaVars.vezJ2) 
                         GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorAi.transform.up + LogisticaVars.m_jogadorAi.transform.position;
@@ -179,7 +177,7 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
 
 
     #region Metodos usados para os Botoes do Jogador
-    void BotoesJogador(string s)
+    public void BotoesJogador(string s)
     {
         switch (s)
         {
@@ -226,18 +224,14 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
         print("Aplicar Especial");
         bola.GetComponent<Rigidbody>().useGravity = false;
         Destroy(GameObject.FindGameObjectWithTag("Mira Especial"));
-        //EventsManager.current.OnAplicarMetodosUiSemBotao("estado jogador e goleiro", "", false);
-
         LogisticaVars.aplicouEspecial = true;
 
         if (LogisticaVars.vezJ1) LogisticaVars.ultimoToque = 1;
         else LogisticaVars.ultimoToque = 2;
-
-        //EventsManager.current.SituacaoGameplay("fim especial");
     }
     void MostrarDirecaoChute()
     {
-        if (!ui.mostrarDirecionalBolaBt.isOn)
+        if (!VariaveisUIsGameplay._current.mostrarDirecionalBolaBt.isOn)
         {
             direcional.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
             LogisticaVars.mostrarDirecaoBola = true;

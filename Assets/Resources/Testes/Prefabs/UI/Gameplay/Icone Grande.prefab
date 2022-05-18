@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4167434502630523931}
   m_Layer: 5
   m_Name: Icone Grande
-  m_TagString: Untagged
+  m_TagString: Icone Selecao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -145,6 +145,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2d0f0bb894083541b697c7beefe18cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 50, z: 0}
   cam: {fileID: 0}
   jogadorReferenciado: {fileID: 0}

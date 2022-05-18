@@ -10,6 +10,7 @@ public class ChuteAoGol : Situacao
 
     public override IEnumerator Inicio()
     {
+        Debug.Log("CHUTE AO GOL INICIO");
         EstadoJogo.TempoJogada(false);
         _camera.MudarBlendCamera(CinemachineBlendDefinition.Style.Cut);
         SelecaoMetodos.EscolherGoleiro();
@@ -30,7 +31,7 @@ public class ChuteAoGol : Situacao
     public override IEnumerator Meio()
     {
         EstadoJogo.JogoNormal();
-        EstadoJogo.TempoJogada(true);
+        //EstadoJogo.TempoJogada(true);
 
         GoleiroMetodos.ComponentesParaGoleiro(false);
         LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
@@ -47,6 +48,8 @@ public class ChuteAoGol : Situacao
         yield return new WaitUntil(() => !JogadorVars.m_chuteAoGol);
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
+
+        EstadoJogo.TempoJogada(true);
 
         /*if (!LogisticaVars.continuaSendoFora && !LogisticaVars.bolaPermaneceNaPequenaArea) { LogisticaVars.jogadas = 3; Fim(); }
         else yield break;*/

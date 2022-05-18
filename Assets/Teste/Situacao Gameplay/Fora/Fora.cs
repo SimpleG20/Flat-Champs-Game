@@ -7,31 +7,31 @@ public class Fora : Situacao
     public Fora(Gameplay gameplay, VariaveisUIsGameplay ui, CamerasSettings camera) : base(gameplay, ui, camera)
     { }
 
-    public override IEnumerator Inicio()
+    protected bool trocou;
+    protected void SetarFora()
     {
+        Debug.Log("FORA GERAL INICIO");
         _gameplay._atual = Gameplay.Situacoes.FORA;
-
+        UI_Inicio();
+        LogisticaVars.saiuFora = false;
         LogisticaVars.continuaSendoFora = true;
-        JogadorMetodos.ResetarValoresChute();
+        
         JogadorVars.m_aplicarChute = false;
+        JogadorMetodos.ResetarValoresChute();
 
-        Debug.Log("Fora");
         EstadoJogo.JogoParado();
         EstadoJogo.TempoJogada(false);
 
-        LogisticaVars.vezJ1 = LogisticaVars.vezJ2 = false;
-        if (LogisticaVars.ultimoToque == 1 && LogisticaVars.vezJ1 || LogisticaVars.ultimoToque == 2 && LogisticaVars.vezJ2) //Trocou Vez
-        { LogisticaVars.tempoJogada = 0; LogisticaVars.jogadas = 0; }
+        if (LogisticaVars.ultimoToque == 1 && LogisticaVars.vezJ1 || LogisticaVars.ultimoToque == 2 && LogisticaVars.vezJ2)
+        { Debug.Log("FORA: TROCOU VEZ"); trocou = true; LogisticaVars.tempoJogada = 0; LogisticaVars.jogadas = 0; }
 
         if (LogisticaVars.tempoJogada > 15) LogisticaVars.tempoJogada = 14;
         if (LogisticaVars.jogadas > 1) LogisticaVars.jogadas--;
+
+        LogisticaVars.vezJ1 = LogisticaVars.vezJ2 = false;
         if (LogisticaVars.ultimoToque == 1) LogisticaVars.vezJ2 = true;
         else LogisticaVars.vezJ1 = true;
         SelecaoMetodos.DesabilitarDadosJogador();
-
-        UI_Inicio();
-        Debug.Log("Fora");
-        yield break;
     }
 
     public override void Camera_Situacao(string s)
@@ -58,4 +58,5 @@ public class Fora : Situacao
         _ui.botaoMeio.SetActive(true);
         _ui.joystick.SetActive(true);
     }
+
 }

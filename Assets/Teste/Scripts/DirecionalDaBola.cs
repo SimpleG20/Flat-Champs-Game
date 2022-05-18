@@ -19,7 +19,9 @@ public class DirecionalDaBola : MonoBehaviour
         {
             if (LogisticaVars.jogadorSelecionado && transform.GetChild(0).GetComponent<MeshRenderer>().enabled) {
                 transform.position = bola.transform.position;
-                transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoJogador.GetAnguloBola(), Mathf.Atan(movimentacaoDoJogador.GetDirecaoBola().y) * Mathf.Rad2Deg);
+                float z = Mathf.Atan(movimentacaoDoJogador.GetDirecaoBola().y) * Mathf.Rad2Deg;
+                //if (z == Mathf.Infinity || z == -Mathf.Infinity) z = 360;
+                transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoJogador.GetAnguloBola(), z);
             }
         }
         else
@@ -27,7 +29,9 @@ public class DirecionalDaBola : MonoBehaviour
             if (LogisticaVars.m_goleiroGameObject != null && transform.GetChild(0).GetComponent<MeshRenderer>().enabled)
             {
                 transform.position = bola.transform.position;
-                transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoJogador.GetAnguloBola(), Mathf.Atan(movimentacaoDoJogador.GetDirecaoBola().y) * Mathf.Rad2Deg);
+                float z = Mathf.Atan(movimentacaoDoJogador.GetDirecaoBola().y) * Mathf.Rad2Deg;
+                //if (z == Mathf.Infinity || z == -Mathf.Infinity) z = 360;
+                transform.eulerAngles = new Vector3(0, 360 - movimentacaoDoJogador.GetAnguloBola(), z);
             }
         }
         

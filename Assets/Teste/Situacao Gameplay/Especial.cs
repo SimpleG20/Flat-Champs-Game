@@ -19,11 +19,11 @@ public class Especial : Situacao
         {
             AcionaEspecial();
 
-            if (GameManager.Instance.m_jogadorAi)
+            if (_gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI)
             {
-                if (LogisticaVars.vezJ1) { _gameplay.InstanciarMira(); UI_Situacao("inicio"); }
+                if (LogisticaVars.vezJ1) { _gameplay.InstanciarMira(); UI_Situacao("acionou"); }
             }
-            else { _gameplay.InstanciarMira(); UI_Situacao("inicio"); }
+            else { _gameplay.InstanciarMira(); UI_Situacao("acionou"); }
 
             Camera_Situacao("inicio");
 
@@ -84,7 +84,8 @@ public class Especial : Situacao
             LogisticaVars.m_jogadorEscolhido_Atual.transform.LookAt(_gameplay.posGol1);
         }
 
-        LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
+        LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = 
+            new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
 
         if (LogisticaVars.vezJ1) GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = _gameplay.posGol2;
         else GameObject.FindGameObjectWithTag("Direcao Especial").transform.position = _gameplay.posGol1;
@@ -92,7 +93,7 @@ public class Especial : Situacao
     void FimEspecial()
     {
         _gameplay._bola.GetComponent<Rigidbody>().useGravity = true;
-        //Physics.gravity = Vector3.down * 9.81f;
+        Physics.gravity = Vector3.down * 9.81f;
         _gameplay.DestruirObjetosEspecial();
         LogisticaVars.especial = false;
     }
@@ -118,6 +119,8 @@ public class Especial : Situacao
         switch (s)
         {
             case "acionou":
+                _ui.EstadoBotoesJogador(false);
+                _ui.barraChuteJogador.SetActive(false);
                 _ui.especialBt.gameObject.SetActive(false);
                 _ui.travarMiraBt.gameObject.SetActive(true);
                 break;

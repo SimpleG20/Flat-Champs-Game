@@ -19,20 +19,14 @@ public class MiraEspecial : MonoBehaviour
     bool travouMira;
 
     InputManager joystick;
-    EventsManager events;
-    UIMetodosGameplay ui;
 
     void Start()
     {
-        events = EventsManager.current;
-        joystick = FindObjectOfType<InputManager>();
-        ui = FindObjectOfType<UIMetodosGameplay>();
+        joystick = InputManager.current;
 
         direcaoEspecial = GameObject.FindGameObjectWithTag("Direcao Especial");
-
         startPos = transform.position;
         tamanho = 175;
-
         Instantiate(trajetoria);
     }
 

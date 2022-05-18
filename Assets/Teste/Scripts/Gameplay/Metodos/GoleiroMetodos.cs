@@ -7,21 +7,18 @@ using Cinemachine;
 public class GoleiroMetodos: MonoBehaviour
 {
     static MovimentacaoDoJogador mJ;
-    static UIMetodosGameplay ui;
-    static EventsManager events;
 
     void Start()
     {
         mJ = FindObjectOfType<MovimentacaoDoJogador>();
-        ui = FindObjectOfType<UIMetodosGameplay>();
-        events = EventsManager.current;
     }
 
 
     public static void EncherBarraChuteGoleiro(float forca, float maxForca)
     {
-        ui.barraChuteGoleiro.transform.GetChild(1).GetComponent<Image>().fillAmount = (forca / maxForca);
-        ui.barraChuteGoleiro.transform.GetChild(1).GetComponent<Image>().color = ui.gradienteChute.Evaluate(forca / maxForca);
+        VariaveisUIsGameplay._current.barraChuteGoleiro.transform.GetChild(1).GetComponent<Image>().fillAmount = (forca / maxForca);
+        VariaveisUIsGameplay._current.barraChuteGoleiro.transform.GetChild(1).GetComponent<Image>().color = 
+            VariaveisUIsGameplay._current.gradienteChute.Evaluate(forca / maxForca);
     }
     public static void ComponentesParaGoleiro(bool situacao)
     {
@@ -36,37 +33,41 @@ public class GoleiroMetodos: MonoBehaviour
             EncherBarraChuteGoleiro(JogadorVars.m_forca, JogadorVars.m_maxForcaAtual);
         }
         //LogisticaVars.m_goleiroGameObject.GetComponentInChildren<AudioListener>().enabled = situacao;
-        if (situacao == false) ui.barraChuteGoleiro.SetActive(situacao);
+        if (situacao == false) VariaveisUIsGameplay._current.barraChuteGoleiro.SetActive(situacao);
 
         Gameplay._current.Situacao_BolaRasteira();
     }
     public static void ChuteAutomatico()
     {
         Debug.Log("Chute Automatico");
-        Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
+        Rigidbody bola = Gameplay._current._bola.m_rbBola;
         bola.constraints = RigidbodyConstraints.None;
 
         bola.AddForce(mJ.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
 
-        ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
+        VariaveisUIsGameplay._current.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;
+
+        if (LogisticaVars.goleiroT1) LogisticaVars.ultimoToque = 1;
+        else LogisticaVars.ultimoToque = 2;
+        
         GoleiroVars.chutou = true;
-        //events.OnAplicarRotinas("rotina pos chute goleiro");
+        EventsManager.current.OnGoleiro("rotina pos chute goleiro");
     }
     public static void ChuteNormal()
     {
-        Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
+        Rigidbody bola = Gameplay._current._bola.m_rbBola;
         bola.constraints = RigidbodyConstraints.None;
 
         bola.AddForce(mJ.GetUltimaDirecao() * GoleiroVars.m_forcaGoleiro, ForceMode.Impulse);
 
-        ui.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
+        VariaveisUIsGameplay._current.barraChuteGoleiro.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         GoleiroVars.m_forcaGoleiro = 0;
 
         if (LogisticaVars.goleiroT1) LogisticaVars.ultimoToque = 1;
         else LogisticaVars.ultimoToque = 2;
 
         GoleiroVars.chutou = true;
-        //events.OnAplicarRotinas("rotina pos chute goleiro");
+        EventsManager.current.OnGoleiro("rotina pos chute goleiro");
     }
 }

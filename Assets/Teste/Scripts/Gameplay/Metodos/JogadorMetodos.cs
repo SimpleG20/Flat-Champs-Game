@@ -6,13 +6,11 @@ using UnityEngine.UI;
 public class JogadorMetodos: MonoBehaviour
 {
     static MovimentacaoDoJogador mJ;
-    static UIMetodosGameplay ui;
     //static float velocidadeBarra;
 
     private void Start()
     {
         mJ = FindObjectOfType<MovimentacaoDoJogador>();
-        ui = FindObjectOfType<UIMetodosGameplay>();
         //velocidadeBarra = GameManager.Instance.m_config.m_velocidadeBarraChute;
     }
 
@@ -90,15 +88,13 @@ public class JogadorMetodos: MonoBehaviour
         {
             Debug.Log("MovimentacaoDoJogador: AposChuteAoGol()");
             LogisticaVars.jogadas = 3;
-            JogadorVars.m_chuteAoGol = LogisticaVars.auxChuteAoGol = false;
             //ResetarValoresChute();
         }
         else LogisticaVars.jogadas++;
         JogadorVars.m_aplicarChute = false;
 
         ResetarValoresChute();
-        if (LogisticaVars.jogadas == 3) Gameplay._current.SetSituacao(new TrocarVez(Gameplay._current, VariaveisUIsGameplay._current, CamerasSettings._current));
-        //EventsManager.current.OnAplicarRotinas("rotina 3 jogadas");
+        if (LogisticaVars.jogadas == 3) Gameplay._current.SetSituacao("trocar vez");
     }
 
     public static void AumentarEspecial(float qnt, bool trocou)
@@ -117,8 +113,9 @@ public class JogadorMetodos: MonoBehaviour
 
     public static void EncherBarraChuteJogador(float forca, float maxForca)
     {
-        ui.barraChuteJogador.transform.GetChild(1).GetComponent<Image>().fillAmount = (forca / maxForca);
-        ui.barraChuteJogador.transform.GetChild(1).GetComponent<Image>().color = ui.gradienteChute.Evaluate(forca / maxForca);
+        VariaveisUIsGameplay._current.barraChuteJogador.transform.GetChild(1).GetComponent<Image>().fillAmount = (forca / maxForca);
+        VariaveisUIsGameplay._current.barraChuteJogador.transform.GetChild(1).GetComponent<Image>().color = 
+            VariaveisUIsGameplay._current.gradienteChute.Evaluate(forca / maxForca);
     }
     private static void EstadoMedirForcaDoChute(bool b)
     {
@@ -138,7 +135,7 @@ public class JogadorMetodos: MonoBehaviour
 
     public static void AplicarChuteEscanteio()
     {
-        Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
+        Rigidbody bola = Gameplay._current._bola.m_rbBola;
         bola.constraints = RigidbodyConstraints.None;
 
         bola.AddForce(mJ.GetUltimaDirecao() * JogadorVars.m_forca, ForceMode.Impulse);
@@ -151,7 +148,7 @@ public class JogadorMetodos: MonoBehaviour
     }
     public static void AplicarChuteLateral()
     {
-        Rigidbody bola = GameObject.FindGameObjectWithTag("Bola").GetComponent<Rigidbody>();
+        Rigidbody bola = Gameplay._current._bola.m_rbBola;
         bola.constraints = RigidbodyConstraints.None;
 
         bola.AddForce(mJ.GetUltimaDirecao() * 27.5f, ForceMode.Impulse);

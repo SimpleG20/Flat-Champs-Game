@@ -10,7 +10,12 @@ public class GoleiroPequenaArea : Situacao
 
     public override IEnumerator Inicio()
     {
-        if(_gameplay._bola.m_pos.z < 0)
+        Debug.Log("PEQUENA AREA INICIO");
+        UI_Situacao("inicio");
+        GoleiroVars.chutou = false;
+        SelecaoMetodos.DesabilitarDadosJogador();
+
+        if (_gameplay._bola.m_pos.z < 0)
         {
             if (!LogisticaVars.vezJ1)
             {
@@ -41,47 +46,32 @@ public class GoleiroPequenaArea : Situacao
             LogisticaVars.m_goleiroGameObject = GameObject.FindGameObjectWithTag("Goleiro2");
         }
         GoleiroMetodos.ComponentesParaGoleiro(true);
-        SelecaoMetodos.DesabilitarDadosJogador();
+
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
         EventsManager.current.OnGoleiro("rotina tempo pequena area");
+        UI_Situacao("meio");
 
         yield return new WaitUntil(() => GoleiroVars.chutou);
+        UI_Situacao("inicio");
         _gameplay.Fim();
     }
 
     public override void UI_Situacao(string s)
     {
-        base.UI_Situacao(s);
-    }
-    public override void Camera_Situacao(string s)
-    {
-        _camera.SituacoesCameras(s);
-    }
-    public override IEnumerator Fim()
-    {
-        LogisticaVars.bolaPermaneceNaPequenaArea = false;
-        LogisticaVars.podeRedirecionar = true;
-        LogisticaVars.fundo1 = LogisticaVars.fundo2 = LogisticaVars.tiroDeMeta = false;
-        GoleiroMetodos.ComponentesParaGoleiro(false);
-
-        yield return new WaitForSeconds(0.5f);
-        if (LogisticaVars.goleiroT2) LogisticaVars.m_goleiroGameObject.transform.position = new Vector3(0, LogisticaVars.m_goleiroGameObject.transform.position.y, _gameplay.posGol2.z);
-        else LogisticaVars.m_goleiroGameObject.transform.position = new Vector3(0, LogisticaVars.m_goleiroGameObject.transform.position.y, _gameplay.posGol1.z);
-
-        LogisticaVars.goleiroT2 = LogisticaVars.goleiroT1 = false;
-        LogisticaVars.m_goleiroGameObject = null;
-
-        yield return new WaitForSeconds(1);
-        if (!LogisticaVars.bolaRasteiraT1 && !LogisticaVars.bolaRasteiraT2) yield return new WaitUntil(() => _gameplay._bola.m_toqueChao);
-        else yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
-
-        Debug.Log("FIM GOLEIRO");
-        EstadoJogo.TempoJogada(true);
-        LogisticaVars.continuaSendoFora = false;
-        LogisticaVars.tiroDeMeta = false;
-        JogadorMetodos.ResetarValoresChute();
-
-        _gameplay._bola.RedirecionarJogadores(true);
-        EventsManager.current.SelecaoAutomatica();
-        base.Fim();
+        switch (s)
+        {
+            case "inicio":
+                _ui.EstadoTodosOsBotoes(false);
+                _ui.m_placar.SetActive(true);
+                _ui.pausarBt.gameObject.SetActive(true);
+                break;
+            case "meio":
+                _ui.EstadoBotoesJogador(false);
+                _ui.EstadoBotoesGoleiro(true);
+                _ui.selecionarJogadorBt.gameObject.SetActive(false);
+                break;
+        }
+        
     }
 }
