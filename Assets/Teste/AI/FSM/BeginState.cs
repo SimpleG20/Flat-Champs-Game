@@ -4,17 +4,23 @@ using UnityEngine;
 
 public class BeginState : State
 {
-    public BeginState(StateSystem StateSystem, AISystem ai) : base(StateSystem, ai) 
+    public BeginState(Gameplay gameplay, StateSystem StateSystem, AISystem ai) : base(gameplay, StateSystem, ai) 
     { }
 
     public override IEnumerator Estado_Start()
     {
-        Debug.Log("Begin State");
-        yield return new WaitForSeconds(2);
+        Debug.Log("BEGIN STATE");
 
-        int quemComeca = Random.Range(0, 2);
-
-        if (quemComeca == 1) { _StateSystem.SetState(new PlayerTurnState(_StateSystem, _AiSystem)); _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_JOGADOR; }
-        else { _StateSystem.SetState(new AITurnState(_StateSystem, _AiSystem)); _StateSystem._estadoAtual = StateSystem.Estado.ESPERANDO_DECISAO; }
+        if(_Gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI)
+        {
+            if (LogisticaVars.vezJ1) { _StateSystem.SetState(new PlayerTurnState(_Gameplay, _StateSystem, _AiSystem)); _StateSystem._estadoAtual_AI = StateSystem.Estado.ESPERANDO_JOGADOR; }
+            else { _StateSystem.SetState(new AITurnState(_Gameplay, _StateSystem, _AiSystem)); _StateSystem._estadoAtual_AI = StateSystem.Estado.ESPERANDO_DECISAO; }
+        }
+        else
+        {
+            _StateSystem.SetState(new PlayerTurnState(_Gameplay, _StateSystem, _AiSystem)); 
+            _StateSystem._estadoAtual_AI = StateSystem.Estado.ESPERANDO_JOGADOR;
+        }
+        yield break;
     }
 }

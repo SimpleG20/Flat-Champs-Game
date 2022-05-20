@@ -76,7 +76,7 @@ public class JogadorMetodos: MonoBehaviour
     }
     public static void ChuteMalSucedido()
     {
-        Debug.Log("Chute Fraco");
+        //Debug.Log("Chute Fraco");
         JogadorVars.m_esperandoContato = false;
         //Debug.Log("Forca: " + JogadorVars.m_forca + " Max: " + JogadorVars.m_maxForca);
         /*JogadorVars.m_fatorAtritoBola = 1.8f;

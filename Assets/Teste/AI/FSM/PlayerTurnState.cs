@@ -4,49 +4,28 @@ using UnityEngine;
 
 public class PlayerTurnState : State
 {
-    public PlayerTurnState(StateSystem StateSystem, AISystem ai) : base(StateSystem, ai) 
+    public PlayerTurnState(Gameplay gameplay, StateSystem StateSystem, AISystem ai) : base(gameplay, StateSystem, ai) 
     { }
 
     public override IEnumerator Estado_Start()
     {
-        _StateSystem.jogadas = 0;
+        /*_StateSystem.jogadas = 0;
         _StateSystem.tempoJogada = 0;
-        _StateSystem.contagem = true;
-        Debug.Log("-----------------------------------------");
-        Debug.Log("PLAYER: TURN");
-        yield break;
-    }
-
-    public override IEnumerator Estado_Mover()
-    {
-        float randomForca = Random.Range(50, 420);
-        Debug.Log("PLAYER: Random Forca " + randomForca);
-
-        _StateSystem.jogadas++;
-
-        yield return new WaitForSeconds(1);
-
-        if (_StateSystem.jogadas >= 3)
-        {
-            _StateSystem.OnEnd();
-        }
-        else
-        {
-            _StateSystem.OnEsperar();
-        }
-    }
-
-    public override IEnumerator Estado_Esperar()
-    {
-        Debug.Log("PLAYER: Waiting players action");
+        _StateSystem.contagem = true;*/
+        Debug.Log("");
+        Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        Debug.Log("NEW PLAYER: TURN");
         yield break;
     }
 
     public override IEnumerator Estado_End()
     {
+        Debug.Log("PLAYER: TURN ENDED");
+        Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         //Substituir pelo LogisticaVars
-        _StateSystem.contagem = false;
-        _StateSystem.SetState(new AITurnState(_StateSystem, _AiSystem));
+        //_StateSystem.contagem = false;
+        /*if (_Gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) _StateSystem.SetState(new AITurnState(_Gameplay, _StateSystem, _AiSystem));
+        else _StateSystem.SetState(new PlayerTurnState(_Gameplay, _StateSystem, _AiSystem));*/
         yield break;
     }
 }

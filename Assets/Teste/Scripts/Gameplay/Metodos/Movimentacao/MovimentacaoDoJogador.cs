@@ -29,71 +29,76 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
     void Update()
     {
         #region Direcao Jogador
-        if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
+        if (LogisticaVars.vezJ1 || LogisticaVars.vezJ2 && Gameplay._current.modoPartida == Partida.Modo.JOGADO_VERSUS_JOGADOR)
         {
-            if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido_Atual);
-        }
-        else
-        {
-            if (LogisticaVars.m_goleiroGameObject != null) SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
-        }
-        #endregion
-
-        #region Movimentacao
-        if (LogisticaVars.jogadorSelecionado && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2 && !LogisticaVars.especial || LogisticaVars.escolherOutroJogador)
-        {
-            if (JogadorVars.m_fisica.m_podeVirar)
+            if (!LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2)
             {
-                if (pc)
-                {
-                    float h = Input.GetAxis("Horizontal");
-                    if (h == 0) JogadorVars.m_rotacionar = false;
-                    else
-                    {
-                        JogadorVars.m_rotacionar = true;
-                        if (LogisticaVars.escolherOutroJogador && !LogisticaVars.virouSelecao) LogisticaVars.virouSelecao = true;
-                    }
-
-                    if (!JogadorVars.m_medirChute)
-                    {
-                        if (LogisticaVars.escolherOutroJogador)
-                            LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * h * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
-                        else
-                            LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidade * Time.deltaTime);
-                    }
-                    else
-                    {
-                        LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
-                    }
-                }
-                else
-                {
-                    if (JogadorVars.m_rotacionar)
-                    {
-                        if (!JogadorVars.m_medirChute)
-                        {
-                            if (LogisticaVars.escolherOutroJogador)
-                                LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
-                            else
-                                LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidade * Time.deltaTime);
-                        }
-                        else
-                        {
-                            LogisticaVars.m_jogadorEscolhido_Atual.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
-                        }
-                    }
-                }
+                if (LogisticaVars.jogadorSelecionado) SetDirecaoChute(LogisticaVars.m_jogadorEscolhido_Atual);
             }
             else
             {
-                //JogadorVars.m_correndo = true;
+                if (LogisticaVars.m_goleiroGameObject != null) SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
+            }
+        }
+            
+        #endregion
+
+        #region Movimentacao
+        if (LogisticaVars.m_jogadorPlayer != null && !LogisticaVars.goleiroT1 && !LogisticaVars.goleiroT2 && !LogisticaVars.especial || 
+            LogisticaVars.escolherOutroJogador || LogisticaVars.vezAI)
+        {
+            if(JogadorVars.m_fisica != null)
+            {
+                if (JogadorVars.m_fisica.m_podeVirar)
+                {
+                    if (pc)
+                    {
+                        float h = Input.GetAxis("Horizontal");
+                        if (h == 0) JogadorVars.m_rotacionar = false;
+                        else
+                        {
+                            JogadorVars.m_rotacionar = true;
+                            if (LogisticaVars.escolherOutroJogador && !LogisticaVars.virouSelecao) LogisticaVars.virouSelecao = true;
+                        }
+
+                        if (!JogadorVars.m_medirChute)
+                        {
+                            if (LogisticaVars.escolherOutroJogador)
+                                LogisticaVars.m_jogadorPlayer.transform.Rotate(Vector3.forward * h * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                            else
+                                LogisticaVars.m_jogadorPlayer.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidade * Time.deltaTime);
+                        }
+                        else
+                        {
+                            LogisticaVars.m_jogadorPlayer.transform.Rotate(Vector3.forward * h * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                        }
+                    }
+                    else
+                    {
+                        if (JogadorVars.m_rotacionar)
+                        {
+                            if (!JogadorVars.m_medirChute)
+                            {
+                                if (LogisticaVars.escolherOutroJogador)
+                                    LogisticaVars.m_jogadorPlayer.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.sensibilidadeEscolha * Time.deltaTime);
+                                else
+                                    LogisticaVars.m_jogadorPlayer.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidade * Time.deltaTime);
+                            }
+                            else
+                            {
+                                LogisticaVars.m_jogadorPlayer.transform.Rotate(Vector3.forward * joystickManager.valorX_Esq * JogadorVars.m_sensibilidadeChute * Time.deltaTime);
+                            }
+                        }
+                    }
+                }
             }
         }
         #endregion
 
         #region Medir Chute
         if (JogadorVars.m_medirChute && LogisticaVars.jogadorSelecionado && !LogisticaVars.jogoParado || 
-            JogadorVars.m_medirChute && LogisticaVars.continuaSendoFora || JogadorVars.m_medirChute && LogisticaVars.jogadorSelecionado && !LogisticaVars.aplicouPrimeiroToque)
+            JogadorVars.m_medirChute && LogisticaVars.continuaSendoFora || 
+            JogadorVars.m_medirChute && LogisticaVars.jogadorSelecionado && !LogisticaVars.aplicouPrimeiroToque)
         {
             float parametro = JogadorMetodos.MedirChute();
 
@@ -149,15 +154,14 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
                 step = 0;
                 if (Gameplay._current.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI)
                 {
-                    if(LogisticaVars.vezJ2) 
-                        GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorAi.transform.up + LogisticaVars.m_jogadorAi.transform.position;
-                    else 
-                        GameObject.Find("RotacaoCamera").transform.position = -LogisticaVars.m_jogadorEscolhido_Atual.transform.up + LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
+                    if(LogisticaVars.vezJ1) 
+                        GameObject.Find("RotacaoCamera").transform.position = 
+                            -LogisticaVars.m_jogadorEscolhido_Atual.transform.up + LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
                 }
                 else
                 {
-                    GameObject.Find("RotacaoCamera").transform.position =
-                    -LogisticaVars.m_jogadorEscolhido_Atual.transform.up + LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
+                    GameObject.Find("RotacaoCamera").transform.position = 
+                        -LogisticaVars.m_jogadorEscolhido_Atual.transform.up + LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
                 }
             }
         }

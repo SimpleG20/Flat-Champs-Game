@@ -13,7 +13,7 @@ public class AISystem : AIDecision
     public float xCampo, zCampo;
     //public int decisao;
 
-    public bool _passouBola, _novaDecisao, _goleiroPosicionado;
+    public bool _passouBola, _novaDecisao;
 
     public Vector3 golPos, direcaoChute;
     public Vector3 posTarget, posParaChute;
@@ -21,7 +21,8 @@ public class AISystem : AIDecision
     public Quaternion rotacaoAnt;
     public LayerMask layerMask;
 
-    public GameObject rotacaoCamera, especialTarget;
+    //public GameObject rotacaoCamera;
+    public GameObject especialTarget;
     public GameObject trajetoriaEspecial;
     public GameObject ai_player;
     public List<GameObject> jogadorAmigo_MaisPerto, jogadorInimigo_MaisPerto;
@@ -30,17 +31,14 @@ public class AISystem : AIDecision
     StateSystem stateSystem;
     DesenharPrevisaoChute trajetoria;
 
-    private void Awake()
+    private void Start()
     {
         DimensaoCampo dimensaoCampo = FindObjectOfType<DimensaoCampo>();
         bola = FindObjectOfType<FisicaBola>();
-        stateSystem = FindObjectOfType<StateSystem>();
-        
-        //jogadorAmigo_MaisPerto = LogisticaVars.jogadoresT2;
-        //jogadorInimigo_MaisPerto = LogisticaVars.jogadoresT1;
+        stateSystem = GetComponent<StateSystem>();
 
         golPos = GameObject.FindGameObjectWithTag("Gol1").transform.position;
-        rotacaoCamera = GameObject.Find("RotacaoCamera");
+        //rotacaoCamera = GameObject.Find("RotacaoCamera");
         especialTarget = GameObject.FindGameObjectWithTag("Direcao Especial");
 
         xCampo = dimensaoCampo.TamanhoCampo().x;
@@ -229,15 +227,18 @@ public class AISystem : AIDecision
     }
     public void ChuteLateral()
     {
-        StartCoroutine(iAction.Chute_Lateral());
+        AIAction aux = iAction.GetType() != typeof(AIStrike) ? new AIStrike(this, ai_player) : iAction;
+        StartCoroutine(aux.Chute_Lateral());
     }
     public void ChuteEscanteio()
     {
-        StartCoroutine(iAction.Chute_Escanteio());
+        AIAction aux = iAction.GetType() != typeof(AIStrike) ? new AIStrike(this, ai_player) : iAction;
+        StartCoroutine(aux.Chute_Escanteio());
     }
     public void ChuteTiroDeMeta()
     {
-        StartCoroutine(iAction.Chute_TiroDeMeta_PequenaArea());
+        AIAction aux = iAction.GetType() != typeof(AIStrike) ? new AIStrike(this, ai_player) : iAction;
+        StartCoroutine(aux.Chute_TiroDeMeta_PequenaArea());
     }
     #endregion
 

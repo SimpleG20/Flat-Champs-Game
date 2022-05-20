@@ -19,6 +19,7 @@ public class Abertura : MonoBehaviour
     Vector3 posGoleiro1, posGoleiro2;
 
     Partida.Tipo tipoJogo;
+    Partida.Modo modoJogo;
     Partida.Conexao conexaoJogo;
 
     void Awake()
@@ -41,6 +42,7 @@ public class Abertura : MonoBehaviour
     {
         tipoJogo = GameManager.Instance.m_partida.getTipo();
         conexaoJogo = GameManager.Instance.m_partida.getConexao();
+        modoJogo = GameManager.Instance.m_partida.getModo();
 
         //print("Instanciar Estadio e Abertura");
         int randomEstadio;
@@ -117,6 +119,7 @@ public class Abertura : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         GetComponent<Gameplay>().enabled = true;
+        if (modoJogo == Partida.Modo.JOGADO_VERSUS_JOGADOR) FindObjectOfType<AISystem>().enabled = false;
     }
 
     void SetarLocalBotoes(Partida.Conexao conexao)
@@ -282,6 +285,8 @@ public class Abertura : MonoBehaviour
         }
 
         LogisticaVars.abertura = false;
+        FindObjectOfType<AISystem>().jogadorAmigo_MaisPerto = LogisticaVars.jogadoresT2;
+        FindObjectOfType<AISystem>().jogadorInimigo_MaisPerto = LogisticaVars.jogadoresT1;
     }
 
     void RedirecionarBotaoParaBola(GameObject g, int tipo)

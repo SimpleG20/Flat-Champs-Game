@@ -4,42 +4,35 @@ using UnityEngine;
 
 public class StateSystem : StateMachine
 {
-    public enum Estado{ NONE, ESPERANDO_JOGADOR, ESPERANDO_DECISAO, DECISAO_TOMADA, MOVER, CHUTAR, CHUTAR_GOL, ESPECIAL, GOLEIRO }
+    public enum Estado { NONE, ESPERANDO_JOGADOR, ESPERANDO_DECISAO, DECISAO_TOMADA, MOVER, CHUTAR, CHUTAR_GOL, ESPECIAL, GOLEIRO }
 
-    public int jogadas;
-    public float tempoJogada;
-    public bool moverPlayer, contagem, comecar;
-
-    public Estado _estadoAtual;
+    public Estado _estadoAtual_AI;
     AISystem AiSystem;
 
-    private void Awake()
+    private void Start()
     {
-        AiSystem = FindObjectOfType<AISystem>();
+        AiSystem = GetComponent<AISystem>();
     }
 
     private void Update()
     {
-        if (comecar)
+        /*if (comecar)
         {
             SetState(new BeginState(this, AiSystem));
             comecar = false;
-        }
+        }*/
 
-        if (moverPlayer)
+        /*if (moverPlayer)
         {
             moverPlayer = false;
             OnMover();
-        }
+        }*/
 
-        if (contagem)
+        /*if (contagem)
         {
             tempoJogada += Time.deltaTime;
             if (tempoJogada >= 20) OnEnd();
-        }
-
-        //Debug.DrawRay(AiSystem.bola.m_pos, AiSystem.direcaoChute * AiSystem.alcanceChute, Color.red);
-        Debug.DrawLine(AiSystem.bola.m_pos, AiSystem.posTarget, Color.blue);
+        }*/
     }
 
     #region Estado conforme a situacao da Bola
@@ -51,7 +44,7 @@ public class StateSystem : StateMachine
     public void OnDecisao()
     {
         AiSystem.TomarDecisao();
-        _estadoAtual = Estado.DECISAO_TOMADA;
+        _estadoAtual_AI = Estado.DECISAO_TOMADA;
     }
 
     public void OnMover()
@@ -61,31 +54,34 @@ public class StateSystem : StateMachine
 
     public void OnChutarNormal()
     {
-        _estadoAtual = Estado.CHUTAR;
+        _estadoAtual_AI = Estado.CHUTAR;
         StartCoroutine(_state.Estado_ChutarNormal());
     }
 
     public void OnChutar_ao_Gol()
     {
-        _estadoAtual = Estado.CHUTAR_GOL;
+        Gameplay._current.SetSituacao("chute ao gol");
+        _estadoAtual_AI = Estado.CHUTAR_GOL;
         StartCoroutine(_state.Estado_Chutar_ao_Gol());
     }
 
     public void OnEspecial()
     {
-        _estadoAtual = Estado.ESPECIAL;
+        Gameplay._current.SetSituacao("especial");
+        _estadoAtual_AI = Estado.ESPECIAL;
         StartCoroutine(_state.Estado_Especial());
     }
 
     public void OnEsperar()
     {
-        _estadoAtual = Estado.ESPERANDO_JOGADOR;
+        _estadoAtual_AI = Estado.ESPERANDO_JOGADOR;
         StartCoroutine(_state.Estado_Esperar());
     }
 
     public void OnGoleiro()
     {
-        _estadoAtual = Estado.GOLEIRO;
+        Gameplay._current.SetSituacao("pequena area");
+        _estadoAtual_AI = Estado.GOLEIRO;
         StartCoroutine(_state.Estado_Goleiro());
     }
 

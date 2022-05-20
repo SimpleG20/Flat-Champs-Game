@@ -14,12 +14,16 @@ public class Gameplay : MonoBehaviour
     public Transform rotacaoCamera;
     public GameObject canvas, mira;
 
+    [SerializeField] StateSystem stateSystem;
+    [SerializeField] AISystem aiSystem;
+
     public Situacoes _atual;
     Situacoes aux;
     Situacao _situacaoAtual;
 
     public Abertura abertura;
     public FisicaBola _bola;
+    
     VariaveisUIsGameplay ui;
     EventsManager events;
 
@@ -27,11 +31,13 @@ public class Gameplay : MonoBehaviour
     public Partida.Modo modoPartida;
     public Partida.Conexao conexaoPartida;
 
+    #region Current
     public static Gameplay _current;
     private void Awake()
     {
         _current = this;
     }
+    #endregion
 
     void Start()
     {
@@ -114,12 +120,21 @@ public class Gameplay : MonoBehaviour
         }
     }
 
+    public AISystem GetAISystem()
+    {
+        return aiSystem;
+    }
+    public StateSystem GetStateSystem()
+    {
+        return stateSystem;
+    }
+
     #region Situacoes
     public void SetSituacao(string situacao)
     {
         print("");
-        print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-        print("* * * * * ANTERIOR: " + _situacaoAtual);
+        //print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        //print("* * * * * ANTERIOR: " + _situacaoAtual);
         print("Numero de controle: " + LogisticaVars.numControle);
         if (LogisticaVars.escolherOutroJogador) { StartCoroutine(EsperarParaMudarSituacao(situacao)); return; }
 
@@ -188,7 +203,7 @@ public class Gameplay : MonoBehaviour
                 break;
         }
         LogisticaVars.numControle++;
-        print("* * * * * " + _atual);
+        //print("* * * * * " + _atual);
         LogisticaVars.fimSituacao = false;
         StartCoroutine(_situacaoAtual.Inicio());
     }
@@ -205,7 +220,7 @@ public class Gameplay : MonoBehaviour
     }
     public void Fim()
     {
-        print("* * * * * FIM: " + _situacaoAtual);
+        //print("* * * * * FIM: " + _situacaoAtual);
         StartCoroutine(_situacaoAtual.Fim());
     }
 
@@ -267,9 +282,9 @@ public class Gameplay : MonoBehaviour
     {
         StartCoroutine(_situacaoAtual.Fim());
     }
-    public void RotacionarJogadorPerto(GameObject jogadorPerto)
+    public void RotacionarJogadorPerto(Vector3 posicao)
     {
-        StartCoroutine(_situacaoAtual.RotacionarParaJogadorMaisPerto(jogadorPerto));
+        StartCoroutine(_situacaoAtual.RotacionarParaJogadorMaisPerto(posicao));
     }
     public void Situacao_BolaRasteira()
     {

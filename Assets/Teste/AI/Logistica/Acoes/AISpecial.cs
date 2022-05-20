@@ -14,7 +14,7 @@ public class AISpecial : AIAction
     {
         ai_System.EspecialInstanciarTrajetoria();
         //Mudar LogisticaVars
-        ai_System.GetStateSystem().contagem = false;
+        //ai_System.GetStateSystem().contagem = false;
     }
 
     public override IEnumerator Especial_Instanciar()

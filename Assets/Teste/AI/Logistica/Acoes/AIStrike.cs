@@ -50,7 +50,8 @@ public class AIStrike : AIAction
         JogadorVars.m_esperandoContato = true;
 
         //Substituir pelo LogisticaVars
-        ai_System.GetStateSystem().jogadas++;
+        //ai_System.GetStateSystem().jogadas++;
+        LogisticaVars.jogadas++;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
@@ -68,9 +69,7 @@ public class AIStrike : AIAction
         if (forcaChute > JogadorVars.m_maxForcaNormal) forcaChute = JogadorVars.m_maxForcaNormal;
         ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
         JogadorVars.m_esperandoContato = true;
-
-        //Substituir pelo LogisticaVars
-        ai_System.GetStateSystem().jogadas++;
+        LogisticaVars.jogadas++;
         ai_System._passouBola = true;
 
         yield return new WaitForSeconds(0.5f);
@@ -89,42 +88,31 @@ public class AIStrike : AIAction
         if (forcaChute > JogadorVars.m_maxForcaNormal) forcaChute = JogadorVars.m_maxForcaNormal;
         ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
         JogadorVars.m_esperandoContato = true;
-
-        //Substituir pelo LogisticaVars
-        ai_System.GetStateSystem().jogadas++;
+        LogisticaVars.jogadas++;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
-
         ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.GetStateSystem().OnEnd();
     }
     public override IEnumerator Chute_Gol()
     {
         Debug.Log("AI STRIKE: GOL");
-        //Substituir pelo LogisticaVars
-        ai_System.GetStateSystem().contagem = false;
-
         ai_System.direcaoChute = CalcularVetorDirecao();
         forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTAR_GOL);
         forcaChute = CalcularForcaChute();
 
-        yield return new WaitUntil(() => ai_System._goleiroPosicionado);
-        //Substituir pelo LogisticaVars
-        //ai_System.GetStateSystem().contagem = true;
-
+        yield return new WaitUntil(() => (LogisticaVars.defenderGoleiro && !LogisticaVars.goleiroT1));
         if (forcaChute > JogadorVars.m_maxForcaChuteAoGol) forcaChute = JogadorVars.m_maxForcaChuteAoGol;
         ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
+        LogisticaVars.jogadas = 3;
+        JogadorVars.m_chuteAoGol = false;
         JogadorVars.m_esperandoContato = true;
-        ai_System._goleiroPosicionado = false;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
-
         ai_System.posParaChute = ai_System.bola.m_pos;
-        //Substituir pelo LogisticaVars
-        ai_System.GetStateSystem().jogadas = 3;
-        ai_System.GetStateSystem().OnEnd();
+        Gameplay._current.GetStateSystem().OnEnd();
     }
     public override IEnumerator Chute_Lateral()
     {
@@ -139,11 +127,13 @@ public class AIStrike : AIAction
 
         yield return new WaitForSeconds(2);
         ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * 30, ForceMode.Impulse);
-
-        //Tirar jogador atual da lateral
+        EventsManager.current.OnFora("rotina sair lateral");
 
         ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.posTarget = aux;
+
+        yield return new WaitUntil(() => LogisticaVars.saiuFora);
+        ai_System.OnIniciarMovimento();
     }
     public override IEnumerator Chute_Escanteio()
     {
@@ -160,11 +150,13 @@ public class AIStrike : AIAction
 
         yield return new WaitForSeconds(2);
         ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * forcaNaBola, ForceMode.Impulse);
-
-        //Tirar jogador atual do escanteio
+        EventsManager.current.OnFora("rotina sair escanteio");
 
         ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.posTarget = aux;
+
+        yield return new WaitUntil(() => LogisticaVars.saiuFora);
+        ai_System.OnIniciarMovimento();
     }
     public override IEnumerator Chute_TiroDeMeta_PequenaArea()
     {

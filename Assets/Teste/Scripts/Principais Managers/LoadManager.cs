@@ -91,7 +91,7 @@ public class LoadManager : MonoBehaviour
         m_loadingScreen.gameObject.SetActive(false);
         scenesLoading.RemoveRange(0,scenesLoading.Count);
 
-        if (GameManager.Instance.getAumentarXP())
+        if (GameManager.Instance.getOnAumentarXP())
         {
             print("ANIMACAO BARRA XP");
             float xpAnterior = GameManager.Instance.m_usuario.m_xp;

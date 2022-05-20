@@ -10,7 +10,7 @@ public class Fora : Situacao
     protected bool trocou;
     protected void SetarFora()
     {
-        Debug.Log("FORA GERAL INICIO");
+        //Debug.Log("FORA GERAL INICIO");
         _gameplay._atual = Gameplay.Situacoes.FORA;
         UI_Inicio();
         LogisticaVars.saiuFora = false;
@@ -23,14 +23,25 @@ public class Fora : Situacao
         EstadoJogo.TempoJogada(false);
 
         if (LogisticaVars.ultimoToque == 1 && LogisticaVars.vezJ1 || LogisticaVars.ultimoToque == 2 && LogisticaVars.vezJ2)
-        { Debug.Log("FORA: TROCOU VEZ"); trocou = true; LogisticaVars.tempoJogada = 0; LogisticaVars.jogadas = 0; }
+        { /*Debug.Log("FORA: TROCOU VEZ");*/ trocou = true; LogisticaVars.tempoJogada = 0; LogisticaVars.jogadas = 0; }
 
         if (LogisticaVars.tempoJogada > 15) LogisticaVars.tempoJogada = 14;
         if (LogisticaVars.jogadas > 1) LogisticaVars.jogadas--;
 
-        LogisticaVars.vezJ1 = LogisticaVars.vezJ2 = false;
+        if (trocou)
+        {
+            bool aux = LogisticaVars.vezJ1;
+            LogisticaVars.vezJ1 = LogisticaVars.vezJ2;
+            LogisticaVars.vezJ2 = aux;
+        }
+        /*LogisticaVars.vezJ1 = LogisticaVars.vezJ2 = false;
         if (LogisticaVars.ultimoToque == 1) LogisticaVars.vezJ2 = true;
-        else LogisticaVars.vezJ1 = true;
+        else LogisticaVars.vezJ1 = true;*/
+
+        if (LogisticaVars.vezJ2 && _gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) LogisticaVars.vezAI = true;
+        else LogisticaVars.vezAI = false;
+        _gameplay.GetStateSystem().OnEnd();
+
         SelecaoMetodos.DesabilitarDadosJogador();
     }
 

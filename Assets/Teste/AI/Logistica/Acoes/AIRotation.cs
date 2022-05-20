@@ -13,9 +13,9 @@ public class AIRotation : AIAction
     {
         yield return new WaitForSeconds(0.01f);
         float step = 0.5f;
-        ai_System.rotacaoCamera.transform.position = Vector3.MoveTowards(ai_System.rotacaoCamera.transform.position, alvo, step);
+        Gameplay._current.rotacaoCamera.transform.position = Vector3.MoveTowards(Gameplay._current.rotacaoCamera.transform.position, alvo, step);
 
-        Vector3 direction = ai_System.rotacaoCamera.transform.position - ai_player.transform.position;
+        Vector3 direction = Gameplay._current.rotacaoCamera.transform.position - ai_player.transform.position;
         Quaternion rotation = Quaternion.LookRotation(direction);
         ai_player.transform.rotation = rotation;
         ai_player.transform.eulerAngles = new Vector3(-90, ai_player.transform.eulerAngles.y, ai_player.transform.eulerAngles.z);
@@ -24,30 +24,30 @@ public class AIRotation : AIAction
         { ai_System.rotacaoAnt = rotation; ai_System.RotacionarParaAlvo(alvo); }
         else 
         {
-            ai_System.rotacaoCamera.transform.position = ai_player.transform.position - ai_player.transform.up;
-            Debug.Log("ROTACIONOU para o ALVO");
+            Gameplay._current.rotacaoCamera.transform.position = ai_player.transform.position - ai_player.transform.up;
+            //Debug.Log("ROTACIONOU para o ALVO");
             ai_System.VerificarProximaJogada(); 
         }
     }
     public override IEnumerator Rotacionar_VasculharArea()
     {
-        Debug.Log("ROTACIONAR: Vasculhando");
+        //Debug.Log("ROTACIONAR: Vasculhando");
         ai_System.DetectarJogadores();
         ai_System.menorDistanciaAoGol_JogadoresAmigos = 1000;
         ai_System.menorDistancia_JogadoresInimigos = 1000;
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.GetComponent<FisicaBola>().m_bolaCorrendo);
-        Debug.Log("ROTACIONAR: Terminou Vasculhamento");
+        //Debug.Log("ROTACIONAR: Terminou Vasculhamento");
         ai_System.DecidirPosicao();
     }
     public override IEnumerator Rotacionar_Posicao()
     {
         yield return new WaitForSeconds(0.01f);
         float step = 0.5f;
-        ai_System.rotacaoCamera.transform.position = Vector3.MoveTowards(ai_System.rotacaoCamera.transform.position, ai_System.posParaChute, step);
+        Gameplay._current.rotacaoCamera.transform.position = Vector3.MoveTowards(Gameplay._current.rotacaoCamera.transform.position, ai_System.posParaChute, step);
 
-        Vector3 direction = ai_System.rotacaoCamera.transform.position - ai_player.transform.position;
+        Vector3 direction = Gameplay._current.rotacaoCamera.transform.position - ai_player.transform.position;
         Quaternion rotation = Quaternion.LookRotation(direction);
         ai_player.transform.rotation = rotation;
         ai_player.transform.eulerAngles = new Vector3(-90, ai_player.transform.eulerAngles.y, ai_player.transform.eulerAngles.z);

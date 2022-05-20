@@ -66,6 +66,7 @@ public class VariaveisUIsGameplay : MonoBehaviour
         tempoEscolhaGO.SetActive(b);
         tempoJogadaGO.SetActive(b);
         numeroJogadasGO.SetActive(b);
+        cameraEsperaBt.gameObject.SetActive(b);
         if (m_placar != null) m_placar.SetActive(b);
     }
     public void EstadoBotoesCentral(bool b)
@@ -105,21 +106,30 @@ public class VariaveisUIsGameplay : MonoBehaviour
             EstadoBotoesCentral(false);
             botaoMeio.SetActive(true);
             botaoBaixo.SetActive(true);
+            cameraEsperaBt.gameObject.SetActive(false);
         }
     }
 
     public void UI_Espera()
     {
+        EstadoTodosOsBotoes(false);
         EstadoBotoesCentral(false);
+        centralBotoes.SetActive(true);
         m_placar.SetActive(true);
         pausarBt.gameObject.SetActive(true);
+        
         if (!CamerasSettings._current.getCameraEspera())
         {
             cameraEsperaBt.gameObject.SetActive(true);
+            botaoLivre1.SetActive(true);
             joystick.SetActive(true);
         }
         botaoCima.SetActive(true);
         selecionarJogadorBt.gameObject.SetActive(true);
+
+        numeroJogadasGO.SetActive(true);
+        tempoEscolhaGO.SetActive(true);
+        tempoJogadaGO.SetActive(true);
     }
     public void UI_BolaRasteira()
     {

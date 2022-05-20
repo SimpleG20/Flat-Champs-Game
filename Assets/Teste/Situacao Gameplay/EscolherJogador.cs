@@ -18,48 +18,51 @@ public class EscolherJogador : Situacao
 
         Debug.Log("ESCOLHER OUTRO INICIO");
         LogisticaVars.escolheu = false;
-        UI_Inicio();
-        Camera_Situacao("entrar");
+        if (!LogisticaVars.vezAI)
+        {
+            UI_Inicio();
+            Camera_Situacao("entrar");
+        }
 
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", true);
-        LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", false);
-        LogisticaVars.contarTempoSelecao = true;
-        LogisticaVars.escolherOutroJogador = true;
-        GameObject jogadorPerto = null;
 
-        if (LogisticaVars.vezJ1)
+        if (LogisticaVars.vezAI)
         {
-            jogadorPerto = SelecaoMetodos.QuemEstaMaisPerto(LogisticaVars.m_jogadorEscolhido_Atual.transform.position, LogisticaVars.jogadoresT1);
             _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT1);
         }
         else
         {
-            jogadorPerto = SelecaoMetodos.QuemEstaMaisPerto(LogisticaVars.m_jogadorEscolhido_Atual.transform.position, LogisticaVars.jogadoresT2);
-            _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT2);
+            LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", true);
+            LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", false);
+            LogisticaVars.contarTempoSelecao = true;
+            LogisticaVars.escolherOutroJogador = true;
+            _gameplay.rotacaoCamera.position = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - LogisticaVars.m_jogadorEscolhido_Atual.transform.up;
+            
+            if (LogisticaVars.vezJ1)
+            {
+                _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT1);
+                _gameplay.RotacionarJogadorPerto(PosicaoParaOlhar(LogisticaVars.jogadoresT1));
+            }
+            else
+            {
+                _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT2);
+                _gameplay.RotacionarJogadorPerto(PosicaoParaOlhar(LogisticaVars.jogadoresT2));
+            }
+            LogisticaVars.virouSelecao = false;
+            aux = LogisticaVars.numControle;
+
+            yield return new WaitUntil(() => LogisticaVars.virouSelecao);
+            if (!LogisticaVars.escolheu)
+            {
+                LogisticaVars.jogadorSelecionado = false;
+                UI_Meio();
+            }
+
+            yield return new WaitUntil(() => LogisticaVars.tempoEscolherJogador > LogisticaVars.tempoMaxEscolhaJogador ||
+            LogisticaVars.tempoJogada > LogisticaVars.tempoMaxJogada && aux == LogisticaVars.numControle);
+            if (!LogisticaVars.jogadorSelecionado && LogisticaVars.numControle == aux && !LogisticaVars.vezAI) _gameplay.Fim();
         }
-        _gameplay.rotacaoCamera.position = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - LogisticaVars.m_jogadorEscolhido_Atual.transform.up;
-        _gameplay.RotacionarJogadorPerto(jogadorPerto);
-
-        aux = LogisticaVars.numControle;
-
-        yield return new WaitUntil(() => LogisticaVars.virouSelecao);
-        LogisticaVars.jogadorSelecionado = false;
-        UI_Meio();
-
-        yield return new WaitUntil(() => LogisticaVars.tempoEscolherJogador > LogisticaVars.tempoMaxEscolhaJogador || 
-        LogisticaVars.tempoJogada > LogisticaVars.tempoMaxJogada && aux == LogisticaVars.numControle);
-        if (!LogisticaVars.jogadorSelecionado) _gameplay.Fim();
-    }
-
-    void EsperandoAi()
-    {
-        UI_Meio();
-    }
-    void SelecionarJogador()
-    {
-
     }
 
     void UI_Inicio()
@@ -76,20 +79,25 @@ public class EscolherJogador : Situacao
         _ui.EstadoTodosOsBotoes(false);
         _ui.centralBotoes.SetActive(true);
         _ui.botaoCima.SetActive(true);
-        _ui.botaoCima.SetActive(true);
-
-        /*_ui.EstadoBotoesJogador(false);
-        _ui.EstadoBotoesGoleiro(false);
-        _ui.centralBotoes.SetActive(true);
-        _ui.botaoCima.SetActive(true);
         _ui.botaoMeio.SetActive(false);
         _ui.botaoBaixo.SetActive(false);
         _ui.botaoDiagonal.SetActive(false);
         _ui.botaoLivre2.SetActive(false);
-        _ui.botaoLivre1.SetActive(false);*/
+        _ui.botaoLivre1.SetActive(false);
 
         _ui.sairSelecaoBt.gameObject.SetActive(true);
         _ui.joystick.SetActive(true);
+    }
+    Vector3 PosicaoParaOlhar(List<GameObject> jogadores)
+    {
+        Vector3 novo = LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
+
+        foreach(GameObject jogador in jogadores)
+        {
+            novo += jogador.transform.position - LogisticaVars.m_jogadorEscolhido_Atual.transform.position; 
+        }
+        novo = novo / jogadores.Count;
+        return novo;
     }
 
     public override void Camera_Situacao(string s)
@@ -110,11 +118,11 @@ public class EscolherJogador : Situacao
                 break;
         }
     }
-    public override IEnumerator RotacionarParaJogadorMaisPerto(GameObject jogador)
+    public override IEnumerator RotacionarParaJogadorMaisPerto(Vector3 pos)
     {
         yield return new WaitForSeconds(0.01f);
         step += 0.05f;
-        _gameplay.rotacaoCamera.position = Vector3.MoveTowards(_gameplay.rotacaoCamera.position, jogador.transform.position, step);
+        _gameplay.rotacaoCamera.position = Vector3.MoveTowards(_gameplay.rotacaoCamera.position, pos, step);
 
         Vector3 direction = _gameplay.rotacaoCamera.position - LogisticaVars.m_jogadorEscolhido_Atual.transform.position;
         Quaternion rotation = Quaternion.LookRotation(direction);
@@ -122,7 +130,7 @@ public class EscolherJogador : Situacao
         LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles = 
             new Vector3(-90, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.y, LogisticaVars.m_jogadorEscolhido_Atual.transform.eulerAngles.z);
 
-        if (_gameplay.rotacaoAnt != rotation && !JogadorVars.m_rotacionar && !LogisticaVars.escolheu) { _gameplay.rotacaoAnt = rotation; _gameplay.RotacionarJogadorPerto(jogador); }
+        if (_gameplay.rotacaoAnt != rotation && !JogadorVars.m_rotacionar && !LogisticaVars.escolheu) { _gameplay.rotacaoAnt = rotation; _gameplay.RotacionarJogadorPerto(pos); }
         else
         {
             Debug.Log("ESCOLHER JOGADOR: Rotacionou");
@@ -136,15 +144,18 @@ public class EscolherJogador : Situacao
         LogisticaVars.tempoEscolherJogador = 0;
         LogisticaVars.contarTempoSelecao = false;
         LogisticaVars.escolheu = true;
+        LogisticaVars.virouSelecao = true;
 
         _gameplay.DestruirIconesSelecao();
         LogisticaVars.m_tempoSelecaoAnimator.SetBool("SelecionarJogador", false);
         LogisticaVars.m_tempoSelecaoAnimator.SetBool("SairSelecionarJogador", true);
         _ui.sairSelecaoBt.gameObject.SetActive(false);
 
-        Camera_Situacao("sair");
-
-        _gameplay._bola.RedirecionarJogadores(true);
+        if (!LogisticaVars.vezAI)
+        {
+            Camera_Situacao("sair");
+            _gameplay._bola.RedirecionarJogadores(true);
+        }
         LogisticaVars.escolherOutroJogador = false;
 
         JogadorMetodos.ResetarValoresChute();

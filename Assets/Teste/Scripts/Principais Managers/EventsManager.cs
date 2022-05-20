@@ -82,6 +82,13 @@ public class EventsManager : MonoBehaviour
     {
         if (onSelecaoAutomatica != null) onSelecaoAutomatica();
     }
+    public void AcionarCameraEspera()
+    {
+        VariaveisUIsGameplay._current.EstadoTodosOsBotoes(false);
+        VariaveisUIsGameplay._current.m_placar.SetActive(true);
+        VariaveisUIsGameplay._current.pausarBt.gameObject.SetActive(true);
+        CamerasSettings._current.SituacoesCameras("acionar camera espera");
+    }
     #endregion
 
     public event Action onAtualizarPlacar;

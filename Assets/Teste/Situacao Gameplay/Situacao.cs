@@ -26,7 +26,7 @@ public abstract class Situacao
     {
         yield break;
     }
-    public virtual IEnumerator RotacionarParaJogadorMaisPerto(GameObject jogador)
+    public virtual IEnumerator RotacionarParaJogadorMaisPerto(Vector3 pos)
     {
         yield break;
     }
@@ -36,19 +36,27 @@ public abstract class Situacao
     }
     public void UI_Normal()
     {
-        _ui.EstadoBotoesGoleiro(false);
-        _ui.EstadoBotoesJogador(true);
-        _ui.especialBt.gameObject.SetActive(true);
-        _ui.barraChuteJogador.SetActive(true);
-        _ui.barraEspecial.SetActive(true);
-        _ui.centralBotoes.SetActive(true);
+        if(!LogisticaVars.vezAI)
+        {
+            _ui.EstadoBotoesGoleiro(false);
+            _ui.EstadoBotoesJogador(true);
+            _ui.especialBt.gameObject.SetActive(true);
+            _ui.barraChuteJogador.SetActive(true);
+            _ui.barraEspecial.SetActive(true);
+            _ui.centralBotoes.SetActive(true);
 
-        _ui.numeroJogadasGO.SetActive(true);
-        _ui.tempoEscolhaGO.SetActive(true);
-        _ui.tempoJogadaGO.SetActive(true);
-        _ui.pausarBt.gameObject.SetActive(true);
-        _ui.sairSelecaoBt.gameObject.SetActive(false);
-        _ui.especialBt.interactable = true;
+            _ui.numeroJogadasGO.SetActive(true);
+            _ui.tempoEscolhaGO.SetActive(true);
+            _ui.tempoJogadaGO.SetActive(true);
+            _ui.pausarBt.gameObject.SetActive(true);
+            _ui.cameraEsperaBt.gameObject.SetActive(false);
+            _ui.sairSelecaoBt.gameObject.SetActive(false);
+            _ui.especialBt.interactable = true;
+        }
+        else
+        {
+            _ui.UI_Espera();
+        }
     }
     public virtual void Camera_Situacao(string s)
     {

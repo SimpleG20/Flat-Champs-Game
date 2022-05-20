@@ -10,15 +10,28 @@ public class Comecar : Situacao
 
     public override IEnumerator Inicio()
     {
-        Debug.Log("COMECAR INICIO");
+        //Debug.Log("COMECAR INICIO");
         ToqueInicial();
-        _camera.SituacoesCameras("toque pos gol");
+        _gameplay.GetStateSystem().SetState(new BeginState(_gameplay, _gameplay.GetStateSystem(), _gameplay.GetAISystem()));
 
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+        if (!LogisticaVars.vezAI)
+        {
+            _camera.SituacoesCameras("somente camera jogador");
 
-        UI_Situacao("inicio");
-        JogadorMetodos.ResetarValoresChute();
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+            UI_Situacao("inicio");
+            JogadorMetodos.ResetarValoresChute();
+        }
+        else
+        {
+            _camera.SituacoesCameras("acionar camera espera");
+
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+            _camera.setCameraEspera(true);
+            _ui.UI_Espera();
+        }
 
         yield return new WaitForSeconds(7);
         if (!LogisticaVars.aplicouPrimeiroToque)
@@ -27,6 +40,29 @@ public class Comecar : Situacao
             _gameplay.Fim();
         }
     }
+    void ToqueInicial()
+    {
+        if (LogisticaVars.vezJ2 && _gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) LogisticaVars.vezAI = true;
+        else LogisticaVars.vezAI = false;
+
+        EventsManager.current.EscolherJogador();
+        SelecaoMetodos.DadosJogador();
+        SelecaoMetodos.DesabilitarComponentesDosNaoSelecionados();
+    }
+    void AplicarToqueInicialAuto()
+    {
+        LogisticaVars.aplicouPrimeiroToque = LogisticaVars.jogoComecou = true;
+        EstadoJogo.JogoNormal();
+        EstadoJogo.TempoJogada(true);
+
+        Vector3 dir = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - _gameplay._bola.transform.position;
+        _gameplay._bola.m_rbBola.AddForce(dir * 2, ForceMode.Impulse);
+
+        LogisticaVars.ultimoToque = LogisticaVars.vezJ1 ? 1 : 2;
+        LogisticaVars.jogadas++;
+        EventsManager.current.OnAtualizarNumeros();
+    }
+
 
     public override void UI_Situacao(string s)
     {
@@ -56,30 +92,9 @@ public class Comecar : Situacao
                 break;
         }
     }
-
-    void ToqueInicial()
-    {
-        EventsManager.current.EscolherJogador();
-        SelecaoMetodos.DadosJogador();
-        SelecaoMetodos.DesabilitarComponentesDosNaoSelecionados();
-    }
-    void AplicarToqueInicialAuto()
-    {
-        LogisticaVars.aplicouPrimeiroToque = LogisticaVars.jogoComecou = true;
-        EstadoJogo.JogoNormal();
-        EstadoJogo.TempoJogada(true);
-
-        Vector3 dir = LogisticaVars.m_jogadorEscolhido_Atual.transform.position - _gameplay._bola.transform.position;
-        _gameplay._bola.m_rbBola.AddForce(dir * 2, ForceMode.Impulse);
-
-        LogisticaVars.ultimoToque = LogisticaVars.vezJ1 ? 1 : 2;
-        LogisticaVars.jogadas++;
-        EventsManager.current.OnAtualizarNumeros();
-    }
-
     public override IEnumerator Fim()
     {
-        UI_Normal();
+        if(_gameplay.modoPartida == Partida.Modo.JOGADO_VERSUS_JOGADOR || (_gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI && LogisticaVars.vezJ1)) UI_Normal();
         return base.Fim();
     }
 }

@@ -9,7 +9,14 @@ public class AIMovement : AIAction
 
     public override void IniciarAction()
     {
-        if(ai_System.GetStateSystem()._estadoAtual == StateSystem.Estado.GOLEIRO)
+        if (LogisticaVars.jogadas == 3)
+        {
+            Debug.Log("AI MOVEMENT: TROCAR VEZ");
+            AcaoFinalizada();
+            return;
+        }
+
+        if (ai_System.GetStateSystem()._estadoAtual_AI == StateSystem.Estado.GOLEIRO)
         {
             ai_System.MoverGoleiroDefender();
             return;
@@ -18,31 +25,25 @@ public class AIMovement : AIAction
 
         if (Vector3.Distance(ai_System.posParaChute, aiPos) < 1.7f && aiPos.z >= ai_System.bola.m_pos.z && ai_System.posParaChute != ai_System.bola.m_pos)
         {
-            if (ai_System._novaDecisao) { Debug.Log("NOVA DECISAO"); DecidirPosicao(); }
+            if (ai_System._novaDecisao) { /*Debug.Log("NOVA DECISAO");*/ DecidirPosicao(); }
             ai_System._novaDecisao = false;
             //ai_System.RotacionarParaAlvo(ai_System.bola.m_pos);
 
-            Debug.Log("Se Arrumar para Chutar a Bola");
+            //Debug.Log("Se Arrumar para Chutar a Bola");
             if(ai_System.GetDecisao() == AISystem.Decisao.AVANCAR || ai_System.GetDecisao() == AISystem.Decisao.CHUTAO || ai_System.GetDecisao() == AISystem.Decisao.PASSAR_AMIGO)
             {
                 ai_System.GetStateSystem().OnChutarNormal();
             }
             else if(ai_System.GetDecisao() == AISystem.Decisao.CHUTAR_GOL)
             {
-                ai_System.GetStateSystem().OnChutar_ao_Gol();
+                Gameplay._current.SetSituacao("chute ao gol");
             }
             else if(ai_System.GetDecisao() == AISystem.Decisao.ESPECIAL)
             {
-                ai_System.GetStateSystem().OnEspecial();
+                Gameplay._current.SetSituacao("especial");
+                //ai_System.GetStateSystem().OnEspecial();
             }
             
-            return; 
-        }
-
-        if (LogisticaVars.jogadas == 3) 
-        { 
-            Debug.Log("Trocar Vez");
-            AcaoFinalizada();
             return; 
         }
 
@@ -57,23 +58,23 @@ public class AIMovement : AIAction
         if (ai_System.GetDecisao() == AISystem.Decisao.PASSAR_AMIGO)
         {
             aux = ai_System.jogadorAmigo_MaisPerto[0].transform.position;
-            Debug.Log("POS TARGET: AMIGO");
+            //Debug.Log("POS TARGET: AMIGO");
         }
         else
         {
             aux = ai_System.golPos;
-            Debug.Log("POS TARGET: GOL");
+            //Debug.Log("POS TARGET: GOL");
         }
         ai_System.posParaChute = Vector3.zero;
         ai_System.posParaChute = ObterPosicao(ai_System.GetDecisao(), aux);
-        Debug.Log("POS para Chutar: " + ai_System.posParaChute);
+        //Debug.Log("POS para Chutar: " + ai_System.posParaChute);
 
         if (ai_System.GetDecisao() == AISystem.Decisao.PASSAR_AMIGO)
             ai_System.alcanceChute = Vector3.Distance(ai_System.jogadorAmigo_MaisPerto[0].transform.position, ai_System.posParaChute);
         else
             ai_System.alcanceChute = Vector3.Distance(ai_System.posParaChute, ai_System.golPos);
 
-        ai_System.rotacaoCamera.transform.position = aiPos - ai_player.transform.up;
+        Gameplay._current.rotacaoCamera.transform.position = aiPos - ai_player.transform.up;
         ai_System.RotacionarParaPosicao();
     }
     public override IEnumerator Mover_Posicao()
@@ -87,15 +88,24 @@ public class AIMovement : AIAction
 
         //Verifica se a forca eh menor ou igual a forca maxima possivel
         if (forca > JogadorVars.m_maxForcaNormal) forca = JogadorVars.m_maxForcaNormal;
-        Debug.Log("MOVIMENTO: Forca No Ai_player: " + forca + "N");
+        //Debug.Log("MOVIMENTO: Forca No Ai_player: " + forca + "N");
 
         ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forca, ForceMode.Impulse);
+        if (!LogisticaVars.aplicouPrimeiroToque) 
+        {
+            LogisticaVars.jogoComecou = true;
+            JogadorVars.m_aplicarChute = false;
+            LogisticaVars.jogoParado = false;
+            LogisticaVars.aplicouPrimeiroToque = true;
+            EstadoJogo.JogoNormal();
+            EstadoJogo.TempoJogada(true);
+            Gameplay._current.Fim();
+        }
+
         yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => !ai_player.GetComponent<FisicaJogador>().m_correndo);
-
         ai_System.fatorExtraChute = 1;
-        ai_System.GetStateSystem().jogadas++;
-        //LogisticaVars.jogadas++;
+        LogisticaVars.jogadas++;
 
         ai_System.RotacionarParaAlvo(ai_System.bola.m_pos);
     }
@@ -155,6 +165,7 @@ public class AIMovement : AIAction
 
     public override void AcaoFinalizada()
     {
+        Debug.Log("AI: ACAO FINALIZADA");
         base.AcaoFinalizada();
         ai_System.FimMovimento();
     }

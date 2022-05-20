@@ -42,31 +42,17 @@ public class ChuteAoGol : Situacao
         JogadorVars.m_chuteAoGol = true;
 
         JogadorMetodos.ResetarValoresChute();
-
-        UI_Jogador();
-
-        yield return new WaitUntil(() => !JogadorVars.m_chuteAoGol);
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
-
         EstadoJogo.TempoJogada(true);
 
-        /*if (!LogisticaVars.continuaSendoFora && !LogisticaVars.bolaPermaneceNaPequenaArea) { LogisticaVars.jogadas = 3; Fim(); }
-        else yield break;*/
+        if (!LogisticaVars.vezAI) UI_Jogador();
+        else _gameplay.GetStateSystem().OnChutar_ao_Gol();
+
+        yield return new WaitUntil(() => !JogadorVars.m_chuteAoGol);
+        Debug.Log("CHUTE AO GOL: Chutou");
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
     }
 
-    public override void UI_Situacao(string s)
-    {
-        switch (s)
-        {
-            case "jogador":
-                UI_Jogador();
-                break;
-            case "goleiro":
-                UI_Goleiro();
-                break;
-        }
-    }
     void UI_Jogador()
     {
         _ui.EstadoBotoesJogador(false);

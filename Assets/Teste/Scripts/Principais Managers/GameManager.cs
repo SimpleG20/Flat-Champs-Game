@@ -231,7 +231,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Gameplay Fim
-    public bool getAumentarXP()
+    public bool getOnAumentarXP()
     {
         return aumentar_XP;
     }

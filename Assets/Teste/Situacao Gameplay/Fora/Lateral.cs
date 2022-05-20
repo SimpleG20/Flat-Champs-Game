@@ -11,8 +11,12 @@ public class Lateral : Fora
     public override IEnumerator Inicio()
     {
         SetarFora();
-        Camera_Situacao("habilitar cam lateral");
 
+        if (!LogisticaVars.vezAI)
+        {
+            Camera_Situacao("somente camera jogador");
+            Camera_Situacao("habilitar cam lateral");
+        }
         yield return new WaitForSeconds(1);
         EventsManager.current.SelecaoAutomatica();
         _gameplay.Spawnar("lateral");
@@ -20,7 +24,7 @@ public class Lateral : Fora
 
     public override IEnumerator Spawnar(string lado)
     {
-        Debug.Log("LATERAL: Spawnar Lateral");
+        //Debug.Log("LATERAL: Spawnar Lateral");
 
         yield return new WaitForSeconds(0.75f);
         if (lado  == "lateral direita")
@@ -39,34 +43,32 @@ public class Lateral : Fora
         }
         LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
 
-        yield return new WaitForSeconds(1f);
-        Camera_Situacao("desabilitar cam lateral");
+        if (LogisticaVars.vezAI)
+        {
+            Debug.Log("AI POSICIONADO");
 
-        LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(3).gameObject.SetActive(true);
-        _gameplay._bola.RedirecionarJogadorEscolhido(_gameplay._bola.transform);
-        LogisticaVars.podeRedirecionar = true;
+        }
+        else
+        {
+            yield return new WaitForSeconds(1f);
+            Camera_Situacao("desabilitar cam lateral");
 
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
-        EstadoJogo.JogoNormal();
-        UI_Meio();
+            LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(3).gameObject.SetActive(true);
+            _gameplay._bola.RedirecionarJogadorEscolhido(_gameplay._bola.transform);
+            LogisticaVars.podeRedirecionar = true;
+
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+            EstadoJogo.JogoNormal();
+            UI_Meio();
+        }
+        
         EventsManager.current.OnFora("rotina tempo lateral");
 
         yield return new WaitUntil(() => LogisticaVars.saiuFora);
         Finalizar();
         _gameplay.Fim();
     }
-
-    void Finalizar()
-    {
-        EstadoJogo.TempoJogada(true);
-        LogisticaVars.lateral = false;
-        LogisticaVars.continuaSendoFora = false;
-        JogadorVars.m_aplicarChute = true;
-        UI_Normal();
-        JogadorMetodos.ResetarValoresChute();
-    }
-
     public override void UI_Meio()
     {
         _ui.EstadoBotoesGoleiro(false);
@@ -82,5 +84,18 @@ public class Lateral : Fora
         _ui.botaoLivre2.SetActive(true);
         _ui.joystick.SetActive(true);
         _ui.lateralBt.gameObject.SetActive(true);
+
+        if (LogisticaVars.vezJ1) _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
+        else _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
+    }
+
+    void Finalizar()
+    {
+        LogisticaVars.lateral = false;
+        LogisticaVars.continuaSendoFora = false;
+        JogadorVars.m_aplicarChute = true;
+        EstadoJogo.TempoJogada(true);
+        UI_Normal();
+        JogadorMetodos.ResetarValoresChute();
     }
 }

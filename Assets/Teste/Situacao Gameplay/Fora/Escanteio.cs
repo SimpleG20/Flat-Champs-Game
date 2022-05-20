@@ -69,14 +69,17 @@ public class Escanteio : Fora
         _ui.joystick.SetActive(true);
         _ui.escanteioBt.gameObject.SetActive(true);
         _ui.barraChuteJogador.SetActive(true);
+
+        if (LogisticaVars.vezJ1) _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
+        else _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
     }
 
     void Finalizar()
     {
-        EstadoJogo.TempoJogada(true);
         LogisticaVars.foraFundo = false;
         LogisticaVars.continuaSendoFora = false;
         JogadorVars.m_aplicarChute = true;
+        EstadoJogo.TempoJogada(true);
         UI_Normal();
         JogadorMetodos.ResetarValoresChute();
     }

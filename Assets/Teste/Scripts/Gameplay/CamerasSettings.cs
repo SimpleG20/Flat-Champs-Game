@@ -29,6 +29,9 @@ public class CamerasSettings : MonoBehaviour
     {
         switch (situacao)
         {
+            case "acionar camera espera":
+                AcionarCameraDeEspera();
+                break;
             case "gol marcado":
                 AcionarCameraTorcida();
                 break;
@@ -50,7 +53,7 @@ public class CamerasSettings : MonoBehaviour
             case "fim especial":
                 RetirarNoise(LogisticaVars.cameraJogador);
                 break;
-            case "toque pos gol":
+            case "somente camera jogador":
                 DesabilitarCamerasMenosJogador();
                 break;
         }
@@ -90,9 +93,18 @@ public class CamerasSettings : MonoBehaviour
         camEspera = true;
         MudarBlendCamera(CinemachineBlendDefinition.Style.HardOut);
 
-        espera.GetComponent<CinemachineVirtualCamera>().m_LookAt = Gameplay._current._bola.transform;
-        espera.GetComponent<CinemachineVirtualCamera>().AddCinemachineComponent<CinemachineHardLookAt>();
-        espera.GetComponent<CinemachineVirtualCamera>().m_Priority = 101;
+        if(Gameplay._current.conexaoPartida == Partida.Conexao.OFFLINE)
+        {
+            espera.GetComponent<CinemachineVirtualCamera>().m_LookAt = Gameplay._current._bola.transform;
+            espera.GetComponent<CinemachineVirtualCamera>().AddCinemachineComponent<CinemachineHardLookAt>();
+            espera.GetComponent<CinemachineVirtualCamera>().m_Priority = 101;
+        }
+        else
+        {
+            //Depois
+        }
+
+        StartCoroutine(EsperarTransicaoCameraEspera());
     }
     void AcionarCameraTorcida()
     {
@@ -181,6 +193,18 @@ public class CamerasSettings : MonoBehaviour
     public bool getCameraEspera()
     {
         return camEspera;
+    }
+    public void setCameraEspera(bool b)
+    {
+        camEspera = b;
+    }
+
+    IEnumerator EsperarTransicaoCameraEspera()
+    {
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => !camPrincipal.IsBlending);
+
+        VariaveisUIsGameplay._current.UI_Espera();
     }
     public IEnumerator EsperarTransicaoParaMudarBlend(CinemachineBlendDefinition.Style c)
     {

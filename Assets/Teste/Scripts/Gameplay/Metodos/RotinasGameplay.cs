@@ -17,7 +17,6 @@ public class RotinasGameplay : MonoBehaviour
         events.onChuteAoGol += RotinasChuteAoGol;
         events.onGol += RotinasGol;
         events.onFora += RotinasFora;
-        //events.onEspecial += RotinasEspecial;
         events.onGoleiro += RotinasGoleiro;
     }
     private void RotinasChuteAoGol(string s)
@@ -88,7 +87,14 @@ public class RotinasGameplay : MonoBehaviour
     }
     IEnumerator TempoParaTiroDeMeta()
     {
-        yield return new WaitForSeconds(11);
+        float rand = 1;
+        if (LogisticaVars.vezAI) rand = Random.Range(1, 6);
+        else Gameplay._current.GetStateSystem().SetState(new PlayerTurnState(Gameplay._current, Gameplay._current.GetStateSystem(), Gameplay._current.GetAISystem()));
+
+        yield return new WaitForSeconds(rand);
+        if (LogisticaVars.vezAI) { Gameplay._current.GetStateSystem().SetState(new AITurnState(Gameplay._current, Gameplay._current.GetStateSystem(), Gameplay._current.GetAISystem())); }
+
+        yield return new WaitForSeconds(11 - rand);
         if (LogisticaVars.tiroDeMeta)
         {
             GoleiroMetodos.ChuteAutomatico();
@@ -96,7 +102,14 @@ public class RotinasGameplay : MonoBehaviour
     }
     IEnumerator TempoParaLateral()
     {
-        yield return new WaitForSeconds(9);
+        float rand = 1;
+        if (LogisticaVars.vezAI) rand = Random.Range(1, 6);
+        else Gameplay._current.GetStateSystem().SetState(new PlayerTurnState(Gameplay._current, Gameplay._current.GetStateSystem(), Gameplay._current.GetAISystem()));
+
+        yield return new WaitForSeconds(rand);
+        if (LogisticaVars.vezAI) { Gameplay._current.GetStateSystem().SetState(new AITurnState(Gameplay._current, Gameplay._current.GetStateSystem(), Gameplay._current.GetAISystem())); }
+
+        yield return new WaitForSeconds(9 - rand);
         if (LogisticaVars.lateral)
         {
             Debug.Log("Lateral Automatico");
@@ -105,7 +118,14 @@ public class RotinasGameplay : MonoBehaviour
     }
     IEnumerator TempoParaEscanteio()
     {
-        yield return new WaitForSeconds(12);
+        float rand = 1;
+        if (LogisticaVars.vezAI) rand = Random.Range(1, 8);
+        else Gameplay._current.GetStateSystem().SetState(new PlayerTurnState(Gameplay._current, Gameplay._current.GetStateSystem(), Gameplay._current.GetAISystem()));
+
+        yield return new WaitForSeconds(rand);
+        if (LogisticaVars.vezAI) { Gameplay._current.GetStateSystem().SetState(new AITurnState(Gameplay._current, Gameplay._current.GetStateSystem(), Gameplay._current.GetAISystem())); }
+
+        yield return new WaitForSeconds(12 - rand);
         if (LogisticaVars.continuaSendoFora)
         {
             Debug.Log("Escanteio Automatico");
@@ -120,8 +140,8 @@ public class RotinasGameplay : MonoBehaviour
         {
             Debug.Log("TempoParaChuteAoGol(): Jogadas = 3");
             LogisticaVars.jogadas = 3;
+            LogisticaVars.auxChuteAoGol = false;
         }
-        LogisticaVars.auxChuteAoGol = false;
     }
     #endregion
 
@@ -223,7 +243,7 @@ public class RotinasGameplay : MonoBehaviour
         yield return new WaitForSeconds(1f);
         Transform jogador = LogisticaVars.m_jogadorEscolhido_Atual.transform;
 
-        Debug.Log("Deslocando Jogador");
+        //Debug.Log("Deslocando Jogador");
         Vector3 target;
         if (jogador.position.x < 0) target = new Vector3(bola.m_posLateral.x + 2f, jogador.position.y, bola.m_posLateral.z);
         else target = new Vector3(bola.m_posLateral.x - 2f, jogador.position.y, bola.m_posLateral.z);
@@ -276,7 +296,7 @@ public class RotinasGameplay : MonoBehaviour
             GameObject.Find("Bandeira Esq 2").transform.GetChild(0).gameObject.SetActive(true);
             LogisticaVars.m_rbJogadorEscolhido.isKinematic = false;
             LogisticaVars.saiuFora = true;
-            print("LATERAL: TERMINOU MOVIMENTO");
+            //print("LATERAL: TERMINOU MOVIMENTO");
         }
     }
     

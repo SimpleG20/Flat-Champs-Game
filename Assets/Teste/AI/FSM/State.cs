@@ -4,12 +4,14 @@ using UnityEngine;
 
 public abstract class State
 {
+    protected readonly Gameplay _Gameplay;
     protected readonly AISystem _AiSystem;
     protected readonly StateSystem _StateSystem;
-    public State(StateSystem state, AISystem ai)
+    public State(Gameplay gameplay, StateSystem state, AISystem ai)
     {
+        _Gameplay = gameplay;
         _StateSystem = state;
-        _AiSystem = ai;
+        _AiSystem = _Gameplay.GetAISystem();
     }
 
     public virtual IEnumerator Estado_Start()

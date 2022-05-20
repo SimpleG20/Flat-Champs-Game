@@ -84,6 +84,9 @@ public class Tiro_de_Meta : Fora
         _ui.EstadoBotoesGoleiro(true);
         _ui.selecionarJogadorBt.gameObject.SetActive(false);
         _ui.barraChuteGoleiro.SetActive(true);
+
+        if (LogisticaVars.vezJ1) _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT1, LogisticaVars.m_maxEspecial);
+        else _gameplay.BarraEspecial(LogisticaVars.m_especialAtualT2, LogisticaVars.m_maxEspecial);
     }
 
 }

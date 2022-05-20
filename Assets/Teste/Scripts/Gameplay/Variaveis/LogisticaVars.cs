@@ -53,6 +53,7 @@ public static class LogisticaVars
     public static bool primeiraJogada;                              //Abertura, GameplayOff
     public static bool vezJ1, vezJ2;                                //Abertura, GameplayOff, SelecaoMetodos, RotinasGameplay, FisicaBola, FisicaJogador
                                                                     //CamerasSettings, MovimentacaoJogadores, MiraEspecial, UIMetodosGameplay
+    public static bool vezAI;
     public static bool jogadorSelecionado;                          //Abertura, FisicaJogador, MovimentacaoJogador, SelecaoMetodos, LinkarBotao
                                                                     //DirecionalBola
     public static bool especialT1Disponivel, especialT2Disponivel;  //GameplayOff

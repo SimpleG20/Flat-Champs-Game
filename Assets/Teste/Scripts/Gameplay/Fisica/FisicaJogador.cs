@@ -86,9 +86,9 @@ public class FisicaJogador : MonoBehaviour
             {
                 //print("Bate neles mesmo!!");
                 JogadorMetodos.AumentarEspecial(quantidadeMovimento, LogisticaVars.trocarVez);
-                print("Mais Especial!!");
+                //print("Mais Especial!!");
             }
-            else print("Batida entre amigos");
+            //else print("Batida entre amigos");
 
 
             collision.gameObject.GetComponent<Rigidbody>().AddForce(vetorDirecao.normalized * quantidadeMovimento * 1.5f, ForceMode.Impulse);
