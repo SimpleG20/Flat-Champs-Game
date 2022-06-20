@@ -28,7 +28,8 @@ public class PrimeirasConfigs : MonoBehaviour
         }
         else
         {
-            SaveSystem.CarregarData();
+            SaveSystem.CarregarPlayer();
+            SaveSystem.CarregarMenu();
             SaveSystem.CarregarConfiguration();
             if (GameManager.Instance.m_usuario.m_timeNome == "" || 
                 GameManager.Instance.m_usuario.m_abreviacao == "" || GameManager.Instance.m_usuario.m_username == "")
@@ -44,6 +45,7 @@ public class PrimeirasConfigs : MonoBehaviour
                 configs = false;
                 m_cena.SetActive(false);
                 print("Bem vindo de volta");
+                enabled = false;
             }
         }
     }
@@ -76,8 +78,9 @@ public class PrimeirasConfigs : MonoBehaviour
             GameManager.Instance.m_usuario.m_abreviacao = m_abreviacao.text.ToUpper();
 
             SaveSystem.SavePlayer(GameManager.Instance.m_usuario);
-            SaveSystem.CarregarData();
-            FindObjectOfType<StatsManager>().InicialzarComponentes();
+            SaveSystem.CarregarPlayer();
+            SaveSystem.CarregarMenu();
+            FindObjectOfType<StatsManager>().SetarComponentes();
 
             m_cena.SetActive(false);
             configs = false;

@@ -11,10 +11,6 @@ public class GoleiroPequenaArea : Situacao
     public override IEnumerator Inicio()
     {
         Debug.Log("PEQUENA AREA INICIO");
-        UI_Situacao("inicio");
-        GoleiroVars.chutou = false;
-        SelecaoMetodos.DesabilitarDadosJogador();
-
         if (_gameplay._bola.m_pos.z < 0)
         {
             if (!LogisticaVars.vezJ1)
@@ -25,6 +21,7 @@ public class GoleiroPequenaArea : Situacao
                     LogisticaVars.vezJ1 = true;
                     LogisticaVars.tempoJogada = 0;
                     LogisticaVars.jogadas = 0;
+                    LogisticaVars.vezAI = false;
                 }
             }
             LogisticaVars.goleiroT1 = true;
@@ -40,17 +37,26 @@ public class GoleiroPequenaArea : Situacao
                     LogisticaVars.vezJ2 = true;
                     LogisticaVars.tempoJogada = 0;
                     LogisticaVars.jogadas = 0;
+                    if (_gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) LogisticaVars.vezAI = true;
                 }
             }
             LogisticaVars.goleiroT2 = true;
             LogisticaVars.m_goleiroGameObject = GameObject.FindGameObjectWithTag("Goleiro2");
         }
-        GoleiroMetodos.ComponentesParaGoleiro(true);
+        SelecaoMetodos.DesabilitarDadosJogadorAtual();
 
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+        if (!LogisticaVars.vezAI)
+        {
+            UI_Situacao("inicio");
+            GoleiroVars.chutou = false;
+            SelecaoMetodos.DesabilitarDadosPlayer();
+            GoleiroMetodos.ComponentesParaGoleiro(true);
+
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+            UI_Situacao("meio");
+        }
         EventsManager.current.OnGoleiro("rotina tempo pequena area");
-        UI_Situacao("meio");
 
         yield return new WaitUntil(() => GoleiroVars.chutou);
         UI_Situacao("inicio");
@@ -67,9 +73,9 @@ public class GoleiroPequenaArea : Situacao
                 _ui.pausarBt.gameObject.SetActive(true);
                 break;
             case "meio":
-                _ui.EstadoBotoesJogador(false);
                 _ui.EstadoBotoesGoleiro(true);
                 _ui.selecionarJogadorBt.gameObject.SetActive(false);
+                _ui.mostrarDirecionalBolaBt.gameObject.SetActive(true);
                 break;
         }
         

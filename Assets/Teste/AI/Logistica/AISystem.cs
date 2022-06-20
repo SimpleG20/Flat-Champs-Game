@@ -133,7 +133,13 @@ public class AISystem : AIDecision
     #region Movimento
     public void OnIniciarMovimento()
     {
-        iAction.IniciarAction();
+        AIAction aux;
+        if (iAction == null) aux = new AIMovement(this, ai_player);
+        else
+        {
+            aux = iAction.GetType() == typeof(AIMovement) ? iAction : new AIMovement(this, ai_player);
+        }
+        aux.IniciarAction();
     }
     public void DecidirPosicao()
     {
@@ -143,9 +149,12 @@ public class AISystem : AIDecision
     {
         StartCoroutine(iAction.Mover_Posicao());
     }
-    public void MoverGoleiroDefender()
+    public void MoverGoleiroDefender(Vector3 target)
     {
-        StartCoroutine(iAction.Movimentar_Defender());
+        AIAction aux;
+        if (iAction != null) aux = iAction.GetType() == typeof(AIMovement) ? iAction : new AIMovement(this, ai_player);
+        else aux = new AIMovement(this, ai_player);
+        StartCoroutine(aux.Movimentar_Defender(target));
     }
     public void FimMovimento()
     {

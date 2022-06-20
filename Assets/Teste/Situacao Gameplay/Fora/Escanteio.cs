@@ -10,7 +10,7 @@ public class Escanteio : Fora
     public override IEnumerator Inicio()
     {
         SetarFora();
-        Camera_Situacao("habilitar cam lateral");
+        if (!LogisticaVars.vezAI) Camera_Situacao("habilitar cam lateral");
 
         yield return new WaitForSeconds(1);
         EventsManager.current.SelecaoAutomatica();
@@ -22,7 +22,7 @@ public class Escanteio : Fora
         Debug.Log("ESCANTEIO: Spawnar Escanteio");
 
         yield return new WaitForSeconds(0.75f);
-        Vector3 novaPos = new Vector3(_gameplay._bola.m_posicaoFundo.x, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y, _gameplay._bola.m_posicaoFundo.z);
+        Vector3 novaPos = new Vector3(_gameplay._bola.m_posicaoFundo.x, LogisticaVars.m_jogadorEscolhido_Atual.transform.position.y + 0.1f, _gameplay._bola.m_posicaoFundo.z);
         if (lado == "fundo 1")
         {
             if (_gameplay._bola.transform.position.x < 0) LogisticaVars.m_jogadorEscolhido_Atual.transform.position = novaPos + new Vector3(-2f, 0, -1.5f);
@@ -38,19 +38,24 @@ public class Escanteio : Fora
             LogisticaVars.fundo2 = true;
         }
 
-        yield return new WaitForSeconds(1.25f);
-        Camera_Situacao("desabilitar cam lateral");
+        if (!LogisticaVars.vezAI)
+        {
+            yield return new WaitForSeconds(1.25f);
+            Camera_Situacao("desabilitar cam lateral");
 
-        _gameplay._bola.RedirecionarJogadorEscolhido(_gameplay._bola.transform);
-        LogisticaVars.podeRedirecionar = true;
+            _gameplay._bola.RedirecionarJogadorEscolhido(_gameplay._bola.transform);
+            LogisticaVars.podeRedirecionar = true;
 
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
-        EstadoJogo.JogoNormal();
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+            EstadoJogo.JogoNormal();
+            UI_Meio();
+        }
+        
         EventsManager.current.OnFora("rotina tempo escanteio");
-        UI_Meio();
 
         yield return new WaitUntil(() => LogisticaVars.saiuFora);
+        yield return new WaitForSeconds(0.5f);
         Finalizar();
         _gameplay.Fim();
     }

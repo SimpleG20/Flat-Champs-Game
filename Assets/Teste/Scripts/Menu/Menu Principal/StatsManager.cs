@@ -9,6 +9,7 @@ public class StatsManager : MonoBehaviour
     [Header("Stats Usuario")]
     [SerializeField] GameObject m_nomeUsuario;
     [SerializeField] GameObject m_nomeTime, m_vitorias, m_empates, m_derrtoas, m_level, m_xpBar;
+    Slider xpBar_slider;
 
     [Header("Player Data")]
     [SerializeField] Player m_usuario;
@@ -16,20 +17,20 @@ public class StatsManager : MonoBehaviour
     public int m_vitoriaAtual, m_derrotasAtual, m_empatesAtual, m_levelAtual;
     public float m_xpReferencia, m_xpReferenciaAnterior, m_xpAtual;
 
+    bool aumentouNivel = false;
+
     private void Awake()
     {
-        m_usuario = GameManager.Instance.GetComponent<Player>();
+        m_usuario = GameManager.Instance.m_usuario;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(AumentarBarraXP(0, 1000));
-        }
+        if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(PreencherBarra(m_xpAtual, 500));
+        if (Input.GetKeyDown(KeyCode.N)) aumentouNivel = false;
     }
 
-    public void InicialzarComponentes()
+    public void SetarComponentes()
     {
         m_nomeUsuario.GetComponent<TextMeshProUGUI>().text = m_usuario.m_username;
         m_nomeTime.GetComponent<TextMeshProUGUI>().text = m_usuario.m_timeNome;
@@ -39,15 +40,16 @@ public class StatsManager : MonoBehaviour
         //m_derrotasAtual = m_usuario.m_derrotas;
         m_empates.GetComponent<TextMeshProUGUI>().text = m_usuario.m_empates.ToString();
         //m_empatesAtual = m_usuario.m_empates;
-        m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level.ToString();
+        m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level < 10 ? "0" + m_usuario.m_level.ToString() : m_usuario.m_level.ToString();
         //m_levelAtual = m_usuario.m_level;
 
         m_xpReferenciaAnterior = TabelaLevel.getMinXPLevel(m_usuario.m_level);
         m_xpReferencia = TabelaLevel.getMaxXPLevel(m_usuario.m_level);
 
-        m_xpBar.GetComponent<Slider>().minValue = m_xpReferenciaAnterior;
-        m_xpBar.GetComponent<Slider>().maxValue = m_xpReferencia;
-        m_xpBar.GetComponent<Slider>().value = m_usuario.m_xp;
+        xpBar_slider = m_xpBar.GetComponent<Slider>();
+        xpBar_slider.minValue = m_xpReferenciaAnterior;
+        xpBar_slider.maxValue = m_xpReferencia;
+        xpBar_slider.value = m_usuario.m_xp;
         
         m_xpAtual = m_usuario.m_xp;
     }
@@ -60,46 +62,53 @@ public class StatsManager : MonoBehaviour
         m_vitorias.GetComponent<TextMeshProUGUI>().text = m_vitoriaAtual.ToString();
         m_derrtoas.GetComponent<TextMeshProUGUI>().text = m_derrotasAtual.ToString();
         m_empates.GetComponent<TextMeshProUGUI>().text = m_empatesAtual.ToString();
+
+        if (GameManager.Instance.getOnAumentarXP())
+        {
+            AumentarBarraXP(m_usuario.m_xp, GameManager.Instance.getXP_ParaAumentar());
+            GameManager.Instance.m_partida = null;
+        }
     }
 
-    public void AtualizarLevel(float xp)
+    
+    void AtualizarLevel(float xpFinal)
     {
-        m_xpAtual = m_usuario.m_xp = xp;
-        m_xpBar.GetComponent<Slider>().value = m_usuario.m_xp;
-
-        if (m_usuario.m_xp >= m_xpReferencia) SubirLevel();
+        m_xpAtual = m_usuario.m_xp = xpBar_slider.value = xpFinal;
+        m_usuario.m_xpPendente_qnt = 0;
+        m_usuario.m_onPendendente_XP = false;
+        GameManager.Instance.setAumentarXP(false);
+        GameManager.Instance.setQntXP(0);
     }
     void SubirLevel()
     {
+        aumentouNivel = true;
         m_usuario.m_level++;
         m_usuario.m_xpReferenciaAnterior = m_xpReferenciaAnterior = TabelaLevel.getMinXPLevel(m_usuario.m_level);
         m_usuario.m_xpReferencia = m_xpReferencia = TabelaLevel.getMaxXPLevel(m_usuario.m_level);
 
         m_xpBar.GetComponent<Slider>().minValue = m_xpReferenciaAnterior;
         m_xpBar.GetComponent<Slider>().maxValue = m_xpReferencia;
-        m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level.ToString();
+        m_level.GetComponent<TextMeshProUGUI>().text = m_usuario.m_level < 10 ? "0" + m_usuario.m_level.ToString() : m_usuario.m_level.ToString();
         m_levelAtual = m_usuario.m_level;
         print("PARABÉNS VOCÊ SUBIU DE NIVEL!!!!");
-
         //Aparecer uma imagem
     }
 
-    public IEnumerator AumentarBarraXP(float xpAnterior, float xp)
+    void AumentarBarraXP(float xpAnterior, float xp)
     {
+        float xpFinal = xpAnterior + xp;
+        StartCoroutine(PreencherBarra(xpAnterior, xpFinal));
+    }
+
+    IEnumerator PreencherBarra(float inicial, float final)
+    {
+        //float timeTween = 3 * (final - inicial) / m_xpReferencia;
+        yield return new WaitUntil(() => !aumentouNivel);
         yield return new WaitForSeconds(0.01f);
-        if(m_xpAtual <= xpAnterior + xp)
-        {
-            print("Aumentando XP BAR");
-            m_xpBar.GetComponent<Slider>().value += 10;
-            AtualizarLevel(m_xpBar.GetComponent<Slider>().value);
-            StartCoroutine(AumentarBarraXP(xpAnterior, xp));
-        }
-        else
-        {
-            if (m_xpBar.GetComponent<Slider>().value > xpAnterior + xp) m_xpBar.GetComponent<Slider>().value = xpAnterior + xp;
-            GameManager.Instance.m_usuario.m_xpPendente_qnt = 0;
-            GameManager.Instance.m_usuario.m_onPendendente_XP = false;
-            GameManager.Instance.m_sceneManager.BotoesMenuInterativos(true);
-        }
+        float velocidade = (m_xpReferencia - m_xpReferenciaAnterior) / 2.5f;
+        xpBar_slider.value += (velocidade * 0.035f);
+        if (xpBar_slider.value >= m_xpReferencia) SubirLevel();
+        if (xpBar_slider.value >= final) AtualizarLevel(final);
+        else StartCoroutine(PreencherBarra(inicial, final));
     }
 }

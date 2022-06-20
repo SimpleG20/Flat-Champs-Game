@@ -100484,7 +100484,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06b46b42d28afa4287360cd80a4fa99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bola: {fileID: 0}
   camPrincipal: {fileID: 5958914077414834779}
   lateralEsq: {fileID: 6110137731612440496}
   lateralDir: {fileID: 9221155458425118116}
@@ -101426,6 +101425,10 @@ PrefabInstance:
     - target: {fileID: 2244837074172492011, guid: 7515ce52f80354b45ae0350cf9397611, type: 3}
       propertyPath: m_Name
       value: Gol Time 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6087029703900238511, guid: 7515ce52f80354b45ae0350cf9397611, type: 3}
+      propertyPath: m_TagString
+      value: Gol1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7515ce52f80354b45ae0350cf9397611, type: 3}

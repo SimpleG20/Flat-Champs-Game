@@ -9,12 +9,7 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
 
     void Start()
     {
-        GoleiroVars.m_maxForca = 40;
         GoleiroVars.m_forcaGoleiro = 0;
-        GoleiroVars.m_speed = 5;
-
-        GoleiroVars.m_sensibilidadeChute = 10;
-        GoleiroVars.m_sensibilidade = GameManager.Instance.m_config.m_camSensibilidade;
         StartCoroutine(EsperarParaSetGoleiros());
     }
 
@@ -22,10 +17,6 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
     {
         if(LogisticaVars.m_goleiroGameObject != null)
         {
-            /*#region Direcao Goleiro
-            SetDirecaoChute(LogisticaVars.m_goleiroGameObject);
-            #endregion*/
-
             #region Chute
             if (GoleiroVars.m_medirChute)
             {
@@ -49,18 +40,24 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
             float v = Input.GetAxis("Vertical");
             Vector3 dir = Vector3.zero;
 
-            if (GoleiroVars.m_medirChute) LogisticaVars.m_goleiroGameObject.transform.Rotate(Vector3.up * GoleiroVars.m_sensibilidadeChute * Time.deltaTime * joystickManager.direcaoRight.x, Space.World); 
-            else LogisticaVars.m_goleiroGameObject.transform.Rotate(Vector3.up * GoleiroVars.m_sensibilidade * Time.deltaTime * joystickManager.direcaoRight.x, Space.World);
+            if (LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 && Gameplay._current.modoPartida == Partida.Modo.JOGADO_VERSUS_JOGADOR)
+            {
+                if (GoleiroVars.m_medirChute) LogisticaVars.m_goleiroGameObject.transform.Rotate(Vector3.up * GoleiroVars.m_sensibilidadeChute * Time.deltaTime * joystickManager.direcaoRight.x, Space.World);
+                else LogisticaVars.m_goleiroGameObject.transform.Rotate(Vector3.up * GoleiroVars.m_sensibilidade * Time.deltaTime * joystickManager.direcaoRight.x, Space.World);
+            }
 
             if (!LogisticaVars.tiroDeMeta)
             {
-                if (MovimentacaoDoJogador.pc) dir = new Vector3(h * GoleiroVars.m_speed * Time.deltaTime, -v * GoleiroVars.m_speed * Time.deltaTime, 0);
-                else
+                if(LogisticaVars.goleiroT1 || LogisticaVars.goleiroT2 && Gameplay._current.modoPartida == Partida.Modo.JOGADO_VERSUS_JOGADOR)
                 {
-                    if(GoleiroVars.m_movimentar) 
-                        dir = new Vector3(joystickManager.valorX_Esq * GoleiroVars.m_speed * Time.deltaTime, -joystickManager.valorY_Esq * GoleiroVars.m_speed * Time.deltaTime, 0);
+                    if (MovimentacaoDoJogador.pc) dir = new Vector3(h * GoleiroVars.m_speed * Time.deltaTime, -v * GoleiroVars.m_speed * Time.deltaTime, 0);
+                    else
+                    {
+                        if (GoleiroVars.m_movimentar)
+                            dir = new Vector3(joystickManager.valorX_Esq * GoleiroVars.m_speed * Time.deltaTime, -joystickManager.valorY_Esq * GoleiroVars.m_speed * Time.deltaTime, 0);
+                    }
+                    LogisticaVars.m_goleiroGameObject.transform.Translate(dir, Space.Self);
                 }
-                LogisticaVars.m_goleiroGameObject.transform.Translate(dir, Space.Self);
             }
             #endregion
         }
@@ -68,11 +65,11 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
         {
             if (LogisticaVars.jogoComecou && !LogisticaVars.auxChuteAoGol && !LogisticaVars.especial)
             {
-                if (goleiro1 != null) goleiro1.transform.position = bola.transform.position.x > 7 || bola.transform.position.x < -7 ? goleiro1.transform.position : 
-                                        new Vector3(bola.transform.position.x, goleiro1.transform.position.y, goleiro1.transform.position.z);
+                if (goleiro1 != null) goleiro1.transform.position = bola.transform.position.x > 7 || bola.transform.position.x < -7 ? goleiro1.transform.position :
+                        Vector3.MoveTowards(goleiro1.transform.position, new Vector3(bola.transform.position.x, goleiro1.transform.position.y, goleiro1.transform.position.z), 0.25f);
 
                 if(goleiro2 != null) goleiro2.transform.position = bola.transform.position.x > 7 || bola.transform.position.x < -7 ? goleiro2.transform.position : 
-                                        new Vector3(bola.transform.position.x, goleiro2.transform.position.y, goleiro2.transform.position.z);
+                        Vector3.MoveTowards(goleiro2.transform.position, new Vector3(bola.transform.position.x, goleiro2.transform.position.y, goleiro2.transform.position.z), 0.25f);
             }
         }
     }
@@ -102,5 +99,7 @@ public class MovimentacaoDoGoleiro : MovimentacaoJogadores
         yield return new WaitUntil(() => LogisticaVars.jogoComecou);
         goleiro1 = GameObject.FindGameObjectWithTag("Goleiro1");
         goleiro2 = GameObject.FindGameObjectWithTag("Goleiro2");
+        Gameplay._current.posGol1.z = goleiro1.transform.position.z;
+        Gameplay._current.posGol2.z = goleiro2.transform.position.z;
     }
 }

@@ -9,9 +9,6 @@ public class PlayerTurnState : State
 
     public override IEnumerator Estado_Start()
     {
-        /*_StateSystem.jogadas = 0;
-        _StateSystem.tempoJogada = 0;
-        _StateSystem.contagem = true;*/
         Debug.Log("");
         Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         Debug.Log("NEW PLAYER: TURN");
@@ -22,10 +19,6 @@ public class PlayerTurnState : State
     {
         Debug.Log("PLAYER: TURN ENDED");
         Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-        //Substituir pelo LogisticaVars
-        //_StateSystem.contagem = false;
-        /*if (_Gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) _StateSystem.SetState(new AITurnState(_Gameplay, _StateSystem, _AiSystem));
-        else _StateSystem.SetState(new PlayerTurnState(_Gameplay, _StateSystem, _AiSystem));*/
         yield break;
     }
 }

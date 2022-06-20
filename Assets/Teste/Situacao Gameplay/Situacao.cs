@@ -40,6 +40,9 @@ public abstract class Situacao
         {
             _ui.EstadoBotoesGoleiro(false);
             _ui.EstadoBotoesJogador(true);
+            _ui.cameraEsperaBt.gameObject.SetActive(false);
+            _ui.sairSelecaoBt.gameObject.SetActive(false);
+
             _ui.especialBt.gameObject.SetActive(true);
             _ui.barraChuteJogador.SetActive(true);
             _ui.barraEspecial.SetActive(true);
@@ -49,9 +52,10 @@ public abstract class Situacao
             _ui.tempoEscolhaGO.SetActive(true);
             _ui.tempoJogadaGO.SetActive(true);
             _ui.pausarBt.gameObject.SetActive(true);
-            _ui.cameraEsperaBt.gameObject.SetActive(false);
-            _ui.sairSelecaoBt.gameObject.SetActive(false);
             _ui.especialBt.interactable = true;
+            _ui.m_placar.SetActive(true);
+
+            _gameplay.AjeitarBarraChute();
         }
         else
         {

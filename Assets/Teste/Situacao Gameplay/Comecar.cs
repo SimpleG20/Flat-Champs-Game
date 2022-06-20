@@ -26,6 +26,7 @@ public class Comecar : Situacao
         else
         {
             _camera.SituacoesCameras("acionar camera espera");
+            _camera.SituacoesCameras("desabilitar camera torcida");
 
             yield return new WaitForSeconds(0.5f);
             yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
@@ -89,6 +90,8 @@ public class Comecar : Situacao
                 _ui.joystick.SetActive(true);
                 _ui.barraChuteJogador.SetActive(true);
                 _gameplay.AjeitarBarraChute();
+
+                _ui.cameraEsperaBt.gameObject.SetActive(false);
                 break;
         }
     }

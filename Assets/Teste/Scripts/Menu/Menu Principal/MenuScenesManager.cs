@@ -230,7 +230,8 @@ public class MenuScenesManager : MonoBehaviour
     public void CarregarDataTemporaria()
     {
         print("Carregando datas");
-        SaveSystem.CarregarData();
+        SaveSystem.CarregarPlayer();
+        SaveSystem.CarregarMenu();
         SaveSystem.CarregarConfiguration();
     }
     public void FirstTimeOpening()

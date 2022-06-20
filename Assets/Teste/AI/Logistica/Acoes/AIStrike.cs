@@ -12,6 +12,7 @@ public class AIStrike : AIAction
 
     public override void IniciarAction()
     {
+        Debug.Log("AI STRIKE: " + ai_System.GetDecisao());
         switch (ai_System.GetDecisao())
         {
             case AISystem.Decisao.AVANCAR:
@@ -93,7 +94,7 @@ public class AIStrike : AIAction
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !ai_System.bola.m_bolaCorrendo);
         ai_System.posParaChute = ai_System.bola.m_pos;
-        ai_System.GetStateSystem().OnEnd();
+        //ai_System.GetStateSystem().OnEnd();
     }
     public override IEnumerator Chute_Gol()
     {
@@ -102,7 +103,6 @@ public class AIStrike : AIAction
         forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTAR_GOL);
         forcaChute = CalcularForcaChute();
 
-        yield return new WaitUntil(() => (LogisticaVars.defenderGoleiro && !LogisticaVars.goleiroT1));
         if (forcaChute > JogadorVars.m_maxForcaChuteAoGol) forcaChute = JogadorVars.m_maxForcaChuteAoGol;
         ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forcaChute, ForceMode.Impulse);
         LogisticaVars.jogadas = 3;
@@ -127,10 +127,10 @@ public class AIStrike : AIAction
 
         yield return new WaitForSeconds(2);
         ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * 30, ForceMode.Impulse);
-        EventsManager.current.OnFora("rotina sair lateral");
-
+        LogisticaVars.ultimoToque = 2;
         ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.posTarget = aux;
+        EventsManager.current.OnFora("rotina sair lateral");
 
         yield return new WaitUntil(() => LogisticaVars.saiuFora);
         ai_System.OnIniciarMovimento();
@@ -150,6 +150,7 @@ public class AIStrike : AIAction
 
         yield return new WaitForSeconds(2);
         ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * forcaNaBola, ForceMode.Impulse);
+        LogisticaVars.ultimoToque = 2;
         EventsManager.current.OnFora("rotina sair escanteio");
 
         ai_System.posParaChute = ai_System.bola.m_pos;
@@ -175,16 +176,16 @@ public class AIStrike : AIAction
         {
             ai_System.direcaoChute = CalcularVetorDirecao(0.5f, true);
             forcaNaBola = CalcularForcaNaBola(AISystem.Decisao.CHUTE_GOLEIRO);
-            if (forcaNaBola > JogadorVars.m_maxForcaFora) forcaNaBola = JogadorVars.m_maxForcaFora;
         }
+        if (forcaNaBola > GoleiroVars.m_maxForca) forcaNaBola = GoleiroVars.m_maxForca;
 
-        yield return new WaitForSeconds(2);
         ai_System.bola.m_rbBola.AddForce(ai_System.direcaoChute * forcaNaBola, ForceMode.Impulse);
-
-        //Esperar para trocar a camera
-
+        GoleiroVars.chutou = true;
+        LogisticaVars.ultimoToque = 2;
         ai_System.posParaChute = ai_System.bola.m_pos;
         ai_System.posTarget = aux;
+        EventsManager.current.OnGoleiro("rotina pos chute goleiro");
+        yield break;
     }
 
     public override bool HaObstaculos(out bool esq, out bool dir, out bool frente)

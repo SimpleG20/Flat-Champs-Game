@@ -30,7 +30,6 @@ public class Especial : Situacao
             yield return new WaitForSeconds(LogisticaVars.m_maxEspecial);
             if (!LogisticaVars.aplicouEspecial)
             {
-                FimEspecial();
                 Camera_Situacao("fim");
                 LogisticaVars.aplicouEspecial = true;
             }
@@ -125,5 +124,10 @@ public class Especial : Situacao
                 _ui.travarMiraBt.gameObject.SetActive(true);
                 break;
         }
+    }
+    public override IEnumerator Fim()
+    {
+        Fim();
+        return base.Fim();
     }
 }

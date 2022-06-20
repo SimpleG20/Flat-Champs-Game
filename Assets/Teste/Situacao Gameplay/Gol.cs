@@ -11,13 +11,14 @@ public class Gol : Situacao
 
     public override IEnumerator Inicio()
     {
+        _gameplay.GetStateSystem().OnEnd();
         UI_Situacao("inicio");
         Camera_Situacao("gol marcado");
         EstadoJogo.JogoParado();
         EstadoJogo.TempoJogada(false);
         LogisticaVars.tempoJogada = LogisticaVars.tempoEscolherJogador = 0;
         LogisticaVars.jogadas = 0;
-        SelecaoMetodos.DesabilitarDadosJogador();
+        SelecaoMetodos.DesabilitarDadosJogadorAtual();
 
         ComputarGols();
         EventsManager.current.OnGol("rotina animacao torcida");
@@ -109,6 +110,7 @@ public class Gol : Situacao
     {
         LogisticaVars.fimAnimacaoGol = false;
         _ui.golMarcadoGO.SetActive(false);
+        _ui.chuteEspecialBt.gameObject.SetActive(false);
         ReiniciarPosGol();
 
         _camera.GetPrincipal().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;

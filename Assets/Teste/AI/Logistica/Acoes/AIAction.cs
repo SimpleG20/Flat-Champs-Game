@@ -151,7 +151,7 @@ public abstract class AIAction
     #endregion
 
     #region Goleiro
-    public virtual IEnumerator Movimentar_Defender()
+    public virtual IEnumerator Movimentar_Defender(Vector3 target)
     {
         yield break;
     }

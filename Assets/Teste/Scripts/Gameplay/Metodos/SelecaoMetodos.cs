@@ -29,8 +29,10 @@ public class SelecaoMetodos : MonoBehaviour
         if (LogisticaVars.vezJ1) LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(bola.m_pos, LogisticaVars.jogadoresT1);
         else LogisticaVars.m_jogadorEscolhido_Atual = QuemEstaMaisPerto(bola.m_pos, LogisticaVars.jogadoresT2);
 
-        if(!LogisticaVars.vezAI) 
+        if (!LogisticaVars.vezAI)
+        {
             LogisticaVars.m_jogadorEscolhido_Atual.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 99;
+        }
     }
     public static void EscolherGoleiro()
     {
@@ -50,7 +52,7 @@ public class SelecaoMetodos : MonoBehaviour
     {
         LogisticaVars.escolherOutroJogador = false;
         Debug.Log("SELECAO: Escolha Automática");
-        DesabilitarDadosJogador();
+        DesabilitarDadosJogadorAtual();
         EscolherJogador();
         DadosJogador();
     }
@@ -120,11 +122,11 @@ public class SelecaoMetodos : MonoBehaviour
         if (CamerasSettings._current.getCameraEspera())
         {
             CamerasSettings._current.MudarBlendCamera(CinemachineBlendDefinition.Style.Cut);
-            CamerasSettings._current.SituacoesCameras("somente camera jogador");
+            CamerasSettings._current.SituacoesCameras("desabilitar camera espera");
         }
     }
 
-    public static void DesabilitarDadosJogador()
+    public static void DesabilitarDadosJogadorAtual()
     {
         //Debug.Log("Desabilitando dados do Jogador");
         LogisticaVars.m_jogadorEscolhido_Atual.tag = "Player";
@@ -132,6 +134,10 @@ public class SelecaoMetodos : MonoBehaviour
 
         LogisticaVars.desabilitouDadosJogador = true;
     } //Tudo Certo
+    public static void DesabilitarDadosPlayer()
+    {
+        if(LogisticaVars.m_jogadorPlayer != null) LogisticaVars.m_jogadorPlayer.transform.GetChild(1).GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+    }
     public static void DesabilitarComponentesDosNaoSelecionados()
     {
         if (GameObject.FindGameObjectsWithTag("Player") != null)

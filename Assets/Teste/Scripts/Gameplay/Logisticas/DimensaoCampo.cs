@@ -6,7 +6,13 @@ public class DimensaoCampo : MonoBehaviour
 {
     [SerializeField] float tamanhoX, tamanhoZ;
     [SerializeField] Vector3 tiroDeMetaPosG1, tiroDeMetaPosG2;
+    [SerializeField] float xLateralD, xLateralE;
 
+    public float Lateral(float x)
+    {
+        if (x > 0) return xLateralD;
+        return xLateralE;
+    }
     public Vector2 TamanhoCampo()
     {
         return new Vector2(tamanhoX, tamanhoZ);

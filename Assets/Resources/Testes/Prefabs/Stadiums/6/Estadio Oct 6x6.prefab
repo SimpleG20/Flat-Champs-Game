@@ -113451,7 +113451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06b46b42d28afa4287360cd80a4fa99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bola: {fileID: 0}
   camPrincipal: {fileID: 5662606496053099987}
   lateralEsq: {fileID: 4601550395080824376}
   lateralDir: {fileID: 4529634179778349803}
@@ -130151,6 +130150,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4289499167539001817}
     m_Modifications:
+    - target: {fileID: 308835994837722735, guid: 84d173ae389081b42875d445f07594c5, type: 3}
+      propertyPath: xLateralE
+      value: -32.1
+      objectReference: {fileID: 0}
     - target: {fileID: 3760008109814055520, guid: 84d173ae389081b42875d445f07594c5, type: 3}
       propertyPath: m_Name
       value: Campo 6
@@ -130264,6 +130267,10 @@ PrefabInstance:
     - target: {fileID: 1921394084339114181, guid: 68bbd88b5e5207f4c8437806efb871f8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2606122526845675280, guid: 68bbd88b5e5207f4c8437806efb871f8, type: 3}
+      propertyPath: m_TagString
+      value: Gol2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68bbd88b5e5207f4c8437806efb871f8, type: 3}

@@ -66,27 +66,15 @@ public class FisicaBola : MonoBehaviour
             if (LogisticaVars.m_jogadorEscolhido_Atual.layer == 8) LogisticaVars.ultimoToque = 1;
             else LogisticaVars.ultimoToque = 2;
 
-            if (GameManager.Instance.m_partida.getConexao() == Partida.Conexao.OFFLINE)
-            {
-                Vector3 ultimaDirecao = FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
-                float forca = LogisticaVars.m_rbJogadorEscolhido.velocity.magnitude * 40 / 16;
+            Vector3 ultimaDirecao = LogisticaVars.vezAI ? FindObjectOfType<AISystem>().direcaoChute : FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao();
+            float vel = LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().velocity.magnitude;
+            float forca = vel * 40 / 16;
+            ultimaDirecao.y /= (3 / 2);
 
-                m_rbBola.AddForce(ultimaDirecao * forca, ForceMode.Impulse);
-                LogisticaVars.m_rbJogadorEscolhido.AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
-            }
-            else
-            { 
-                Vector3 ultimaDirecao = LogisticaVars.vezJ1 ? FindObjectOfType<MovimentacaoDoJogador>().GetUltimaDirecao(): FindObjectOfType<AISystem>().direcaoChute;
-                float vel = LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().velocity.magnitude;
-                float forca = vel * 40 / 16;
-                ultimaDirecao.y /= (3/2);
-                //print("VELOCIDADE IMPACTO: " + vel);
-                print("FORCA IMPACTO: " + forca);
+            m_rbBola.AddForce(ultimaDirecao * forca, ForceMode.Impulse);
+            if (vel > 15) LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 100, ForceMode.Impulse);
+            else LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
 
-                m_rbBola.AddForce(ultimaDirecao * forca, ForceMode.Impulse);
-                if(vel > 15) LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 100, ForceMode.Impulse);
-                else LogisticaVars.m_jogadorEscolhido_Atual.GetComponent<Rigidbody>().AddForce(-new Vector3(ultimaDirecao.x, 0, ultimaDirecao.z) * 50, ForceMode.Impulse);
-            }
             JogadorVars.m_esperandoContato = false;
             m_encostouJogador = true;
         }
@@ -125,7 +113,10 @@ public class FisicaBola : MonoBehaviour
         }
         else
         {
-            
+            if(m_rbBola.velocity.magnitude != 0)
+            {
+                m_rbBola.AddForce(new Vector3(-m_rbBola.velocity.normalized.x * 0.75f, 0, -m_rbBola.velocity.normalized.z * 0.45f), ForceMode.Force);
+            }
             //if (m_rbBola.velocity.magnitude != 0) m_bolaCorrendo = true;
         }
         #endregion
@@ -171,7 +162,7 @@ public class FisicaBola : MonoBehaviour
     private void PosicionarLateral()
     {
         LogisticaVars.lateral = true;
-        m_posLateral = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        m_posLateral = new Vector3(Gameplay._current.dimensoesCampo.Lateral(transform.position.x), 0.5f, transform.position.z);
         transform.position = m_posLateral;
         m_rbBola.velocity = Vector3.zero;
         m_rbBola.freezeRotation = true;
@@ -258,14 +249,12 @@ public class FisicaBola : MonoBehaviour
         if (other.gameObject.CompareTag("Linha Fundo G1") && !LogisticaVars.gol)
         {
             LogisticaVars.foraFundo = true;
-            //LogisticaVars.fundo1 = true;
-            //LogisticaVars.fundo2 = false;
             LogisticaVars.m_rbJogadorEscolhido.velocity = Vector3.zero;
 
             if (LogisticaVars.ultimoToque == 2)// Tiro de meta
             {
-                if (transform.position.x < 0) m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(1, false);
-                else m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(1, true);
+                if (transform.position.x < 0) m_posicaoFundo = Gameplay._current.dimensoesCampo.PosicaoBolaTiroDeMeta(1, false);
+                else m_posicaoFundo = Gameplay._current.dimensoesCampo.PosicaoBolaTiroDeMeta(1, true);
                 transform.position = m_posicaoFundo;
 
                 Gameplay._current.SetSituacao("tiro de meta");
@@ -306,8 +295,8 @@ public class FisicaBola : MonoBehaviour
 
             if (LogisticaVars.ultimoToque == 1) //Tiro de Meta
             {
-                if (transform.position.x < 0) m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(2, false);
-                else m_posicaoFundo = FindObjectOfType<DimensaoCampo>().PosicaoBolaTiroDeMeta(2, true);
+                if (transform.position.x < 0) m_posicaoFundo = Gameplay._current.dimensoesCampo.PosicaoBolaTiroDeMeta(2, false);
+                else m_posicaoFundo = Gameplay._current.dimensoesCampo.PosicaoBolaTiroDeMeta(2, true);
                 transform.position = m_posicaoFundo;
 
                 Gameplay._current.SetSituacao("tiro de meta");
@@ -342,17 +331,23 @@ public class FisicaBola : MonoBehaviour
         }
         #endregion
         #region Gol
+        if (other.CompareTag("Trave"))
+        {
+            m_rbBola.AddForce(-m_rbBola.velocity * 2, ForceMode.Impulse);
+        }
         if (other.CompareTag("Gol1"))
         {
             LogisticaVars.gol = true;
             LogisticaVars.golT2 = true;
             Gameplay._current.SetSituacao("gol");
+            m_rbBola.AddForce(-m_rbBola.velocity, ForceMode.Impulse);
         }
         if (other.CompareTag("Gol2"))
         {
             LogisticaVars.gol = true;
             LogisticaVars.golT1 = true;
             Gameplay._current.SetSituacao("gol");
+            m_rbBola.AddForce(-m_rbBola.velocity, ForceMode.Impulse);
         }
         #endregion
     }

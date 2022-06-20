@@ -37,7 +37,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] bool aumentar_XP;
     [SerializeField] float qnt_XP;
 
-    public bool m_menu;
     public bool m_transicaoCena;
     
     //bool m_colocouPos, m_adicionouPos, m_criouDadosDosJogadores;
@@ -75,6 +74,16 @@ public class GameManager : MonoBehaviour
     }
 
     #region Metodos Get e Set
+    public void SetarScripts()
+    {
+        m_playerEditionManager = FindObjectOfType<PlayerEditionManager>();
+        m_sceneManager = FindObjectOfType<MenuScenesManager>();
+        m_statsManager = FindObjectOfType<StatsManager>();
+        m_logoManager = FindObjectOfType<LogoManager>();
+        m_teamEditionManager = FindObjectOfType<TeamEditionManager>();
+        m_configurationManager = FindObjectOfType<ConfigurationManager>();
+        m_levelManager = FindObjectOfType<LevelManager>();
+    } //Verificar se todos os scripts nao estao null
 
     #region Gameplay Inicio
     public Teams GetTimeOff()
@@ -83,17 +92,6 @@ public class GameManager : MonoBehaviour
         else m_timeOffEscolhido = m_timesOff[Random.Range(0, m_timesOff.Count)];
         return m_timeOffEscolhido;
     }
-
-    public void SetarScripts()
-    {
-        if (m_playerEditionManager == null) m_playerEditionManager = FindObjectOfType<PlayerEditionManager>();
-        if (m_sceneManager == null) m_sceneManager = FindObjectOfType<MenuScenesManager>();
-        if (m_statsManager == null) m_statsManager = FindObjectOfType<StatsManager>();
-        if (m_logoManager == null) m_logoManager = FindObjectOfType<LogoManager>();
-        if (m_teamEditionManager == null) m_teamEditionManager = FindObjectOfType<TeamEditionManager>();
-        if (m_configurationManager == null) m_configurationManager = FindObjectOfType<ConfigurationManager>();
-        if (m_levelManager == null) m_levelManager = FindObjectOfType<LevelManager>();
-    } //Verificar se todos os scripts nao estao null
     public void SetarBotaoPlayerParaJogo(GameObject g, int tipoBotao)
     {
         GameObject botao = Resources.Load<GameObject>("Testes/Prefabs/Referencia para os Formatos dos Botao/Botao Tipo " + tipoBotao.ToString());
@@ -280,7 +278,6 @@ public class GameManager : MonoBehaviour
         //print(m_partida.getConexao() + " - " + m_partida.getModo()+ " - " + m_partida.getTipo());
 
         m_timeOffEscolhido = m_timesOff[Random.Range(0, m_timesOff.Count)];
-        m_menu = false;
         m_transicaoCena = true;
     }
     public void JogoOff_JogadorJogador(int i)
@@ -308,7 +305,6 @@ public class GameManager : MonoBehaviour
         //print(m_partida.getConexao() + " - " + m_partida.getModo() + " - " + m_partida.getTipo());
 
         m_timeOffEscolhido = m_timesOff[Random.Range(0, m_timesOff.Count)];
-        m_menu = false;
         m_transicaoCena = true;
     }
     public void JogoOn_JogadorJogador(int i)
@@ -341,18 +337,12 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    public void AumentarBarraXP(float ant, float prox)
-    {
-        StartCoroutine(m_statsManager.AumentarBarraXP(ant, prox));
-    }
-
     public void Menu()
     {
-        SaveSystem.CarregarData();
+        //SaveSystem.CarregarMenu();
+        m_sceneManager.cenaAtual = "Menu";
         //m_playerButtonMenu = GameObject.Find("Player Botao");
         //m_playerGoleiroMenu = GameObject.Find("Player Goleiro");
-        //CarregarData();
-        //CarregarConfiguration();
     }
     public bool InternetConnectivity()
     {

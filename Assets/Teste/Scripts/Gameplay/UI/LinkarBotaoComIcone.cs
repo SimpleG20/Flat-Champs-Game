@@ -6,6 +6,7 @@ using Cinemachine;
 public class LinkarBotaoComIcone : MonoBehaviour
 {
     [Header("Logic")]
+    public float offset;
     public Camera cam;
 
     [Header("Jogador Referenciado")]
@@ -13,7 +14,7 @@ public class LinkarBotaoComIcone : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector3 pos = cam.WorldToScreenPoint(jogadorReferenciado.transform.position) + Vector3.up * 110;
+        Vector3 pos = cam.WorldToScreenPoint(jogadorReferenciado.transform.position) + Vector3.up * offset;
         if (transform.position != pos) transform.position = pos;
     }
 
@@ -22,7 +23,7 @@ public class LinkarBotaoComIcone : MonoBehaviour
         CamerasSettings._current.GetPrincipal().m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
         if (!LogisticaVars.vezAI)
         {
-            SelecaoMetodos.DesabilitarDadosJogador();
+            SelecaoMetodos.DesabilitarDadosJogadorAtual();
             LogisticaVars.m_jogadorEscolhido_Atual = jogadorReferenciado.gameObject;
             SelecaoMetodos.DadosJogador();
         }
@@ -35,8 +36,7 @@ public class LinkarBotaoComIcone : MonoBehaviour
             if (CamerasSettings._current.getCameraEspera())
             {
                 CamerasSettings._current.MudarBlendCamera(CinemachineBlendDefinition.Style.Cut);
-                CamerasSettings._current.SituacoesCameras("somente camera jogador");
-                CamerasSettings._current.setCameraEspera(false);
+                CamerasSettings._current.SituacoesCameras("desabilitar camera espera");
             }
         }
         Gameplay._current.OnJogadorSelecionado();

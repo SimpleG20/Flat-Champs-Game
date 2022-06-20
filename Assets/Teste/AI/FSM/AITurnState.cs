@@ -9,8 +9,9 @@ public class AITurnState : State
 
     public override IEnumerator Estado_Start()
     {
-        //Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-        //Debug.Log("AI: TURN");
+        Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        Debug.Log("AI: TURN");
+        if (_AiSystem.ai_player == null) _AiSystem.ai_player = LogisticaVars.m_jogadorAi = _AiSystem.jogadorAmigo_MaisPerto[0];
         Gameplay._current.rotacaoCamera.transform.position = _AiSystem.ai_player.transform.position - _AiSystem.ai_player.transform.up;
         
         yield return new WaitForSeconds(1);
@@ -30,7 +31,7 @@ public class AITurnState : State
             _AiSystem.SetAction(new AIStrike(_AiSystem, _AiSystem.ai_player));
             yield break;
         }
-        if (LogisticaVars.tiroDeMeta)
+        if (LogisticaVars.tiroDeMeta || LogisticaVars.bolaPermaneceNaPequenaArea)
         {
             Debug.Log("AI: Tiro de meta");
             _StateSystem._estadoAtual_AI = StateSystem.Estado.CHUTAR;
@@ -83,7 +84,7 @@ public class AITurnState : State
 
         yield return new WaitForSeconds(0.5f);
 
-        if (!LogisticaVars.vezAI || LogisticaVars.jogadas >= 3) { _StateSystem.OnEnd(); yield break; }
+        if (!LogisticaVars.vezAI || LogisticaVars.jogadas >= 3 || LogisticaVars.bolaPermaneceNaPequenaArea) { _StateSystem.OnEnd(); yield break; }
         if (_AiSystem.GetDecisao() == AISystem.Decisao.NONE || _AiSystem.GetDecisao() == AISystem.Decisao.AVANCAR || _AiSystem._passouBola)
         {
             //Debug.Log("AI: just waiting to choose an action");
@@ -93,7 +94,7 @@ public class AITurnState : State
             _AiSystem._passouBola = false;
             _AiSystem._novaDecisao = true;
             //Debug.Log("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-            //Debug.Log("AI DECISAO: " + _AiSystem.GetDecisao());
+            Debug.Log("AI DECISAO: " + _AiSystem.GetDecisao());
             _StateSystem.OnMover();
             yield break;
         }
@@ -113,7 +114,7 @@ public class AITurnState : State
         }
     }
 
-    public override IEnumerator Estado_Goleiro()
+    public override IEnumerator Estado_ChutarComGoleiro()
     {
         _AiSystem.SetAction(new AIStrike(_AiSystem, _AiSystem.ai_player));
         yield break;

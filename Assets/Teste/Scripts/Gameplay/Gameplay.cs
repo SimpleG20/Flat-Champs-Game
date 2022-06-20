@@ -22,6 +22,7 @@ public class Gameplay : MonoBehaviour
     Situacao _situacaoAtual;
 
     public Abertura abertura;
+    public DimensaoCampo dimensoesCampo;
     public FisicaBola _bola;
     
     VariaveisUIsGameplay ui;
@@ -42,6 +43,7 @@ public class Gameplay : MonoBehaviour
     void Start()
     {
         abertura = GetComponent<Abertura>();
+        dimensoesCampo = FindObjectOfType<DimensaoCampo>();
         events = EventsManager.current;
         ui = VariaveisUIsGameplay._current;
         tipoPartida = GameManager.Instance.m_partida.getTipo();
@@ -81,7 +83,7 @@ public class Gameplay : MonoBehaviour
 
             if (LogisticaVars.vezJ1)
             {
-                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT1 += Time.deltaTime * 20;
+                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT1 += Time.deltaTime * 2f;
 
                 if (LogisticaVars.m_especialAtualT1 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT1Disponivel)
                 { LogisticaVars.m_especialAtualT1 = LogisticaVars.m_maxEspecial; LogisticaVars.especialT1Disponivel = true; }
@@ -89,7 +91,7 @@ public class Gameplay : MonoBehaviour
             }
             else
             {
-                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT2 += Time.deltaTime * 0f; //mudar para 0.5f
+                if (!LogisticaVars.especial) LogisticaVars.m_especialAtualT2 += Time.deltaTime * 2f; //mudar para 0.5f
 
                 if (LogisticaVars.m_especialAtualT2 >= LogisticaVars.m_maxEspecial && !LogisticaVars.especialT2Disponivel)
                 { LogisticaVars.m_especialAtualT2 = LogisticaVars.m_maxEspecial; LogisticaVars.especialT2Disponivel = true; }
@@ -203,7 +205,7 @@ public class Gameplay : MonoBehaviour
                 break;
         }
         LogisticaVars.numControle++;
-        //print("* * * * * " + _atual);
+        print("* * * * * SITUACAO ATUAL: " + _atual);
         LogisticaVars.fimSituacao = false;
         StartCoroutine(_situacaoAtual.Inicio());
     }
@@ -227,7 +229,8 @@ public class Gameplay : MonoBehaviour
     #region Comecar
     public void AjeitarBarraChute()
     {
-        FollowWorld barra = FindObjectOfType<FollowWorld>();
+        print("GAMEPLAY: AJUSTE BARRA CHUTE");
+        FollowWorld barra = ui.barraChuteJogador.GetComponent<FollowWorld>();
         barra.lookAt = LogisticaVars.m_jogadorEscolhido_Atual.transform;
         barra.PosicionarBarra();
     }
@@ -257,6 +260,7 @@ public class Gameplay : MonoBehaviour
 
                 icone.GetComponent<LinkarBotaoComIcone>().cam = FindObjectOfType<Camera>();
                 icone.GetComponent<LinkarBotaoComIcone>().jogadorReferenciado = jogador;
+                icone.GetComponent<LinkarBotaoComIcone>().offset = 110 - (Vector3.Distance(jogador.transform.position, jogadorRef) / 1.5f);
 
                 Instantiate(icone, GameObject.Find("Canvas").transform.GetChild(1));
             }

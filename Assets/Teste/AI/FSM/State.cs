@@ -44,7 +44,7 @@ public abstract class State
         yield break;
     }
 
-    public virtual IEnumerator Estado_Goleiro()
+    public virtual IEnumerator Estado_ChutarComGoleiro()
     {
         yield break;
     }

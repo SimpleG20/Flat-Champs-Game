@@ -40,9 +40,10 @@ public class Fora : Situacao
 
         if (LogisticaVars.vezJ2 && _gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI) LogisticaVars.vezAI = true;
         else LogisticaVars.vezAI = false;
-        _gameplay.GetStateSystem().OnEnd();
+        //_gameplay.GetStateSystem().OnEnd();
 
-        SelecaoMetodos.DesabilitarDadosJogador();
+        SelecaoMetodos.DesabilitarDadosJogadorAtual();
+        //SelecaoMetodos.DesabilitarDadosPlayer();
     }
 
     public override void Camera_Situacao(string s)

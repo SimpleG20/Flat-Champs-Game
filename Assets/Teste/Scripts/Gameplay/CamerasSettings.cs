@@ -53,6 +53,12 @@ public class CamerasSettings : MonoBehaviour
             case "fim especial":
                 RetirarNoise(LogisticaVars.cameraJogador);
                 break;
+            case "desabilitar camera espera":
+                DesabilitarCameraEspera();
+                break;
+            case "desabilitar camera torcida":
+                torcida.GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+                break;
             case "somente camera jogador":
                 DesabilitarCamerasMenosJogador();
                 break;
@@ -114,8 +120,8 @@ public class CamerasSettings : MonoBehaviour
     }
     void AcionarCameraLateral()
     {
-        float xCampo = FindObjectOfType<DimensaoCampo>().TamanhoCampo().x / 2;
-        float zCampo = FindObjectOfType<DimensaoCampo>().TamanhoCampo().y;
+        float xCampo = Gameplay._current.dimensoesCampo.TamanhoCampo().x / 2;
+        float zCampo = Gameplay._current.dimensoesCampo.TamanhoCampo().y;
         Vector3 target = new Vector3(Gameplay._current._bola.transform.position.x * 3 / 4, Gameplay._current._bola.transform.position.y, Gameplay._current._bola.transform.position.z);
         follow.transform.position = target;
 
@@ -179,6 +185,11 @@ public class CamerasSettings : MonoBehaviour
     }
     #endregion
 
+    void DesabilitarCameraEspera()
+    {
+        espera.GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
+        camEspera = false;
+    }
     void DesabilitarCamerasMenosJogador()
     {
         lateralEsq.transform.GetChild(0).GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
@@ -189,6 +200,10 @@ public class CamerasSettings : MonoBehaviour
         torcida.GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
         espera.GetComponent<CinemachineVirtualCamera>().m_Priority = 0;
         StartCoroutine(EsperarTransicaoParaMudarBlend(CinemachineBlendDefinition.Style.Cut));
+    }
+    public CinemachineVirtualCamera getEspera()
+    {
+        return espera.GetComponent<CinemachineVirtualCamera>();
     }
     public bool getCameraEspera()
     {
@@ -210,7 +225,7 @@ public class CamerasSettings : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !camPrincipal.IsBlending);
-        LogisticaVars.cameraJogador.m_Lens.FieldOfView = 60;
+        if(LogisticaVars.cameraJogador != null) LogisticaVars.cameraJogador.m_Lens.FieldOfView = 60;
         MudarBlendCamera(c);
     }
 }

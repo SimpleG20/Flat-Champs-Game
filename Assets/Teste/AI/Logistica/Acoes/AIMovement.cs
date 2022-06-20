@@ -16,11 +16,6 @@ public class AIMovement : AIAction
             return;
         }
 
-        if (ai_System.GetStateSystem()._estadoAtual_AI == StateSystem.Estado.GOLEIRO)
-        {
-            ai_System.MoverGoleiroDefender();
-            return;
-        }
         Vector3 aiPos = ai_player.transform.position;
 
         if (Vector3.Distance(ai_System.posParaChute, aiPos) < 1.7f && aiPos.z >= ai_System.bola.m_pos.z && ai_System.posParaChute != ai_System.bola.m_pos)
@@ -41,7 +36,6 @@ public class AIMovement : AIAction
             else if(ai_System.GetDecisao() == AISystem.Decisao.ESPECIAL)
             {
                 Gameplay._current.SetSituacao("especial");
-                //ai_System.GetStateSystem().OnEspecial();
             }
             
             return; 
@@ -91,6 +85,8 @@ public class AIMovement : AIAction
         //Debug.Log("MOVIMENTO: Forca No Ai_player: " + forca + "N");
 
         ai_player.GetComponent<Rigidbody>().AddForce(-ai_player.transform.up * forca, ForceMode.Impulse);
+        JogadorVars.m_esperandoContato = true;
+
         if (!LogisticaVars.aplicouPrimeiroToque) 
         {
             LogisticaVars.jogoComecou = true;
@@ -103,15 +99,31 @@ public class AIMovement : AIAction
         }
 
         yield return new WaitForSeconds(1f);
-        yield return new WaitUntil(() => !ai_player.GetComponent<FisicaJogador>().m_correndo);
+        yield return new WaitUntil(() => ai_player.GetComponent<FisicaJogador>().m_rigidbody.velocity.magnitude < 2);
         ai_System.fatorExtraChute = 1;
+        JogadorVars.m_esperandoContato = false;
         LogisticaVars.jogadas++;
 
         ai_System.RotacionarParaAlvo(ai_System.bola.m_pos);
     }
-    public override IEnumerator Movimentar_Defender()
+    public override IEnumerator Movimentar_Defender(Vector3 target)
     {
-        return base.Movimentar_Defender();
+        yield return new WaitForSeconds(0.01f);
+        float step = 0.3f;
+        LogisticaVars.m_goleiroGameObject.transform.position = Vector3.MoveTowards(LogisticaVars.m_goleiroGameObject.transform.position, target, step);
+        LogisticaVars.m_goleiroGameObject.transform.LookAt(Gameplay._current._bola.transform);
+        LogisticaVars.m_goleiroGameObject.transform.eulerAngles = new Vector3(-90, LogisticaVars.m_goleiroGameObject.transform.eulerAngles.y, LogisticaVars.m_goleiroGameObject.transform.eulerAngles.z);
+
+        if (LogisticaVars.m_goleiroGameObject.transform.position != target)
+        {
+            if (LogisticaVars.defenderGoleiro) ai_System.MoverGoleiroDefender(target);
+            yield break;
+        }
+        else
+        {
+            Debug.Log("AI GOLEIRO POSICIONADO");
+            if (LogisticaVars.defenderGoleiro) Gameplay._current.GoleiroPosicionado();
+        }
     }
 
     Vector3 ObterPosicao(AISystem.Decisao decisao, Vector3 target)
@@ -139,8 +151,18 @@ public class AIMovement : AIAction
 
             if(decisao != AISystem.Decisao.ESPECIAL)
             {
-                random = decisao == AISystem.Decisao.CHUTAR_GOL ? Mathf.Pow(-1, Random.Range(0, 2)) * Random.value * 3 :
-                                                                    Mathf.Pow(-1, Random.Range(0, 2)) * Random.value * 5;
+                int rand = Random.Range(0, 3);
+                if(rand == 0)
+                {
+                    random = decisao == AISystem.Decisao.CHUTAR_GOL ? Mathf.Pow(-1, Random.Range(0, 2)) * Random.value * 10 :
+                                                                    Mathf.Pow(-1, Random.Range(0, 2)) * Random.value * 11;
+                }
+                else
+                {
+                    random = decisao == AISystem.Decisao.CHUTAR_GOL ? Mathf.Pow(-1, Random.Range(0, 2)) * Random.value * 6 :
+                                                                    Mathf.Pow(-1, Random.Range(0, 2)) * Random.value * 7;
+                }
+                
             }
 
             float x = ai_System.bola.m_pos.x, x2 = ai_System.golPos.x + random;

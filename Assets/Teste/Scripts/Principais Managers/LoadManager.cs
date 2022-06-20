@@ -11,8 +11,9 @@ public class LoadManager : MonoBehaviour
     public Slider m_barraLoad;
     public TextMeshProUGUI m_loadingText;
     public int m_cenaAtual;
+    public bool done;
 
-    List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
+    public List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
 
     private static LoadManager m_Instance;
     public static LoadManager Instance
@@ -39,6 +40,7 @@ public class LoadManager : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         m_loadingScreen.gameObject.SetActive(true);
+        m_cenaAtual = 1;
         scenesLoading.Add(SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive));
         StartCoroutine(GetSceneLoadProgress());
     }
@@ -47,8 +49,8 @@ public class LoadManager : MonoBehaviour
     {
         m_loadingScreen.gameObject.SetActive(true);
         m_cenaAtual = 2;
-        scenesLoading.Add(SceneManager.UnloadSceneAsync(1));
-        scenesLoading.Add(SceneManager.LoadSceneAsync(m_cenaAtual, LoadSceneMode.Additive));
+        scenesLoading.Add(SceneManager.UnloadSceneAsync(1, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects));
+        scenesLoading.Add(SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive));
         StartCoroutine(GetSceneLoadProgress());
     }
 
@@ -58,13 +60,14 @@ public class LoadManager : MonoBehaviour
         scenesLoading.Add(SceneManager.UnloadSceneAsync(m_cenaAtual, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects));
         scenesLoading.Add(SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive));
         m_cenaAtual = 1;
+        if (Time.timeScale == 0) Time.timeScale = 1;
         StartCoroutine(GetSceneLoadProgress());
-        GameManager.Instance.m_menu = true;
     }
 
     float totalSceneProgress;
     public IEnumerator GetSceneLoadProgress()
     {
+        done = false;
         for(int i = 0; i < scenesLoading.Count; i++)
         {
             while (!scenesLoading[i].isDone)
@@ -85,18 +88,9 @@ public class LoadManager : MonoBehaviour
             }
         }
 
-
-        if(m_cenaAtual == 1) GameManager.Instance.Menu();
         SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(m_cenaAtual));
         m_loadingScreen.gameObject.SetActive(false);
         scenesLoading.RemoveRange(0,scenesLoading.Count);
-
-        if (GameManager.Instance.getOnAumentarXP())
-        {
-            print("ANIMACAO BARRA XP");
-            float xpAnterior = GameManager.Instance.m_usuario.m_xp;
-            GameManager.Instance.AumentarBarraXP(xpAnterior, GameManager.Instance.getXP_ParaAumentar());
-            GameManager.Instance.m_sceneManager.BotoesMenuInterativos(false);
-        }
+        done = true;
     }
 }

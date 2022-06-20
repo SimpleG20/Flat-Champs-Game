@@ -14,27 +14,6 @@ public class StateSystem : StateMachine
         AiSystem = GetComponent<AISystem>();
     }
 
-    private void Update()
-    {
-        /*if (comecar)
-        {
-            SetState(new BeginState(this, AiSystem));
-            comecar = false;
-        }*/
-
-        /*if (moverPlayer)
-        {
-            moverPlayer = false;
-            OnMover();
-        }*/
-
-        /*if (contagem)
-        {
-            tempoJogada += Time.deltaTime;
-            if (tempoJogada >= 20) OnEnd();
-        }*/
-    }
-
     #region Estado conforme a situacao da Bola
 
     #endregion
@@ -60,14 +39,14 @@ public class StateSystem : StateMachine
 
     public void OnChutar_ao_Gol()
     {
-        Gameplay._current.SetSituacao("chute ao gol");
+        //Gameplay._current.SetSituacao("chute ao gol");
         _estadoAtual_AI = Estado.CHUTAR_GOL;
         StartCoroutine(_state.Estado_Chutar_ao_Gol());
     }
 
     public void OnEspecial()
     {
-        Gameplay._current.SetSituacao("especial");
+        //Gameplay._current.SetSituacao("especial");
         _estadoAtual_AI = Estado.ESPECIAL;
         StartCoroutine(_state.Estado_Especial());
     }
@@ -82,7 +61,7 @@ public class StateSystem : StateMachine
     {
         Gameplay._current.SetSituacao("pequena area");
         _estadoAtual_AI = Estado.GOLEIRO;
-        StartCoroutine(_state.Estado_Goleiro());
+        StartCoroutine(_state.Estado_ChutarComGoleiro());
     }
 
     public void OnEnd()

@@ -15,11 +15,26 @@ public class ChuteAoGol : Situacao
         _camera.MudarBlendCamera(CinemachineBlendDefinition.Style.Cut);
         SelecaoMetodos.EscolherGoleiro();
 
-        GoleiroMetodos.ComponentesParaGoleiro(true);
+        if (_gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI && !LogisticaVars.goleiroT2 || _gameplay.modoPartida == Partida.Modo.JOGADO_VERSUS_JOGADOR)
+        {
+            if (_gameplay.VerificarIconesSelecao()) _gameplay.DestruirIconesSelecao();
+            GoleiroMetodos.ComponentesParaGoleiro(true);
+            UI_Goleiro();
+        }
+        else
+        {
+            _ui.EstadoBotoesJogador(false);
+            _ui.EstadoBotoesCentral(false);
+        }
         _ui.barraChuteJogador.SetActive(false);
-        UI_Goleiro();
 
         LogisticaVars.defenderGoleiro = true;
+        if (_gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI && LogisticaVars.goleiroT2)
+        {
+            Vector3 target = new Vector3(0, LogisticaVars.m_goleiroGameObject.transform.position.y, _gameplay.posGol2.z) + (Vector3.right * Mathf.Pow(-1, Random.Range(0, 2)) * Random.Range(0, 7f));
+            Debug.Log(target);
+            _gameplay.GetAISystem().MoverGoleiroDefender(target);
+        }
 
         yield return new WaitForSeconds(8);
         if (LogisticaVars.goleiroT1 && LogisticaVars.defenderGoleiro || LogisticaVars.goleiroT2 && LogisticaVars.defenderGoleiro)
@@ -30,10 +45,7 @@ public class ChuteAoGol : Situacao
     }
     public override IEnumerator Meio()
     {
-        EstadoJogo.JogoNormal();
-        //EstadoJogo.TempoJogada(true);
-
-        GoleiroMetodos.ComponentesParaGoleiro(false);
+        if (_gameplay.modoPartida == Partida.Modo.JOGADOR_VERSUS_AI && !LogisticaVars.goleiroT2 || _gameplay.modoPartida == Partida.Modo.JOGADO_VERSUS_JOGADOR) GoleiroMetodos.ComponentesParaGoleiro(false);
         LogisticaVars.goleiroT1 = LogisticaVars.goleiroT2 = false;
         LogisticaVars.m_goleiroGameObject = null;
 
@@ -41,16 +53,28 @@ public class ChuteAoGol : Situacao
         LogisticaVars.auxChuteAoGol = true;
         JogadorVars.m_chuteAoGol = true;
 
+        EstadoJogo.JogoNormal();
+        //EstadoJogo.TempoJogada(true);
+
         JogadorMetodos.ResetarValoresChute();
         EstadoJogo.TempoJogada(true);
 
         if (!LogisticaVars.vezAI) UI_Jogador();
-        else _gameplay.GetStateSystem().OnChutar_ao_Gol();
+        else
+        {
+            Debug.Log("CHUTE AO GOL: ESPERANDO AI CHUTAR");
+            _ui.goleiroPosicionadoBt.gameObject.SetActive(false);
+            _ui.UI_Espera();
+            _gameplay.GetStateSystem().OnChutar_ao_Gol();
+        }
 
         yield return new WaitUntil(() => !JogadorVars.m_chuteAoGol);
         Debug.Log("CHUTE AO GOL: Chutou");
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() => !_gameplay._bola.m_bolaCorrendo);
+
+        EstadoJogo.TempoJogada(true);
+        Debug.Log("CHUTE AO GOL: FIM");
     }
 
     void UI_Jogador()
@@ -74,6 +98,7 @@ public class ChuteAoGol : Situacao
         _ui.EstadoBotoesGoleiro(false);
         _ui.EstadoBotoesCentral(false);
         _ui.especialBt.gameObject.SetActive(false);
+        _ui.cameraEsperaBt.gameObject.SetActive(false);
 
         _ui.barraChuteGoleiro.SetActive(false);
         _ui.goleiroPosicionadoBt.gameObject.SetActive(true);

@@ -22,14 +22,17 @@ public class EscolherJogador : Situacao
         {
             UI_Inicio();
             Camera_Situacao("entrar");
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
         }
 
-        yield return new WaitForSeconds(0.5f);
-        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
+        
 
         if (LogisticaVars.vezAI)
         {
             _gameplay.CriarIconesSelecao(LogisticaVars.jogadoresT1);
+            _ui.selecionarJogadorBt.gameObject.SetActive(false);
+            _ui.botaoCima.SetActive(false);
         }
         else
         {
@@ -76,15 +79,14 @@ public class EscolherJogador : Situacao
     }
     void UI_Meio()
     {
-        _ui.EstadoTodosOsBotoes(false);
-        _ui.centralBotoes.SetActive(true);
-        _ui.botaoCima.SetActive(true);
         _ui.botaoMeio.SetActive(false);
         _ui.botaoBaixo.SetActive(false);
         _ui.botaoDiagonal.SetActive(false);
         _ui.botaoLivre2.SetActive(false);
         _ui.botaoLivre1.SetActive(false);
 
+        _ui.centralBotoes.SetActive(true);
+        _ui.botaoCima.SetActive(true);
         _ui.sairSelecaoBt.gameObject.SetActive(true);
         _ui.joystick.SetActive(true);
     }
@@ -141,6 +143,7 @@ public class EscolherJogador : Situacao
     }
     public override IEnumerator Fim()
     {
+        Debug.Log("ESCOLHER OUTRO: FIM");
         LogisticaVars.tempoEscolherJogador = 0;
         LogisticaVars.contarTempoSelecao = false;
         LogisticaVars.escolheu = true;
@@ -162,7 +165,10 @@ public class EscolherJogador : Situacao
         LogisticaVars.jogadorSelecionado = true;
         LogisticaVars.virouSelecao = false;
         LogisticaVars.numControle++;
+
+        yield return new WaitUntil(() => !_camera.GetPrincipal().IsBlending);
         UI_Normal();
-        return base.Fim();
+        //_gameplay.AjeitarBarraChute();
+        base.Fim();
     }
 }

@@ -39,7 +39,8 @@ public class EstadoJogo
         Debug.Log("ESTADO: PAUSE");
         Time.timeScale = 0;
         UI_Situacao("pause");
-        CamerasSettings._current.AplicarBlur(LogisticaVars.cameraJogador);
+        if (CamerasSettings._current.getCameraEspera()) CamerasSettings._current.AplicarBlur(CamerasSettings._current.getEspera());
+        else CamerasSettings._current.AplicarBlur(LogisticaVars.cameraJogador);
         TempoJogada(false);
         JogoParado();
     }

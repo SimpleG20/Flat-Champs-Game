@@ -13,13 +13,10 @@ public class MovimentacaoDoJogador : MovimentacaoJogadores
 
     void Start()
     {
-        JogadorVars.m_maxForcaAtual = 420;
+        JogadorVars.m_maxForcaAtual = JogadorVars.m_maxForcaNormal;
         JogadorVars.m_forca = 50;
 
-        JogadorVars.m_sensibilidadeChute = 10;
         JogadorVars.m_sensibilidade = GameManager.Instance.m_config.m_camSensibilidade;
-        JogadorVars.sensibilidadeEscolha = 80;
-
         JogadorVars.m_forcaMin = 20 * AtributosFisicos.coefAtritoEsJogador * AtributosFisicos.gravidade;
 
         velocidadeBarraChute = GameManager.Instance.m_config.m_velocidadeBarraChute;
